@@ -1,3 +1,23 @@
 export const info = {
-  titles: ['Home', 'Works', 'Contact', 'Resume'] 
+  titles: [
+    {
+      text: 'Home',
+      hash: '#home',
+      route: 'Main'
+    },
+    {
+      text: 'Projects',
+      hash: '#projects',
+      route: 'Main'
+    },
+    {
+      text: 'Contact',
+      hash: '#contact',
+      route: 'Main'
+    },
+    {
+      text: 'Resume',
+      route: 'Resume'
+    },
+  ],
 }

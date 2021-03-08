@@ -10,9 +10,13 @@
       centered
       borderless
       @click="$emit('changeTab', $event)">
-      <v-btn v-for="title in text.titles" :key="title" value="title">
-        {{ title }}
-      </v-btn>
+      <router-link
+        v-for="title in text.titles" 
+        :to="{ name: title.route, hash: title.hash }">
+        <v-btn>
+          {{ title.text }}
+        </v-btn>
+      </router-link>
     </v-btn-toggle>
     <v-spacer></v-spacer>
     <v-menu offset-y>

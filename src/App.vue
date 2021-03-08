@@ -6,6 +6,7 @@
       <v-container fluid>
         <router-view></router-view>
       </v-container>
+      <Footer></Footer>
     </v-main>
   </v-app>
 </template>
@@ -13,6 +14,7 @@
 <script>
 import Drawer from './components/Drawer.vue'
 import AppBar from './components/AppBar.vue'
+import Footer from './components/Footer.vue'
 
 export default {
   data: () => ({
@@ -20,7 +22,8 @@ export default {
   }),
   components: {
     AppBar,
-    Drawer
+    Drawer,
+    Footer
   }
 }
 </script>
@@ -28,5 +31,16 @@ export default {
 <style lang="scss">
 .set-pointer {
   cursor: pointer
+}
+.w-90{
+  max-width: 90%;
+  margin: auto;
+}
+.w-40{
+  max-width: 40%;
+  margin: auto;
+}
+a{
+  text-decoration: none
 }
 </style>

@@ -18,14 +18,16 @@
     <v-list
       dense
       nav>
-      <v-list-item
-        v-for="title in text.titles"
-        :key="title"
-        link>
-        <v-list-item-content>
-          <v-list-item-title>{{ title }}</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+      <router-link
+        v-for="(title, index) in text.titles" 
+        :key="index"
+        :to="{ name: title.route, hash: title.hash }">
+        <v-list-item link>
+          <v-list-item-content>
+            <v-list-item-title>{{ title.text }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </router-link>
     </v-list>
   </v-navigation-drawer>
 </template>

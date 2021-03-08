@@ -1,25 +1,33 @@
 <template>
-  <div class="main text-center">
-    <div class="w-40">
+  <div class="main text-center" :class="[$vuetify.breakpoint.xsOnly ? 'w-90' : 'w-40']">
+    <div class="category">
       <Home></Home>
+    </div>
+    <div class="category">
+      <Projects></Projects>
+    </div>
+    <div class="category">
+      <Contact></Contact>
     </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
 import Home from '@/components/Home.vue'
+import Contact from '@/components/Contact.vue'
+import Projects from '@/components/Projects.vue'
 
 export default {
   components: {
-    Home
+    Home,
+    Contact,
+    Projects
   }
 }
 </script>
 
 <style>
-.w-40{
-  max-width: 40%;
-  margin: auto
+.category{
+  margin-bottom: 50px
 }
 </style>
