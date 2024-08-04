@@ -23,6 +23,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Print SSH Key
+        run: |
+          echo "${{ secrets.SSH_REMOTE_USE }}"
+          echo "${{ secrets.SSH_REMOTE_KEY }}"
+
       - name: ssh-scp-ssh-pipelines
         # You may pin to the exact commit or the version.
         # uses: cross-the-world/ssh-scp-ssh-pipelines@78e864b4890087a58248ff39320406971ca88b89
