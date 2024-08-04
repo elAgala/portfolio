@@ -28,16 +28,21 @@ jobs:
         # uses: appleboy/scp-action@6d1fc191a822daa12faa45f3a985413f995ff5c5
         uses: appleboy/scp-action@v0.1.7
         with: 
+
           # scp remote host
           host: ${{ secrets.SSH_REMOTE_HOST }}
+
           # ssh remote port
           port: ${{ secrets.SSH_REMOTE_PORT }}
+          
           # ssh remote user
           username: ${{ secrets.SSH_REMOTE_USER }}
+          
           # content of ssh private key. ex raw content of ~/.ssh/id_rsa
           key: ${{ secrets.SSH_REMOTE_KEY }}
+
           passphrase: ${{ secrets.SSH_REMOTE_PASSPHRASE }}
+
           source: "./dist"
-          target: "/home/agala/itc_api"
-        
-          
+
+          target: "/home/${{ secrets.SSH_REMOTE_USER }}/deployments/portfolio"
