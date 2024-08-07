@@ -28,7 +28,6 @@ jobs:
         # uses: appleboy/scp-action@6d1fc191a822daa12faa45f3a985413f995ff5c5
         uses: appleboy/scp-action@v0.1.7
         with: 
-          debug: true
           # scp remote host
           host: ${{ secrets.SSH_REMOTE_HOST }}
 
