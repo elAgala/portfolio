@@ -45,4 +45,4 @@ jobs:
 
           source: "./dist"
 
-          target: "/home/${{ secrets.SSH_REMOTE_USER }}/deployments/portfolio"
+          target: "/var/www/static/portfolio"
