@@ -1,0 +1,44 @@
+when:
+  - event: push
+    branch:
+      - master
+
+steps:
+
+  - name: Install packages
+    image: node:20
+    commands:
+      - echo "Installing dependencies..."
+      - npm install
+
+  - name: Lint
+    image: node:20
+    commands:
+      - echo "Running linter..."
+      - npm run lint
+
+  - name: Build
+    image: node:20
+    commands:
+      - echo "Building the app..."
+      - npm run build
+
+  - name: Package files for upload
+    image: alpine
+    commands:
+      - echo "Building artifact..."
+      - tar -czf app.tar.gz -C dist .
+
+  - name: Deploy to VPS
+    image: ghcr.io/elagala/agala-deploy:latest
+    settings:
+    environment:
+      ANSIBLE_PLAYBOOK: .ansible/production.yml
+      OP_CONNECT_HOST:
+        from_secret: op_connect_host
+      OP_CONNECT_TOKEN:
+        from_secret: op_connect_token
+      OP_ANSIBLE_INVENTORY_FILE_ROUTE:
+        from_secret: op_ansible_inventory_file_route
+      OP_ANSIBLE_PRIVATE_KEY_ROUTE:
+        from_secret: op_ansible_private_key_route
