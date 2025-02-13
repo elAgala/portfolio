@@ -1,3 +1,5 @@
+@use "sass:math";
+
 .hero {
   height: 100vh;
   width: 100%;
@@ -103,10 +105,10 @@
 
     @for $i from 1 through 20 {
       &:nth-child(#{$i}) {
-        left: random(100) * 1%;
-        top: random(100) * 1%;
-        animation-delay: random(20) * -1s;
-        animation-duration: (15 + random(10)) * 1s;
+        left: math.random(100) * 1%;
+        top: math.random(100) * 1%;
+        animation-delay: math.random(20) * -1s;
+        animation-duration: (15 + math.random(10)) * 1s;
       }
     }
   }
