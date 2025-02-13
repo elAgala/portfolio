@@ -1,0 +1,16 @@
+when:
+  - event: push
+
+steps:
+  - name: Notify
+    image: codeberg.org/l-x/woodpecker-ntfy
+    settings:
+      url:
+        from_secret: ntfy_server
+      token:
+          from_secret: ntfy_token
+      title: Deploy by ${CI_COMMIT_AUTHOR} on ${CI_COMMIT_BRANCH}
+      priority: urgent
+      icon: https://woodpecker-ci.org/img/logo.svg
+      tags: robot,${CI_REPO_NAME}
+      message: ${CI_COMMIT_MESSAGE}
