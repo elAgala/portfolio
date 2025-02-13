@@ -5,7 +5,8 @@ steps:
   - name: Notify
     image: codeberg.org/l-x/woodpecker-ntfy
     settings:
-      url: https://notifications.agala.com.ar/agala-ci
+      url:
+        from_secret: ntfy_server
       token:
           from_secret: ntfy_token
       title: Deploy by ${CI_COMMIT_AUTHOR} on ${CI_COMMIT_BRANCH}
