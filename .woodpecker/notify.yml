@@ -1,5 +1,7 @@
 when:
   - event: push
+  - evaluate: 'CI_PREV_PIPELINE_STATUS == "success"'
+skip_clone: true
 
 steps:
   - name: Notify
