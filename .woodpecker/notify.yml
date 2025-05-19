@@ -15,4 +15,4 @@ steps:
       priority: urgent
       icon: https://woodpecker-ci.org/img/logo.svg
       tags: robot,${CI_REPO_NAME}
-      message: ${CI_COMMIT_MESSAGE}
+      message: "${CI_COMMIT_MESSAGE}"

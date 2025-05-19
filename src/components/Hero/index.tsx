@@ -21,7 +21,7 @@ export const Hero = () => {
         animate={{ opacity: 1 }}
         transition={{ ...transition, delay: 0.4 }}
       >
-        Julian Benitez
+        Miranda Benitez
       </motion.h1>
       <motion.p
         className="hero-subtitle"
