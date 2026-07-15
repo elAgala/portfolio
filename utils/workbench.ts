@@ -1,6 +1,6 @@
-import type { EvidenceGraphDefinition, KernelQuality, KernelQualityInput } from '~/types/workbench'
+import type { EvidenceGraphDefinition, HeroSceneQuality, HeroSceneQualityInput, TracePhase } from '~/types/workbench'
 
-export function chooseKernelQuality(input: KernelQualityInput): KernelQuality {
+export function chooseHeroSceneQuality(input: HeroSceneQualityInput): HeroSceneQuality {
   if (input.reducedMotion || !input.webglAvailable)
     return 'fallback'
 
@@ -11,8 +11,21 @@ export function chooseKernelQuality(input: KernelQualityInput): KernelQuality {
   return constrainedViewport || constrainedPixelDensity || constrainedCpu ? 'balanced' : 'high'
 }
 
-export function clampKernelPointer(value: number): number {
+export function clampHeroPointer(value: number): number {
   return Math.min(1, Math.max(-1, value))
+}
+
+export function getTracePhase(progress: number | null): TracePhase {
+  if (progress === null)
+    return 'idle'
+  const normalized = Math.min(1, Math.max(0, progress))
+  if (normalized < 2 / 11)
+    return 'source'
+  if (normalized < 5 / 11)
+    return 'services'
+  if (normalized < 8.5 / 11)
+    return 'linux'
+  return 'complete'
 }
 
 export function validateEvidenceGraph(definition: EvidenceGraphDefinition): string[] {

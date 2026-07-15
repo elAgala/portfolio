@@ -5,7 +5,7 @@ A distinctive software-engineering portfolio and a formal, exportable résumé. 
 ## Experience
 
 - **GUI-first portfolio:** selected work, architecture diagrams, verified project links, capability record, and direct contact paths.
-- **Kernel stack machine:** a small procedural Three.js model representing interface, services, and platform layers. It supports pointer orbit, an inspect/assemble state, adaptive rendering, and an image fallback for reduced motion or unavailable WebGL.
+- **Operator’s desk:** a procedural Three.js workstation diorama that traces source code through Go, C#, and Node services into a Linux host. It supports restrained pointer parallax, an accessible guided delivery sequence, adaptive rendering, and a static fallback for reduced motion or unavailable WebGL.
 - **Portfolio TTY:** open it with the fixed launcher or `Ctrl + backtick`. Supported commands are `help`, `whoami`, `projects`, `open`, `source`, `resume`, `contact`, `clear`, and `exit`. It uses an explicit parser; arbitrary code is never evaluated.
 - **Formal résumé:** `/resume` is intentionally restrained, photo-free, print-safe, and available as a generated PDF.
 

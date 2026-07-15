@@ -17,32 +17,41 @@
   <circle cx="674" cy="77" r="5" fill="#596259"/>
   <circle cx="692" cy="77" r="5" fill="#a57b3e"/>
   <circle cx="710" cy="77" r="5" fill="#6b1f28"/>
-  <text x="902" y="82" fill="#b9b3a7" font-family="monospace" font-size="11" text-anchor="middle">~/julian/system-viewer</text>
-  <text x="1128" y="82" fill="#9bbf72" font-family="monospace" font-size="10" text-anchor="end">SYSTEM READY</text>
+  <text x="902" y="82" fill="#b9b3a7" font-family="monospace" font-size="11" text-anchor="middle">~/julian/operator-desk</text>
+  <text x="1128" y="82" fill="#9bbf72" font-family="monospace" font-size="10" text-anchor="end">TRACE DELIVERY</text>
 
-  <g fill="#151c17" stroke="#a57b3e" stroke-width="2">
-    <path d="M755 390l230-70 104 54-228 73z"/>
-    <path d="M730 315l230-70 104 54-228 73z"/>
-    <path d="M706 240l230-70 104 54-228 73z"/>
+  <path d="M702 418l345-78 76 47-346 84z" fill="#342017" stroke="#a57b3e" stroke-width="2"/>
+  <path d="M777 471v31M1084 398v31" stroke="#50301f" stroke-width="12"/>
+  <g fill="#0b0f0d" stroke="#39433b" stroke-width="2">
+    <path d="M773 208h191v146H773z"/>
+    <path d="M792 228h153v94H792z"/>
+    <path d="M845 354h48v31h-48z"/>
+    <path d="M817 383h104v14H817z"/>
   </g>
-  <g fill="none" stroke="#67814b" stroke-width="1" opacity=".8">
-    <path d="M741 239l195-58 73 40-194 61z"/>
-    <path d="M765 314l195-58 73 40-194 61z"/>
-    <path d="M790 389l195-58 73 40-194 61z"/>
+  <g fill="#9bbf72" font-family="monospace" font-size="10">
+    <text x="804" y="254">$ whoami</text>
+    <text x="804" y="276">julian / engineer</text>
+    <text x="804" y="298">trace_delivery --ready</text>
   </g>
-  <path d="M805 229l100-30 62 33-100 32z" fill="#6b1f28" stroke="#a57b3e"/>
-  <g fill="#303a32" stroke="#657262">
-    <path d="M817 307l34-10 20 11-34 11z"/><path d="M867 292l34-10 20 11-34 11z"/><path d="M917 277l34-10 20 11-34 11z"/>
-    <path d="M866 337l34-10 20 11-34 11z"/><path d="M916 322l34-10 20 11-34 11z"/>
+  <path d="M785 407l119-25 57 27-119 28z" fill="#0b0f0d" stroke="#39433b"/>
+  <g fill="#39433b" stroke="#59655b">
+    <path d="M804 403l15-3 9 4-15 4z"/><path d="M828 398l15-3 9 4-15 4z"/><path d="M852 393l15-3 9 4-15 4z"/>
+    <path d="M817 414l15-3 9 4-15 4z"/><path d="M841 409l15-3 9 4-15 4z"/><path d="M865 404l15-3 9 4-15 4z"/>
   </g>
-  <ellipse cx="975" cy="221" rx="35" ry="17" fill="#6b1f28" stroke="#d0a455" stroke-width="3"/>
-  <circle cx="897" cy="349" r="12" fill="#6b1f28" stroke="#d0a455" stroke-width="2"/>
+  <path d="M990 351l84-17 32 17-83 18z" fill="#0b0f0d" stroke="#a57b3e"/>
+  <path d="M1004 340l18-4 12 7-18 4z" fill="#6b1f28"/><path d="M1030 334l18-4 12 7-18 4z" fill="#39433b"/><path d="M1056 329l18-4 12 7-18 4z" fill="#39433b"/>
+  <path d="M1061 190h62v154h-62z" fill="#080b09" stroke="#39433b" stroke-width="2"/>
+  <path d="M1074 232h36M1074 249h36M1074 266h36M1074 283h36" stroke="#536158"/>
+  <circle cx="1081" cy="320" r="4" fill="#9bbf72"/><circle cx="1094" cy="320" r="4" fill="#9bbf72"/><circle cx="1107" cy="320" r="4" fill="#9bbf72"/>
+  <path d="M720 355v-150" stroke="#a57b3e" stroke-width="8"/><path d="M720 205l48-42" stroke="#a57b3e" stroke-width="8"/><path d="M746 150l44 39-72 26z" fill="#a57b3e"/>
+  <circle cx="745" cy="205" r="58" fill="#d0a455" opacity=".08"/>
+  <path d="M956 399c32-4 35-34 45-43M1076 350c10-2 17-9 18-18" fill="none" stroke="#d0a455" stroke-width="2"/>
   <g fill="#9bbf72" font-family="monospace" font-size="10" letter-spacing="1">
-    <text x="1065" y="208">01 / INTERFACE</text>
-    <text x="681" y="304">02 / SERVICES</text>
-    <text x="1035" y="436">03 / PLATFORM</text>
+    <text x="681" y="139">01 / WORKSTATION</text>
+    <text x="974" y="386">02 / SERVICE BAY</text>
+    <text x="1052" y="173">03 / LINUX HOST</text>
   </g>
   <rect x="676" y="477" width="452" height="70" fill="#080b09" stroke="#303a32"/>
-  <text x="696" y="503" fill="#9bbf72" font-family="monospace" font-size="12">$ kernel --status</text>
-  <text x="696" y="528" fill="#a57b3e" font-family="monospace" font-size="11">interface / services / platform</text>
+  <text x="696" y="503" fill="#9bbf72" font-family="monospace" font-size="12">$ trace_delivery --ready</text>
+  <text x="696" y="528" fill="#a57b3e" font-family="monospace" font-size="11">source → services → linux</text>
 </svg>

@@ -3,7 +3,8 @@ export type EvidenceGraphId = 'agala-ui' | 'agala-deploy' | 'agala-ai' | 'agala-
 export type EvidenceNodeKind = 'token' | 'primitive' | 'workflow' | 'input' | 'secret' | 'inventory' | 'runtime' | 'target' | 'role' | 'contract' | 'outcome'
 export type EvidenceEdgeStyle = 'flow' | 'contract' | 'assembly'
 export type EvidenceMaterialTheme = 'parchment-oxblood' | 'steel-brass' | 'glass-brass'
-export type KernelQuality = 'high' | 'balanced' | 'fallback'
+export type HeroSceneQuality = 'high' | 'balanced' | 'fallback'
+export type TracePhase = 'idle' | 'source' | 'services' | 'linux' | 'complete'
 
 export interface EvidenceNode {
   id: string
@@ -51,7 +52,7 @@ export interface EvidenceGraphDefinition {
   }
 }
 
-export interface KernelQualityInput {
+export interface HeroSceneQualityInput {
   reducedMotion: boolean
   webglAvailable: boolean
   viewportWidth: number

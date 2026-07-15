@@ -1,21 +1,83 @@
 <script setup lang="ts">
-import KernelMachine from '~/components/kernel/KernelMachine.client.vue'
+import OperatorDesk from '~/components/desk/OperatorDesk.client.vue'
 import type { Profile } from '~/types/portfolio'
-import type { KernelQuality } from '~/types/workbench'
+import type { HeroSceneQuality, TracePhase } from '~/types/workbench'
 
 defineProps<{
   person: Profile
 }>()
 
-const inspected = ref(false)
-const kernelStatus = ref('booting')
+const traceRun = ref(0)
+const tracePhase = ref<TracePhase>('idle')
+const traceHasRun = ref(false)
+const traceIsActive = ref(false)
+const sceneFallback = ref(false)
+const sceneStatus = ref('booting')
 
-function onKernelReady(quality: KernelQuality) {
-  kernelStatus.value = `${quality} render · 60 fps target`
+const traceRunning = computed(() => traceIsActive.value)
+
+const traceButtonLabel = computed(() => {
+  if (traceRunning.value)
+    return 'tracing…'
+  if (sceneFallback.value)
+    return traceHasRun.value ? 'show path again' : 'show delivery path'
+  return traceHasRun.value ? 'replay trace' : 'trace delivery'
+})
+
+const traceConsole = computed(() => {
+  const lines: Record<TracePhase, Array<{ label: string, value: string }>> = {
+    idle: [
+      { label: 'source', value: 'vue / nuxt / typescript' },
+      { label: 'route', value: 'go / node / c#' },
+      { label: 'target', value: 'linux / docker / ansible' },
+    ],
+    source: [
+      { label: 'source', value: 'product interface compiled' },
+      { label: 'artifact', value: 'signed and ready' },
+      { label: 'next', value: 'service gateway' },
+    ],
+    services: [
+      { label: 'go', value: 'gateway ready' },
+      { label: 'c#', value: 'api ready' },
+      { label: 'node', value: 'worker ready' },
+    ],
+    linux: [
+      { label: 'deploy', value: 'ansible applying state' },
+      { label: 'runtime', value: 'containers starting' },
+      { label: 'target', value: 'linux host' },
+    ],
+    complete: [
+      { label: 'release', value: 'healthy' },
+      { label: 'host', value: 'operational' },
+      { label: 'path', value: 'source → services → linux' },
+    ],
+  }
+  return lines[tracePhase.value]
+})
+
+function startTrace() {
+  traceIsActive.value = true
+  tracePhase.value = 'source'
+  traceRun.value += 1
 }
 
-function onKernelFallback() {
-  kernelStatus.value = 'static render · motion preference honored'
+function onSceneReady(quality: HeroSceneQuality) {
+  sceneStatus.value = quality === 'fallback' ? 'static render · motion preference honored' : `${quality} render · 60 fps target`
+}
+
+function onSceneFallback() {
+  sceneFallback.value = true
+  sceneStatus.value = 'static render · motion preference honored'
+}
+
+function onTracePhase(phase: TracePhase) {
+  tracePhase.value = phase
+}
+
+function onTraceComplete() {
+  traceIsActive.value = false
+  tracePhase.value = 'complete'
+  traceHasRun.value = true
 }
 </script>
 
@@ -44,26 +106,30 @@ function onKernelFallback() {
       </dl>
     </div>
 
-    <div class="system-window" aria-label="Interactive system viewer preview">
+    <div id="operator-desk" class="system-window" aria-label="Interactive source-to-Linux delivery scene">
       <header class="system-window__bar">
         <div aria-hidden="true"><i /><i /><i /></div>
-        <p>~/julian/system-viewer</p>
-        <button type="button" :aria-pressed="inspected" @click="inspected = !inspected">
-          {{ inspected ? 'assemble' : 'inspect' }} ↗
+        <p>~/julian/operator-desk</p>
+        <button type="button" :disabled="traceRunning" @click="startTrace">
+          {{ traceButtonLabel }} ↗
         </button>
       </header>
       <div class="system-window__viewport">
-        <KernelMachine :exploded="inspected" @ready="onKernelReady" @fallback="onKernelFallback" />
-        <div class="system-window__console" aria-hidden="true">
-          <p><span>$</span> kernel {{ inspected ? '--explode --verbose' : '--status' }}</p>
-          <p><b>interface</b> vue / nuxt / typescript</p>
-          <p><b>services</b> go / node / c#</p>
-          <p><b>platform</b> linux / docker / ansible</p>
+        <OperatorDesk
+          :trace-run="traceRun"
+          @ready="onSceneReady"
+          @fallback="onSceneFallback"
+          @phase="onTracePhase"
+          @complete="onTraceComplete"
+        />
+        <div class="system-window__console" aria-live="polite" aria-atomic="true">
+          <p><span>$</span> trace_delivery --{{ tracePhase === 'idle' ? 'ready' : tracePhase }}</p>
+          <p v-for="line in traceConsole" :key="line.label"><b>{{ line.label }}</b> {{ line.value }}</p>
         </div>
       </div>
       <footer class="system-window__status">
-        <span><i /> system ready</span>
-        <span>{{ kernelStatus }}</span>
+        <span><i /> {{ traceRunning ? `tracing ${tracePhase}` : traceHasRun ? 'delivery verified' : 'scene ready' }}</span>
+        <span>{{ sceneStatus }}</span>
       </footer>
     </div>
   </section>
