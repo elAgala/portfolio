@@ -3,13 +3,13 @@ import type { Profile } from '~/types/portfolio'
 export const profile = {
   name: 'Julián Benitez',
   initials: 'JB',
-  title: 'Software Engineer',
+  title: 'Software Engineer / Tech Lead',
   location: 'Buenos Aires, Argentina',
   availability: 'Open to ambitious engineering work',
   email: 'julian@benitez.com.ar',
   website: 'julian.benitez.ar',
-  summary: 'I design and build maintainable software across product interfaces, backend systems, and the infrastructure that carries them into production.',
-  manifesto: 'The best systems feel inevitable. Clear boundaries. Useful abstractions. No ceremony without purpose. I work close to the hard decisions and stay until the details hold.',
+  summary: 'I lead and build maintainable software across product interfaces, backend systems, and the Linux infrastructure that carries them into production.',
+  manifesto: 'The best systems feel inevitable. Clear boundaries. Useful abstractions. No ceremony without purpose. I lead close to the hard decisions, help teams sharpen their craft, and stay until the details hold.',
   avatar: '/images/julian-portrait.webp',
   links: [
     { label: 'GitHub', url: 'https://github.com/elAgala' },
@@ -18,19 +18,24 @@ export const profile = {
   ],
   capabilities: [
     {
+      title: 'Technical leadership',
+      description: 'Technical direction, mentoring, hiring, and shared frontend standards for distributed engineering teams.',
+      tools: ['Tech Lead', 'Frontend Guild', 'Mentoring', 'Interviews'],
+    },
+    {
       title: 'Product engineering',
-      description: 'Interfaces that make complicated work feel direct, with systems that remain maintainable after launch.',
-      tools: ['Vue', 'Nuxt', 'TypeScript', 'Flutter'],
+      description: 'Interfaces that make complicated work feel direct and remain maintainable after launch.',
+      tools: ['TypeScript', 'React', 'Next.js', 'Vue', 'Nuxt', 'Flutter'],
     },
     {
-      title: 'Backend systems',
-      description: 'Practical APIs and services shaped around clear contracts, operational safety, and fast delivery.',
-      tools: ['Node.js', 'NestJS', 'C#', 'Go'],
+      title: 'Backend & data',
+      description: 'Practical services shaped around clear contracts, durable data, operational safety, and fast delivery.',
+      tools: ['C#', 'Node.js', 'NestJS', 'Go', 'SQL Server', 'PostgreSQL'],
     },
     {
-      title: 'Platform craft',
-      description: 'Delivery tooling and Linux infrastructure that turn deployment from tribal knowledge into a repeatable system.',
-      tools: ['Azure', 'AWS', 'Ansible', 'Docker'],
+      title: 'Platform engineering',
+      description: 'Linux infrastructure and delivery automation that turn deployment knowledge into a repeatable system.',
+      tools: ['Linux', 'Azure', 'AWS', 'Docker', 'Ansible', 'OpenTofu', 'CI/CD'],
     },
   ],
   principles: [

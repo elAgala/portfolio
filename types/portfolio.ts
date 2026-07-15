@@ -27,15 +27,26 @@ export interface Profile {
   }>
 }
 
+export interface CareerLayer {
+  label: string
+  detail: string
+  tools: string[]
+}
+
+export interface CareerEntry {
+  dates: string
+  role: string
+  company: string
+  location?: string
+  summary: string
+  bullets: string[]
+  stack: string[]
+  layers?: CareerLayer[]
+}
+
 export interface Resume {
   summary: string
-  experience: Array<{
-    dates: string
-    role: string
-    company: string
-    location?: string
-    bullets: string[]
-  }>
+  experience: CareerEntry[]
   education: Array<{
     dates: string
     degree: string
