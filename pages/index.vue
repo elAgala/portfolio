@@ -68,5 +68,6 @@ useHead({
     </main>
 
     <SiteFooter :replay-enabled="false" />
+    <TerminalDrawer />
   </div>
 </template>
