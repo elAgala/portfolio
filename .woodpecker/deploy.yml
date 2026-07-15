@@ -1,0 +1,64 @@
+when:
+  - event: pull_request
+  - event: push
+    branch: master
+
+steps:
+  - name: validate
+    when:
+      - event: pull_request
+      - event: push
+        branch: master
+    image: node:22-alpine
+    commands:
+      - apk add --no-cache poppler-utils
+      - npm ci
+      - npm run lint
+      - npm run typecheck
+      - npm run test
+      - npm run generate
+      - npm run route:validate
+      - npm run resume:verify
+
+  - name: build-portfolio
+    when:
+      - event: push
+        branch: master
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      registry: ghcr.io
+      repo: ghcr.io/elagala/portfolio
+      username:
+        from_secret: gh_username
+      password:
+        from_secret: gh_token
+      tags:
+        - ${CI_COMMIT_SHA}
+      build_args:
+        VCS_REF: ${CI_COMMIT_SHA}
+
+  - name: deploy-portfolio
+    when:
+      - event: push
+        branch: master
+    image: ghcr.io/agala-labs/ansible-runner:latest
+    pull: true
+    environment:
+      SSH_DEPLOY_KEY:
+        from_secret: ssh_deploy_key
+      GH_USER:
+        from_secret: gh_username
+      GH_TOKEN:
+        from_secret: gh_token
+      ANSIBLE_REPO: https://github.com/agala-labs/platform-iac.git
+      ANSIBLE_DIR: ansible
+      ANSIBLE_PLAYBOOK: ansible/playbooks/portfolio-site.yml
+      ANSIBLE_INVENTORY: ansible/inventories/
+      ANSIBLE_USER: deploy
+      ANSIBLE_LIMIT: apps:localhost
+      APP_VERSION: ${CI_COMMIT_SHA}
+      REGISTRY_URL: ghcr.io
+      REGISTRY_USERNAME:
+        from_secret: gh_username
+      REGISTRY_PASSWORD:
+        from_secret: gh_token

@@ -1,0 +1,11 @@
+.git
+.github
+.woodpecker
+.agala-plans
+.data
+.nuxt
+.output
+.visual-regression
+node_modules
+*.log
+/tmp
