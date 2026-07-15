@@ -13,7 +13,7 @@ const viewports = [
   { width: 1024, height: 900 },
   { width: 1440, height: 900 },
 ]
-const sections = ['top', 'agala-ui', 'profile', 'contact']
+const sections = ['top', 'experience', 'agala-setup', 'profile', 'contact']
 
 const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
 
@@ -144,7 +144,7 @@ async function runAudit(protocol) {
   })()`)
   await sleep(150)
   const terminalOutput = await evaluate(protocol, 'document.querySelector(\'.terminal-drawer__output\')?.textContent')
-  if (!terminalOutput?.includes('agala-ui') || !terminalOutput.includes('agala-deploy'))
+  if (!terminalOutput?.includes('agala-ui') || !terminalOutput.includes('agala-deploy') || !terminalOutput.includes('agala-setup'))
     throw new Error('Terminal projects command did not return project targets')
   await assertAccessibility(protocol, 'Open terminal')
 
@@ -189,6 +189,13 @@ async function captureVisuals(protocol) {
       await writeFile(file, Buffer.from(screenshot.data, 'base64'))
       console.log(`Captured ${file}`)
     }
+
+    await evaluate(protocol, 'document.querySelector(\'.terminal-launcher\')?.click()')
+    await sleep(350)
+    const terminalScreenshot = await protocol.send('Page.captureScreenshot', { format: 'png', fromSurface: true })
+    const terminalFile = join(outputDirectory, `${viewport.width}-terminal.png`)
+    await writeFile(terminalFile, Buffer.from(terminalScreenshot.data, 'base64'))
+    console.log(`Captured ${terminalFile}`)
   }
 }
 

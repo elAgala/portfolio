@@ -12,6 +12,7 @@
     "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
     "resume:pdf": "node scripts/generate-resume.mjs",
+    "resume:verify": "node scripts/verify-resume.mjs",
     "route:validate": "node scripts/validate-route-isolation.mjs",
     "visual:regression": "node scripts/verify-workbench.mjs http://127.0.0.1:43177 43178",
     "test": "vitest run",

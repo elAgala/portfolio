@@ -28,10 +28,10 @@ const terminalContext: TerminalContext = {
 }
 
 describe('portfolio content', () => {
-  it('keeps three ordered, unique featured case studies', () => {
-    expect(projects).toHaveLength(3)
+  it('keeps four ordered, unique featured case studies', () => {
+    expect(projects).toHaveLength(4)
     expect(new Set(projects.map(project => project.slug)).size).toBe(projects.length)
-    expect(projects.map(project => project.order)).toEqual([1, 2, 3])
+    expect(projects.map(project => project.order)).toEqual([1, 2, 3, 4])
     expect(projects.every(project => project.featured)).toBe(true)
   })
 
@@ -50,6 +50,28 @@ describe('portfolio content', () => {
     expect(profile.links.some(link => link.url === 'https://github.com/elAgala')).toBe(true)
     expect(resume.experience[0]?.company).toBe('AlixPartners')
     expect(resume.languages.map(item => item.language)).toEqual(['Spanish', 'English'])
+  })
+
+  it('uses one career record for the portfolio and résumé', () => {
+    expect(resume.experience).toBe(careerEntries)
+    expect(careerEntries.map(entry => entry.company)).toEqual(['AlixPartners', 'Agala Labs', 'Self-employed'])
+
+    const alix = careerEntries[0]!
+    expect(alix.role).toBe('Software Engineer / Tech Lead')
+    expect(alix.bullets.join(' ')).toMatch(/Frontend Guild/)
+    expect(alix.bullets.join(' ')).toMatch(/technical interviews/)
+    expect(alix.stack).toEqual(expect.arrayContaining(['Next.js', 'React', 'Vue', 'C#']))
+  })
+
+  it('keeps Agala Labs evidence factual and privacy-safe', () => {
+    const lab = careerEntries.find(entry => entry.company === 'Agala Labs')!
+    const publicContent = JSON.stringify({ profile, projects, resume }).toLowerCase()
+    const labClaims = JSON.stringify(lab).toLowerCase()
+
+    expect(lab.role).toBe('Creator / Software Engineer')
+    expect(lab.layers?.map(layer => layer.label)).toEqual(['Product surfaces', 'Services', 'Platform'])
+    expect(publicContent).not.toContain('github.com/agala-labs')
+    expect(labClaims).not.toMatch(/founder|client|customer|revenue|user count/)
   })
 })
 
@@ -87,13 +109,16 @@ describe('portfolio terminal', () => {
     expect(runTerminalCommand('source agala-deploy', terminalContext).action).toEqual({ type: 'external', target: 'https://github.com/elAgala/agala-deploy' })
     expect(runTerminalCommand('resume', terminalContext).action).toEqual({ type: 'navigate', target: '/resume' })
     expect(runTerminalCommand('clear', terminalContext).action).toEqual({ type: 'clear' })
+    expect(runTerminalCommand('experience', terminalContext).output.join(' ')).toContain('Software Engineer / Tech Lead')
+    expect(runTerminalCommand('lab', terminalContext).output.join(' ')).toContain('products private')
     expect(runTerminalCommand('process.exit()', terminalContext).output[0]).toContain('command not found')
   })
 
   it('lists targets, reports invalid targets, and completes commands', () => {
-    expect(runTerminalCommand('projects', terminalContext).output).toHaveLength(3)
+    expect(runTerminalCommand('projects', terminalContext).output).toHaveLength(4)
     expect(runTerminalCommand('open missing', terminalContext).output.join(' ')).toContain('target not found')
     expect(completeTerminalInput('who', terminalContext)).toBe('whoami')
     expect(completeTerminalInput('open agala-d', terminalContext)).toBe('open agala-deploy')
+    expect(completeTerminalInput('open agala-s', terminalContext)).toBe('open agala-setup')
   })
 })
