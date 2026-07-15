@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createKernelMachine, type KernelMachineRuntime } from './runtime/kernel-machine'
+import type { KernelMachineRuntime } from './runtime/kernel-machine'
 import type { KernelQuality } from '~/types/workbench'
 import { chooseKernelQuality, clampKernelPointer } from '~/utils/workbench'
 
@@ -57,7 +57,7 @@ function resetPointer() {
 
 watch(() => props.exploded, exploded => runtime?.setExploded(exploded))
 
-onMounted(() => {
+onMounted(async () => {
   if (!canvas.value || !host.value)
     return
 
@@ -77,6 +77,9 @@ onMounted(() => {
   }
 
   try {
+    const { createKernelMachine } = await import('./runtime/kernel-machine')
+    if (!canvas.value || !host.value)
+      return
     runtime = createKernelMachine(canvas.value, quality.value)
     runtime.setExploded(props.exploded)
     resizeObserver = new ResizeObserver(([entry]) => {

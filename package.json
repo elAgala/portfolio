@@ -5,15 +5,15 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "accessibility:audit": "node scripts/capture-estate-stills.mjs http://127.0.0.1:43177 43178 --audit",
-    "dev": "nuxt dev",
+    "accessibility:audit": "node scripts/verify-workbench.mjs http://127.0.0.1:43177 43178 --audit",
+    "dev": "nuxt dev --port 43177",
     "generate": "nuxt generate",
     "lint": "eslint .",
     "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
     "resume:pdf": "node scripts/generate-resume.mjs",
     "route:validate": "node scripts/validate-route-isolation.mjs",
-    "visual:regression": "node scripts/capture-estate-stills.mjs http://127.0.0.1:43177 43178 --qa",
+    "visual:regression": "node scripts/verify-workbench.mjs http://127.0.0.1:43177 43178",
     "test": "vitest run",
     "typecheck": "nuxt typecheck"
   },

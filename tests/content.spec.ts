@@ -3,7 +3,22 @@ import { evidenceGraphs } from '../data/experience-graphs'
 import { profile } from '../data/profile'
 import { projects } from '../data/projects'
 import { resume } from '../data/resume'
+import { completeTerminalInput, runTerminalCommand, type TerminalContext } from '../utils/terminal'
 import { chooseKernelQuality, clampKernelPointer, validateEvidenceGraph } from '../utils/workbench'
+
+const terminalContext: TerminalContext = {
+  name: profile.name,
+  title: profile.title,
+  location: profile.location,
+  email: profile.email,
+  github: 'https://github.com/elAgala',
+  projects: projects.map(project => ({
+    slug: project.slug,
+    title: project.title,
+    path: project.path,
+    repository: project.repository,
+  })),
+}
 
 describe('portfolio content', () => {
   it('keeps three ordered, unique featured case studies', () => {
@@ -56,5 +71,22 @@ describe('project evidence diagrams', () => {
       expect(graph.nodes.every(node => Object.hasOwn(project, node.metadataRef.split('.')[0]!))).toBe(true)
       expect(new Set(graph.nodes.map(node => node.label)).size).toBe(graph.nodes.length)
     }
+  })
+})
+
+describe('portfolio terminal', () => {
+  it('routes explicit commands without evaluating arbitrary input', () => {
+    expect(runTerminalCommand('open agala-ui', terminalContext).action).toEqual({ type: 'navigate', target: '/work/agala-ui' })
+    expect(runTerminalCommand('source agala-deploy', terminalContext).action).toEqual({ type: 'external', target: 'https://github.com/elAgala/agala-deploy' })
+    expect(runTerminalCommand('resume', terminalContext).action).toEqual({ type: 'navigate', target: '/resume' })
+    expect(runTerminalCommand('clear', terminalContext).action).toEqual({ type: 'clear' })
+    expect(runTerminalCommand('process.exit()', terminalContext).output[0]).toContain('command not found')
+  })
+
+  it('lists targets, reports invalid targets, and completes commands', () => {
+    expect(runTerminalCommand('projects', terminalContext).output).toHaveLength(3)
+    expect(runTerminalCommand('open missing', terminalContext).output.join(' ')).toContain('target not found')
+    expect(completeTerminalInput('who', terminalContext)).toBe('whoami')
+    expect(completeTerminalInput('open agala-d', terminalContext)).toBe('open agala-deploy')
   })
 })

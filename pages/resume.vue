@@ -19,13 +19,13 @@ function printResume() {
 
 <template>
   <div class="resume-route">
-    <div class="resume-toolbar" aria-label="Résumé actions">
+    <nav class="resume-toolbar" aria-label="Résumé actions">
       <NuxtLink to="/">← Portfolio</NuxtLink>
       <div>
         <button type="button" @click="printResume">Save as PDF</button>
         <a href="/julian-benitez-resume.pdf" download>Download PDF</a>
       </div>
-    </div>
+    </nav>
 
     <main class="resume-sheet">
       <header class="resume-header">

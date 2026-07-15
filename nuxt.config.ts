@@ -41,6 +41,10 @@ export default defineNuxtConfig({
     typeCheck: true,
   },
   vite: {
+    build: {
+      chunkSizeWarningLimit: 550,
+      modulePreload: false,
+    },
     optimizeDeps: {
       include: ['three'],
     },

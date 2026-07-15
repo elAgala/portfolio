@@ -1,23 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <defs>
-    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#070504" stop-opacity=".98"/>
-      <stop offset=".58" stop-color="#070504" stop-opacity=".78"/>
-      <stop offset="1" stop-color="#070504" stop-opacity=".12"/>
-    </linearGradient>
-    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
-      <stop offset=".45" stop-color="#070504" stop-opacity="0"/>
-      <stop offset="1" stop-color="#070504" stop-opacity=".72"/>
-    </linearGradient>
-  </defs>
-  <image href="/stills/estate-hero.avif" width="1200" height="630" preserveAspectRatio="xMidYMid slice"/>
-  <rect width="1200" height="630" fill="url(#shade)"/>
-  <rect width="1200" height="630" fill="url(#floor)"/>
-  <circle cx="1080" cy="96" r="46" fill="#090706" fill-opacity=".7" stroke="#ad8a54" stroke-width="1"/>
-  <text x="1080" y="107" fill="#eee4d5" font-family="Georgia,serif" font-size="26" text-anchor="middle">JB</text>
-  <text x="70" y="82" fill="#ad8a54" font-family="Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="4">JULIÁN BENITEZ · SOFTWARE ENGINEER</text>
-  <text x="66" y="260" fill="#eee4d5" font-family="Georgia,serif" font-size="86">Built with intent.</text>
-  <text x="68" y="350" fill="#d4c6b3" font-family="Georgia,serif" font-size="78" font-style="italic">Made to endure.</text>
-  <line x1="70" y1="504" x2="1130" y2="504" stroke="#ad8a54" stroke-opacity=".48"/>
-  <text x="70" y="550" fill="#d4c6b3" font-family="Arial,sans-serif" font-size="14" letter-spacing="2">PRODUCT · BACKEND · PLATFORM · BUENOS AIRES</text>
+  <rect width="1200" height="630" fill="#f2ebdd"/>
+  <g stroke="#d5ccbc" stroke-width="1">
+    <path d="M64 0v630M128 0v630M192 0v630M256 0v630M320 0v630M384 0v630M448 0v630M512 0v630M576 0v630M640 0v630M704 0v630M768 0v630M832 0v630M896 0v630M960 0v630M1024 0v630M1088 0v630M1152 0v630"/>
+  </g>
+  <rect x="38" y="34" width="46" height="46" fill="none" stroke="#111713" transform="rotate(-2 61 57)"/>
+  <text x="61" y="63" fill="#111713" font-family="monospace" font-size="16" text-anchor="middle">JB</text>
+  <text x="54" y="162" fill="#6b1f28" font-family="monospace" font-size="14" font-weight="700" letter-spacing="2">PRODUCT · BACKEND · PLATFORM</text>
+  <text x="50" y="272" fill="#11110f" font-family="Georgia,serif" font-size="82" letter-spacing="-3">Built with</text>
+  <text x="50" y="350" fill="#11110f" font-family="Georgia,serif" font-size="82" letter-spacing="-3">intent.</text>
+  <text x="50" y="432" fill="#6b1f28" font-family="Georgia,serif" font-size="76" font-style="italic" letter-spacing="-2">Made to endure.</text>
+  <text x="54" y="535" fill="#575148" font-family="Arial,sans-serif" font-size="19">Julián Benitez · Software Engineer</text>
+  <text x="54" y="568" fill="#746d62" font-family="monospace" font-size="13" letter-spacing="1">LINUX · OSS · BUENOS AIRES</text>
+
+  <rect x="650" y="54" width="504" height="522" fill="#0b0f0d" stroke="#252c26"/>
+  <rect x="650" y="54" width="504" height="46" fill="#111713"/>
+  <circle cx="674" cy="77" r="5" fill="#596259"/>
+  <circle cx="692" cy="77" r="5" fill="#a57b3e"/>
+  <circle cx="710" cy="77" r="5" fill="#6b1f28"/>
+  <text x="902" y="82" fill="#b9b3a7" font-family="monospace" font-size="11" text-anchor="middle">~/julian/system-viewer</text>
+  <text x="1128" y="82" fill="#9bbf72" font-family="monospace" font-size="10" text-anchor="end">SYSTEM READY</text>
+
+  <g fill="#151c17" stroke="#a57b3e" stroke-width="2">
+    <path d="M755 390l230-70 104 54-228 73z"/>
+    <path d="M730 315l230-70 104 54-228 73z"/>
+    <path d="M706 240l230-70 104 54-228 73z"/>
+  </g>
+  <g fill="none" stroke="#67814b" stroke-width="1" opacity=".8">
+    <path d="M741 239l195-58 73 40-194 61z"/>
+    <path d="M765 314l195-58 73 40-194 61z"/>
+    <path d="M790 389l195-58 73 40-194 61z"/>
+  </g>
+  <path d="M805 229l100-30 62 33-100 32z" fill="#6b1f28" stroke="#a57b3e"/>
+  <g fill="#303a32" stroke="#657262">
+    <path d="M817 307l34-10 20 11-34 11z"/><path d="M867 292l34-10 20 11-34 11z"/><path d="M917 277l34-10 20 11-34 11z"/>
+    <path d="M866 337l34-10 20 11-34 11z"/><path d="M916 322l34-10 20 11-34 11z"/>
+  </g>
+  <ellipse cx="975" cy="221" rx="35" ry="17" fill="#6b1f28" stroke="#d0a455" stroke-width="3"/>
+  <circle cx="897" cy="349" r="12" fill="#6b1f28" stroke="#d0a455" stroke-width="2"/>
+  <g fill="#9bbf72" font-family="monospace" font-size="10" letter-spacing="1">
+    <text x="1065" y="208">01 / INTERFACE</text>
+    <text x="681" y="304">02 / SERVICES</text>
+    <text x="1035" y="436">03 / PLATFORM</text>
+  </g>
+  <rect x="676" y="477" width="452" height="70" fill="#080b09" stroke="#303a32"/>
+  <text x="696" y="503" fill="#9bbf72" font-family="monospace" font-size="12">$ kernel --status</text>
+  <text x="696" y="528" fill="#a57b3e" font-family="monospace" font-size="11">interface / services / platform</text>
 </svg>

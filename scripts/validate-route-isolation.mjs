@@ -9,12 +9,12 @@ const requestedChunks = [...resumeHtml.matchAll(/(?:src|href)="\/?(_nuxt\/[^"?]+
 if (!requestedChunks.length)
   throw new Error('No résumé JavaScript chunks found; generate the site before checking route isolation')
 
-const forbiddenMarkers = ['estate-core-', 'estate-detail-', '/models/estate-', 'EstateExperience']
+const forbiddenMarkers = ['kernel-machine', 'KernelMachine', 'three.module', 'system-viewer']
 for (const chunk of new Set(requestedChunks)) {
   const source = readFileSync(resolve(publicDirectory, chunk), 'utf8')
   const marker = forbiddenMarkers.find(value => source.includes(value))
   if (marker)
-    throw new Error(`Résumé route chunk ${chunk} contains estate marker ${marker}`)
+    throw new Error(`Résumé route chunk ${chunk} contains interactive portfolio marker ${marker}`)
 }
 
 console.log(`Résumé isolation passed across ${new Set(requestedChunks).size} requested JavaScript chunks.`)
