@@ -5,7 +5,7 @@ import { profile } from '../data/profile'
 import { projects } from '../data/projects'
 import { resume } from '../data/resume'
 import { completeTerminalInput, runTerminalCommand, type TerminalContext } from '../utils/terminal'
-import { chooseKernelQuality, clampKernelPointer, validateEvidenceGraph } from '../utils/workbench'
+import { chooseHeroSceneQuality, clampHeroPointer, getTracePhase, validateEvidenceGraph } from '../utils/workbench'
 
 const terminalContext: TerminalContext = {
   name: profile.name,
@@ -75,18 +75,27 @@ describe('portfolio content', () => {
   })
 })
 
-describe('kernel machine policy', () => {
+describe('operator desk policy', () => {
   it('selects an adaptive rendering tier', () => {
-    expect(chooseKernelQuality({ reducedMotion: true, webglAvailable: true, viewportWidth: 1440, devicePixelRatio: 1 })).toBe('fallback')
-    expect(chooseKernelQuality({ reducedMotion: false, webglAvailable: false, viewportWidth: 1440, devicePixelRatio: 1 })).toBe('fallback')
-    expect(chooseKernelQuality({ reducedMotion: false, webglAvailable: true, viewportWidth: 390, devicePixelRatio: 3 })).toBe('balanced')
-    expect(chooseKernelQuality({ reducedMotion: false, webglAvailable: true, viewportWidth: 1440, devicePixelRatio: 1, hardwareConcurrency: 12 })).toBe('high')
+    expect(chooseHeroSceneQuality({ reducedMotion: true, webglAvailable: true, viewportWidth: 1440, devicePixelRatio: 1 })).toBe('fallback')
+    expect(chooseHeroSceneQuality({ reducedMotion: false, webglAvailable: false, viewportWidth: 1440, devicePixelRatio: 1 })).toBe('fallback')
+    expect(chooseHeroSceneQuality({ reducedMotion: false, webglAvailable: true, viewportWidth: 390, devicePixelRatio: 3 })).toBe('balanced')
+    expect(chooseHeroSceneQuality({ reducedMotion: false, webglAvailable: true, viewportWidth: 1440, devicePixelRatio: 1, hardwareConcurrency: 12 })).toBe('high')
   })
 
-  it('constrains pointer input to the intended orbit range', () => {
-    expect(clampKernelPointer(-4)).toBe(-1)
-    expect(clampKernelPointer(0.4)).toBe(0.4)
-    expect(clampKernelPointer(9)).toBe(1)
+  it('constrains pointer input to restrained parallax', () => {
+    expect(clampHeroPointer(-4)).toBe(-1)
+    expect(clampHeroPointer(0.4)).toBe(0.4)
+    expect(clampHeroPointer(9)).toBe(1)
+  })
+
+  it('maps the guided trace to explicit delivery phases', () => {
+    expect(getTracePhase(null)).toBe('idle')
+    expect(getTracePhase(0)).toBe('source')
+    expect(getTracePhase(2 / 11)).toBe('services')
+    expect(getTracePhase(5 / 11)).toBe('linux')
+    expect(getTracePhase(8.5 / 11)).toBe('complete')
+    expect(getTracePhase(4)).toBe('complete')
   })
 })
 

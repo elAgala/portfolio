@@ -13,7 +13,7 @@ const viewports = [
   { width: 1024, height: 900 },
   { width: 1440, height: 900 },
 ]
-const sections = ['top', 'experience', 'agala-setup', 'profile', 'contact']
+const sections = ['top', 'operator-desk', 'experience', 'agala-setup', 'profile', 'contact']
 
 const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
 
@@ -120,9 +120,32 @@ async function runAudit(protocol) {
   await assertNoOverflow(protocol, 'Desktop workbench')
   await assertAccessibility(protocol, 'Desktop workbench')
 
-  const kernelStatus = await evaluate(protocol, 'document.querySelector(\'.system-window__status span:last-child\')?.textContent?.trim()')
-  if (!kernelStatus || kernelStatus === 'booting')
-    throw new Error(`Kernel did not initialize: ${kernelStatus || 'missing status'}`)
+  const sceneStatus = await evaluate(protocol, 'document.querySelector(\'.system-window__status span:last-child\')?.textContent?.trim()')
+  if (!sceneStatus || sceneStatus === 'booting')
+    throw new Error(`Operator desk did not initialize: ${sceneStatus || 'missing status'}`)
+
+  const traceButtonFound = await evaluate(protocol, `(() => {
+    const button = [...document.querySelectorAll('.system-window__bar button')].find(item => item.textContent.includes('trace delivery'))
+    button?.click()
+    return Boolean(button)
+  })()`)
+  await sleep(400)
+  const traceState = await evaluate(protocol, `(() => {
+    const button = document.querySelector('.system-window__bar button')
+    return { disabled: button?.disabled, label: button?.textContent?.trim() }
+  })()`)
+  const traceOutput = await evaluate(protocol, 'document.querySelector(\'.system-window__console\')?.textContent')
+  if (!traceButtonFound || !traceState.disabled || !traceOutput?.includes('product interface compiled'))
+    throw new Error(`Operator desk trace did not enter source phase: ${JSON.stringify({ traceButtonFound, traceState, traceOutput })}`)
+
+  await sleep(10800)
+  const traceComplete = await evaluate(protocol, `({
+    button: document.querySelector('.system-window__bar button')?.textContent?.trim(),
+    console: document.querySelector('.system-window__console')?.textContent,
+    status: document.querySelector('.system-window__status span:first-child')?.textContent?.trim(),
+  })`)
+  if (!traceComplete.button?.includes('replay trace') || !traceComplete.console?.includes('release healthy') || !traceComplete.status?.includes('delivery verified'))
+    throw new Error(`Operator desk trace did not complete: ${JSON.stringify(traceComplete)}`)
 
   await evaluate(protocol, 'document.querySelector(\'.terminal-launcher\')?.click()')
   await sleep(350)
@@ -154,11 +177,24 @@ async function runAudit(protocol) {
   })
   await navigate(protocol, `${baseUrl}/`)
   const fallback = await evaluate(protocol, `({
-    image: Boolean(document.querySelector('.kernel-machine__fallback img')),
+    image: Boolean(document.querySelector('.operator-desk__fallback img')),
+    button: [...document.querySelectorAll('.system-window__bar button')].find(item => item.textContent.includes('show delivery path'))?.textContent?.trim(),
     status: document.querySelector('.system-window__status span:last-child')?.textContent?.trim(),
   })`)
-  if (!fallback.image || !fallback.status?.startsWith('static render'))
+  if (!fallback.image || !fallback.button || !fallback.status?.startsWith('static render'))
     throw new Error(`Reduced-motion fallback failed: ${JSON.stringify(fallback)}`)
+
+  await evaluate(protocol, `(() => {
+    const button = document.querySelector('.system-window__bar button')
+    if (button && !button.disabled) button.click()
+  })()`)
+  await sleep(100)
+  const staticPath = await evaluate(protocol, `({
+    path: document.querySelector('.operator-desk__static-path')?.textContent,
+    output: document.querySelector('.system-window__console')?.textContent,
+  })`)
+  if (!staticPath.path?.includes('source') || !staticPath.output?.includes('source → services → linux'))
+    throw new Error(`Reduced-motion delivery path failed: ${JSON.stringify(staticPath)}`)
   await assertAccessibility(protocol, 'Reduced-motion workbench')
 
   await protocol.send('Emulation.setEmulatedMedia', { media: 'screen', features: [] })
@@ -188,6 +224,18 @@ async function captureVisuals(protocol) {
       const file = join(outputDirectory, `${viewport.width}-${section}.png`)
       await writeFile(file, Buffer.from(screenshot.data, 'base64'))
       console.log(`Captured ${file}`)
+
+      if (section === 'operator-desk') {
+        await evaluate(protocol, `(() => {
+          const button = document.querySelector('.system-window__bar button')
+          if (button && !button.disabled) button.click()
+        })()`)
+        await sleep(3300)
+        const traceScreenshot = await protocol.send('Page.captureScreenshot', { format: 'png', fromSurface: true })
+        const traceFile = join(outputDirectory, `${viewport.width}-operator-desk-trace.png`)
+        await writeFile(traceFile, Buffer.from(traceScreenshot.data, 'base64'))
+        console.log(`Captured ${traceFile}`)
+      }
     }
 
     await evaluate(protocol, 'document.querySelector(\'.terminal-launcher\')?.click()')
