@@ -3,8 +3,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: ['@nuxt/eslint'],
   css: [
-    '@fontsource-variable/bodoni-moda/wght.css',
-    '@fontsource-variable/bodoni-moda/wght-italic.css',
+    '@fontsource-variable/inter-tight/wght.css',
     '@fontsource-variable/manrope/wght.css',
     '@fontsource-variable/jetbrains-mono/wght.css',
     '~/assets/css/main.css',

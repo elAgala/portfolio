@@ -5,11 +5,11 @@
   </g>
   <rect x="38" y="34" width="46" height="46" fill="none" stroke="#111713" transform="rotate(-2 61 57)"/>
   <text x="61" y="63" fill="#111713" font-family="monospace" font-size="16" text-anchor="middle">JB</text>
-  <text x="54" y="162" fill="#6b1f28" font-family="monospace" font-size="14" font-weight="700" letter-spacing="2">PRODUCT · BACKEND · PLATFORM</text>
-  <text x="50" y="272" fill="#11110f" font-family="Georgia,serif" font-size="82" letter-spacing="-3">Built with</text>
-  <text x="50" y="350" fill="#11110f" font-family="Georgia,serif" font-size="82" letter-spacing="-3">intent.</text>
-  <text x="50" y="432" fill="#6b1f28" font-family="Georgia,serif" font-size="76" font-style="italic" letter-spacing="-2">Made to endure.</text>
-  <text x="54" y="535" fill="#575148" font-family="Arial,sans-serif" font-size="19">Julián Benitez · Software Engineer</text>
+  <text x="54" y="162" fill="#6b1f28" font-family="monospace" font-size="14" font-weight="700" letter-spacing="2">LEAD · PRODUCT · BACKEND · PLATFORM</text>
+  <text x="50" y="272" fill="#11110f" font-family="Inter Tight,Arial,sans-serif" font-size="82" font-weight="700" letter-spacing="-3">Built with</text>
+  <text x="50" y="350" fill="#11110f" font-family="Inter Tight,Arial,sans-serif" font-size="82" font-weight="700" letter-spacing="-3">intent.</text>
+  <text x="50" y="432" fill="#6b1f28" font-family="Inter Tight,Arial,sans-serif" font-size="76" font-weight="700" letter-spacing="-2">Made to endure.</text>
+  <text x="54" y="535" fill="#575148" font-family="Arial,sans-serif" font-size="19">Julián Benitez · Software Engineer / Tech Lead</text>
   <text x="54" y="568" fill="#746d62" font-family="monospace" font-size="13" letter-spacing="1">LINUX · OSS · BUENOS AIRES</text>
 
   <rect x="650" y="54" width="504" height="522" fill="#0b0f0d" stroke="#252c26"/>

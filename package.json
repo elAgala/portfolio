@@ -18,7 +18,7 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
-    "@fontsource-variable/bodoni-moda": "^5.2.7",
+    "@fontsource-variable/inter-tight": "^5.2.7",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/manrope": "^5.2.8",
     "nuxt": "^4.4.8",

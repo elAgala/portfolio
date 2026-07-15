@@ -16,9 +16,9 @@ const evidenceProjects = projects.map(project => ({
 }))
 
 useSeoMeta({
-  title: 'Software Engineer',
+  title: 'Software Engineer / Tech Lead',
   description: person.summary,
-  ogTitle: 'Julián Benitez — Software Engineer',
+  ogTitle: 'Julián Benitez — Software Engineer / Tech Lead',
   ogDescription: person.summary,
 })
 

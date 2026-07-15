@@ -4,7 +4,7 @@ const config = useRuntimeConfig()
 const canonicalUrl = computed(() => `${config.public.siteUrl}${route.path}`)
 
 useHead({
-  titleTemplate: (title) => title ? `${title} — Julián Benitez` : 'Julián Benitez — Software Engineer',
+  titleTemplate: (title) => title ? `${title} — Julián Benitez` : 'Julián Benitez — Software Engineer / Tech Lead',
   link: [{ rel: 'canonical', href: canonicalUrl }],
 })
 
