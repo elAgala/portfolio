@@ -9,7 +9,7 @@ steps:
     image: node:20
     commands:
       - echo "Installing dependencies..."
-      - npm install
+      - npm ci
 
   - name: Lint
     image: node:20
@@ -21,13 +21,16 @@ steps:
     image: node:20
     commands:
       - echo "Building the app..."
-      - npm run build
+      - npm run typecheck
+      - npm run test
+      - npm run generate
+      - test -f public/julian-benitez-resume.pdf
 
   - name: Package files for upload
     image: alpine
     commands:
       - echo "Building artifact..."
-      - tar -czf app.tar.gz -C dist .
+      - tar -czf app.tar.gz -C .output/public .
 
   - name: Deploy to VPS
     image: ghcr.io/elagala/agala-deploy:latest
