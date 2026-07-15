@@ -7,7 +7,7 @@ import { profile } from '../data/profile'
 import { projects } from '../data/projects'
 import { resume } from '../data/resume'
 import { cameraKeyframes, estateAssets, experienceChapters } from '../data/experience'
-import { chooseExperienceQuality, evaluateCameraKeyframes, evaluateEvidenceGraphPhase, graphLocalProgress, interpolateExperienceStage, isEvidenceEdgeActive, shouldRunExperienceIntro, validateAssetManifest, validateEvidenceGraph } from '../utils/experience'
+import { chooseExperienceQuality, evaluateCameraKeyframes, evaluateEvidenceGraphPhase, graphLocalProgress, interpolateExperienceStage, isEvidenceEdgeActive, parseSoundPreference, resolveExperiencePresentation, shouldRunExperienceIntro, validateAssetManifest, validateEvidenceGraph } from '../utils/experience'
 
 describe('portfolio content', () => {
   it('keeps three ordered, unique featured case studies', () => {
@@ -75,6 +75,16 @@ describe('cinematic experience', () => {
     expect(shouldRunExperienceIntro({ reducedMotion: false, hasSeenIntro: true, hash: '' })).toBe(false)
     expect(shouldRunExperienceIntro({ reducedMotion: true, hasSeenIntro: false, hash: '' })).toBe(false)
     expect(shouldRunExperienceIntro({ reducedMotion: false, hasSeenIntro: true, hash: '#contact', force: true })).toBe(true)
+  })
+
+  it('maps loading, cinematic, static, and session sound states deterministically', () => {
+    expect(resolveExperiencePresentation({ quality: 'high', ready: false, failed: false })).toBe('loading')
+    expect(resolveExperiencePresentation({ quality: 'balanced', ready: true, failed: false })).toBe('cinematic')
+    expect(resolveExperiencePresentation({ quality: 'fallback', ready: false, failed: false })).toBe('static')
+    expect(resolveExperiencePresentation({ quality: 'high', ready: true, failed: true })).toBe('static')
+    expect(parseSoundPreference('true')).toBe(true)
+    expect(parseSoundPreference('false')).toBe(false)
+    expect(parseSoundPreference(null)).toBe(false)
   })
 
   it('releases scene geometry and materials during route teardown', () => {

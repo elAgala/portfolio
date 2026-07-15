@@ -31,6 +31,23 @@ Project evidence is defined once in `data/experience-graphs.ts`. Those definitio
 drive the instanced Three.js blueprint, deployment topology, and orchestration
 council as well as the semantic phase annotations shown in the page.
 
+The recruiter-facing shell is split into typed chapter components under
+`components/chapters/` and styled in `assets/css/portfolio.css`. The same semantic
+content drives cinematic and static modes; reduced-motion and WebGL fallback use
+optimized estate frames from `public/stills/` instead of hiding any evidence.
+
+With the development server running, the estate authoring and QA utilities can
+regenerate those frames and verify the responsive shell:
+
+```bash
+npm run scene:stills -- http://127.0.0.1:43177 43178
+npm run visual:regression
+npm run accessibility:audit
+```
+
+The two port arguments are the local Nuxt and temporary Chrome debugging ports;
+neither is used by the production application.
+
 Static output is written to `.output/public` and deployed to the existing VPS through Woodpecker and Ansible.
 
 ## Content

@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .nuxt
+.visual-regression
 .output
 .data
 .cache

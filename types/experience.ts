@@ -2,6 +2,7 @@ export type ExperienceChapter = 'hero' | 'agala-ui' | 'agala-deploy' | 'agala-ai
 export type ExperienceQuality = 'high' | 'balanced' | 'fallback'
 export type ExperienceRoom = 'study' | 'council' | 'archive' | 'decision'
 export type ExperienceLoadPhase = 'idle' | 'core' | 'detail' | 'ready' | 'fallback'
+export type ExperiencePresentation = 'loading' | 'cinematic' | 'static'
 export type Vec3Tuple = [number, number, number]
 export type EvidenceGraphId = 'agala-ui' | 'agala-deploy' | 'agala-ai'
 export type EvidenceNodeKind = 'token' | 'primitive' | 'workflow' | 'input' | 'secret' | 'inventory' | 'runtime' | 'target' | 'role' | 'contract' | 'outcome'
@@ -45,6 +46,15 @@ export interface ExperienceRuntimeState {
   progress: number
   soundEnabled: boolean
   failureReason?: string
+}
+
+export interface ExperienceShellState {
+  activeChapter: ExperienceChapter
+  graphProgress: Record<EvidenceGraphId, number>
+  quality: ExperienceQuality
+  ready: boolean
+  failed: boolean
+  presentation: ExperiencePresentation
 }
 
 export interface ExperienceStage {

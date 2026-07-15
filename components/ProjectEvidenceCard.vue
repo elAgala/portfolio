@@ -3,6 +3,7 @@ import type { CSSProperties } from 'vue'
 import type { EvidenceGraphDefinition, ExperienceQuality } from '~/types/experience'
 import type { Project } from '~/types/portfolio'
 import { evaluateEvidenceGraphPhase } from '~/utils/experience'
+import StaticPortfolio from './chapters/StaticPortfolio.vue'
 
 const props = defineProps<{
   project: Project
@@ -32,13 +33,14 @@ function nodeStyle(position: [number, number, number]): CSSProperties {
 <template>
   <article
     :id="project.slug"
-    class="project-evidence experience-stage"
+    class="project-evidence experience-stage chapter chapter--right"
     :class="`project-evidence--${definition.id}`"
     :data-experience-x="experienceX"
     :data-experience-chapter="project.slug"
     :data-graph-phase="graphState.phase.id"
   >
     <div class="project-evidence__visual" aria-hidden="true">
+      <StaticPortfolio :chapter="definition.id" :label="definition.title" />
       <span class="project-evidence__index">0{{ index + 1 }}</span>
       <svg class="evidence-static-frame" viewBox="0 0 100 100" preserveAspectRatio="none">
         <line

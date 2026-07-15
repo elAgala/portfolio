@@ -1,12 +1,13 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-14',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   modules: ['@nuxt/eslint'],
   css: [
     '@fontsource-variable/bodoni-moda/wght.css',
     '@fontsource-variable/bodoni-moda/wght-italic.css',
     '@fontsource-variable/manrope/wght.css',
     '~/assets/css/main.css',
+    '~/assets/css/portfolio.css',
   ],
   app: {
     head: {

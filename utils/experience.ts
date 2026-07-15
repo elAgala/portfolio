@@ -1,4 +1,4 @@
-import type { CameraKeyframe, EvidenceEdge, EvidenceGraphDefinition, EvidenceGraphState, ExperienceChapter, ExperienceQuality, ExperienceStage, SceneAssetManifest } from '~/types/experience'
+import type { CameraKeyframe, EvidenceEdge, EvidenceGraphDefinition, EvidenceGraphState, ExperienceChapter, ExperiencePresentation, ExperienceQuality, ExperienceStage, SceneAssetManifest } from '~/types/experience'
 
 export type { ExperienceChapter, ExperienceQuality, ExperienceStage } from '~/types/experience'
 
@@ -18,6 +18,12 @@ export interface ExperienceIntroInput {
   force?: boolean
 }
 
+export interface ExperiencePresentationInput {
+  quality: ExperienceQuality
+  ready: boolean
+  failed: boolean
+}
+
 export function chooseExperienceQuality(input: ExperienceCapabilityInput): ExperienceQuality {
   if (input.reducedMotion || !input.webglAvailable || input.softwareRenderer)
     return 'fallback'
@@ -35,6 +41,16 @@ export function shouldRunExperienceIntro(input: ExperienceIntroInput) {
   if (input.force)
     return true
   return !input.hasSeenIntro && input.hash.length === 0
+}
+
+export function resolveExperiencePresentation(input: ExperiencePresentationInput): ExperiencePresentation {
+  if (input.failed || input.quality === 'fallback')
+    return 'static'
+  return input.ready ? 'cinematic' : 'loading'
+}
+
+export function parseSoundPreference(value: string | null) {
+  return value === 'true'
 }
 
 export function interpolateExperienceStage(stages: ExperienceStage[], viewportCenter: number) {

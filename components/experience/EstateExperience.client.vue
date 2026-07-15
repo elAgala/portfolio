@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import * as THREE from 'three'
 import { estateAssets, experienceChapters } from '~/data/experience'
 import type { EvidenceGraphId, ExperienceChapter, ExperienceLoadPhase, ExperienceQuality, ExperienceStage } from '~/types/experience'
-import { chooseExperienceQuality, interpolateExperienceStage, shouldRunExperienceIntro } from '~/utils/experience'
+import { chooseExperienceQuality, interpolateExperienceStage, parseSoundPreference, shouldRunExperienceIntro } from '~/utils/experience'
 import ExperienceHud from './ExperienceHud.vue'
 import ExperienceLoader from './ExperienceLoader.vue'
 import { EstateAudio } from './runtime/audio'
@@ -26,6 +26,7 @@ const isDev = import.meta.dev
 
 const canvas = ref<HTMLCanvasElement | null>(null)
 const coldOpen = ref<HTMLElement | null>(null)
+const skipIntroButton = ref<HTMLButtonElement | null>(null)
 const ready = ref(false)
 const fallback = ref(false)
 const introActive = ref(false)
@@ -209,8 +210,10 @@ function startIntro(force = false) {
   introActive.value = true
   document.body.classList.add('intro-active')
   nextTick(() => {
-    if (coldOpen.value)
+    if (coldOpen.value) {
       gsap.fromTo(coldOpen.value, { opacity: 0 }, { opacity: 1, duration: 0.2 })
+      skipIntroButton.value?.focus({ preventScroll: true })
+    }
   })
   introTimer = window.setTimeout(completeIntro, 3100)
 }
@@ -224,10 +227,29 @@ async function toggleSound() {
   if (soundEnabled.value) {
     audio.disable()
     soundEnabled.value = false
+    sessionStorage.setItem('jb-sound-enabled', 'false')
   }
   else {
     await audio.enable()
     soundEnabled.value = true
+    sessionStorage.setItem('jb-sound-enabled', 'true')
+  }
+}
+
+async function restoreSoundAfterGesture() {
+  if (!parseSoundPreference(sessionStorage.getItem('jb-sound-enabled')) || soundEnabled.value)
+    return
+  await toggleSound()
+}
+
+function handleExperienceKeydown(event: KeyboardEvent) {
+  if (!introActive.value)
+    return
+  if (event.key === 'Escape')
+    completeIntro()
+  else if (event.key === 'Tab') {
+    event.preventDefault()
+    skipIntroButton.value?.focus({ preventScroll: true })
   }
 }
 
@@ -323,6 +345,8 @@ async function initExperience() {
 
 onMounted(() => {
   window.addEventListener('jb-replay-intro', replayIntro)
+  window.addEventListener('keydown', handleExperienceKeydown)
+  window.addEventListener('pointerdown', restoreSoundAfterGesture, { once: true })
   window.setTimeout(initExperience, 50)
 })
 
@@ -341,6 +365,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', updateScrollPosition)
   window.removeEventListener('pointermove', handlePointer)
   window.removeEventListener('jb-replay-intro', replayIntro)
+  window.removeEventListener('keydown', handleExperienceKeydown)
+  window.removeEventListener('pointerdown', restoreSoundAfterGesture)
   document.removeEventListener('visibilitychange', handleVisibility)
   canvas.value?.removeEventListener('webglcontextlost', handleContextLoss)
   document.body.classList.remove('experience-ready', 'experience-fallback', 'experience-content-ready', 'intro-active')
@@ -368,14 +394,14 @@ onBeforeUnmount(() => {
   </div>
 
   <Teleport to="body">
-    <section v-if="introActive" ref="coldOpen" class="cold-open cold-open--estate" tabindex="-1" aria-label="Cinematic introduction">
+    <section v-if="introActive" ref="coldOpen" class="cold-open cold-open--estate" role="dialog" aria-modal="true" aria-label="Cinematic introduction">
       <div class="cold-open__copy">
         <p>An audience with the work.</p>
         <h2>The doors<br><em>are open.</em></h2>
         <span>Julián Benitez · Software engineer</span>
       </div>
       <p class="cold-open__instruction">Enter the study.</p>
-      <button type="button" @click="completeIntro">Skip introduction <span aria-hidden="true">↗</span></button>
+      <button ref="skipIntroButton" type="button" @click="completeIntro">Skip introduction <span aria-hidden="true">↗</span></button>
       <div class="cold-open__progress" aria-hidden="true" />
     </section>
   </Teleport>

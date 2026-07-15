@@ -1,23 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <radialGradient id="glow" cx="72%" cy="34%" r="72%">
-      <stop offset="0" stop-color="#4b2924"/>
-      <stop offset=".5" stop-color="#17100e"/>
-      <stop offset="1" stop-color="#0b0908"/>
-    </radialGradient>
-    <linearGradient id="beam" x1="0" y1="1" x2="1" y2="0">
-      <stop offset=".25" stop-color="#ad8a54" stop-opacity="0"/>
-      <stop offset=".55" stop-color="#ad8a54" stop-opacity=".18"/>
-      <stop offset=".8" stop-color="#ad8a54" stop-opacity="0"/>
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#070504" stop-opacity=".98"/>
+      <stop offset=".58" stop-color="#070504" stop-opacity=".78"/>
+      <stop offset="1" stop-color="#070504" stop-opacity=".12"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".45" stop-color="#070504" stop-opacity="0"/>
+      <stop offset="1" stop-color="#070504" stop-opacity=".72"/>
     </linearGradient>
   </defs>
-  <rect width="1200" height="630" fill="url(#glow)"/>
-  <path d="M585 630 920 0h205L760 630Z" fill="url(#beam)"/>
-  <circle cx="1050" cy="110" r="52" fill="none" stroke="#eee4d5" stroke-opacity=".45"/>
-  <text x="1050" y="120" fill="#eee4d5" font-family="Georgia,serif" font-size="27" text-anchor="middle">JB</text>
-  <text x="72" y="105" fill="#ad8a54" font-family="Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="4">SOFTWARE ENGINEER · BUENOS AIRES</text>
-  <text x="68" y="300" fill="#eee4d5" font-family="Georgia,serif" font-size="98">Julián Benitez</text>
-  <text x="72" y="390" fill="#d4c6b3" font-family="Georgia,serif" font-size="52" font-style="italic">Software that holds up.</text>
-  <line x1="72" y1="505" x2="1128" y2="505" stroke="#eee4d5" stroke-opacity=".2"/>
-  <text x="72" y="555" fill="#9d9388" font-family="Arial,sans-serif" font-size="16" letter-spacing="2">PRODUCT · BACKEND · PLATFORM</text>
+  <image href="/stills/estate-hero.avif" width="1200" height="630" preserveAspectRatio="xMidYMid slice"/>
+  <rect width="1200" height="630" fill="url(#shade)"/>
+  <rect width="1200" height="630" fill="url(#floor)"/>
+  <circle cx="1080" cy="96" r="46" fill="#090706" fill-opacity=".7" stroke="#ad8a54" stroke-width="1"/>
+  <text x="1080" y="107" fill="#eee4d5" font-family="Georgia,serif" font-size="26" text-anchor="middle">JB</text>
+  <text x="70" y="82" fill="#ad8a54" font-family="Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="4">JULIÁN BENITEZ · SOFTWARE ENGINEER</text>
+  <text x="66" y="260" fill="#eee4d5" font-family="Georgia,serif" font-size="86">Built with intent.</text>
+  <text x="68" y="350" fill="#d4c6b3" font-family="Georgia,serif" font-size="78" font-style="italic">Made to endure.</text>
+  <line x1="70" y1="504" x2="1130" y2="504" stroke="#ad8a54" stroke-opacity=".48"/>
+  <text x="70" y="550" fill="#d4c6b3" font-family="Arial,sans-serif" font-size="14" letter-spacing="2">PRODUCT · BACKEND · PLATFORM · BUENOS AIRES</text>
 </svg>

@@ -7,8 +7,9 @@ defineProps<{
 </script>
 
 <template>
-  <div v-if="!ready || fallback" class="estate-loader" :class="{ 'estate-loader--fallback': fallback }" aria-live="polite">
-    <span>{{ fallback ? 'Static edition' : 'Preparing the study' }}</span>
-    <i v-if="!fallback" :style="{ transform: `scaleX(${progress})` }" aria-hidden="true" />
+  <p v-if="fallback" class="sr-only" aria-live="polite">The static portfolio edition is active.</p>
+  <div v-else-if="!ready" class="estate-loader" aria-live="polite">
+    <span>Preparing the study</span>
+    <i :style="{ transform: `scaleX(${progress})` }" aria-hidden="true" />
   </div>
 </template>
