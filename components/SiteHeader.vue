@@ -1,6 +1,7 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   light?: boolean
+  workbench?: boolean
 }>()
 
 const route = useRoute()
@@ -41,7 +42,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header class="site-header" :class="{ 'site-header--light': light, 'site-header--scrolled': scrolled, 'site-header--menu-open': menuOpen }">
+  <header class="site-header" :class="{ 'site-header--light': light, 'site-header--scrolled': scrolled, 'site-header--menu-open': menuOpen, 'site-header--workbench': props.workbench }">
     <NuxtLink class="site-mark" to="/" aria-label="Julián Benitez, home">
       <span aria-hidden="true">JB</span>
     </NuxtLink>
@@ -59,9 +60,10 @@ onBeforeUnmount(() => {
 
     <nav id="primary-navigation" class="site-nav" :class="{ 'site-nav--open': menuOpen }" aria-label="Primary navigation">
       <NuxtLink to="/#work" @click="closeMenu">Work</NuxtLink>
-      <NuxtLink to="/#profile" @click="closeMenu">Profile</NuxtLink>
-      <NuxtLink class="site-nav__resume" to="/resume" @click="closeMenu">Open résumé <span aria-hidden="true">↗</span></NuxtLink>
-      <NuxtLink to="/#contact" @click="closeMenu">Contact</NuxtLink>
+      <NuxtLink to="/#profile" @click="closeMenu">About</NuxtLink>
+      <NuxtLink class="site-nav__resume" to="/resume" @click="closeMenu">Résumé <span aria-hidden="true">↗</span></NuxtLink>
+      <a v-if="props.workbench" href="https://github.com/elAgala" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+      <NuxtLink v-else to="/#contact" @click="closeMenu">Contact</NuxtLink>
     </nav>
   </header>
 </template>

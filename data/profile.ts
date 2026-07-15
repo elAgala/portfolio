@@ -10,7 +10,7 @@ export const profile = {
   website: 'julian.benitez.ar',
   summary: 'I design and build maintainable software across product interfaces, backend systems, and the infrastructure that carries them into production.',
   manifesto: 'The best systems feel inevitable. Clear boundaries. Useful abstractions. No ceremony without purpose. I work close to the hard decisions and stay until the details hold.',
-  avatar: 'https://avatars.githubusercontent.com/u/62021513?v=4',
+  avatar: '/images/julian-portrait.webp',
   links: [
     { label: 'GitHub', url: 'https://github.com/elAgala' },
     { label: 'Email', url: 'mailto:julian@benitez.com.ar' },

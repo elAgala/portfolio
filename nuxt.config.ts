@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     '@fontsource-variable/bodoni-moda/wght.css',
     '@fontsource-variable/bodoni-moda/wght-italic.css',
     '@fontsource-variable/manrope/wght.css',
+    '@fontsource-variable/jetbrains-mono/wght.css',
     '~/assets/css/main.css',
     '~/assets/css/portfolio.css',
   ],

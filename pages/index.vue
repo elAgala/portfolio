@@ -1,23 +1,13 @@
 <script setup lang="ts">
-import ContactDecision from '~/components/chapters/ContactDecision.vue'
-import HeroChapter from '~/components/chapters/HeroChapter.vue'
-import ProfileArchive from '~/components/chapters/ProfileArchive.vue'
-import ProjectEvidenceChapter from '~/components/chapters/ProjectEvidenceChapter.vue'
-import EstateExperience from '~/components/experience/EstateExperience.client.vue'
+import ProjectRelease from '~/components/workbench/ProjectRelease.vue'
+import WorkbenchContact from '~/components/workbench/WorkbenchContact.vue'
+import WorkbenchHero from '~/components/workbench/WorkbenchHero.vue'
+import WorkbenchProfile from '~/components/workbench/WorkbenchProfile.vue'
 import { evidenceGraphById } from '~/data/experience-graphs'
 import { profile as person } from '~/data/profile'
 import { projects } from '~/data/projects'
-import type { EvidenceGraphId, ExperienceChapter, ExperienceQuality } from '~/types/experience'
-import { resolveExperiencePresentation } from '~/utils/experience'
+import type { EvidenceGraphId } from '~/types/experience'
 
-const route = useRoute()
-const experienceQuality = ref<ExperienceQuality>('fallback')
-const activeChapter = ref<ExperienceChapter>('hero')
-const experienceReady = ref(false)
-const experienceFailed = ref(false)
-const graphProgress = ref<Record<EvidenceGraphId, number>>({ 'agala-ui': 0, 'agala-deploy': 0, 'agala-ai': 0 })
-const presentation = computed(() => resolveExperiencePresentation({ quality: experienceQuality.value, ready: experienceReady.value, failed: experienceFailed.value }))
-const captureMode = computed(() => route.query.capture === 'scene')
 const evidenceProjects = projects.map(project => ({
   project,
   graph: evidenceGraphById[project.slug as EvidenceGraphId],
@@ -31,9 +21,7 @@ useSeoMeta({
 })
 
 useHead({
-  bodyAttrs: {
-    class: 'portfolio-body',
-  },
+  bodyAttrs: { class: 'workbench-body' },
   script: [{
     type: 'application/ld+json',
     innerHTML: JSON.stringify({
@@ -50,46 +38,35 @@ useHead({
 </script>
 
 <template>
-  <div class="portfolio-page" :data-quality="experienceQuality" :data-active-chapter="activeChapter" :data-presentation="presentation" :data-capture="captureMode">
+  <div class="workbench-page">
     <a class="skip-link" href="#main-content">Skip to portfolio content</a>
-    <EstateExperience
-      @tier="experienceQuality = $event"
-      @ready="experienceReady = true"
-      @chapter-change="activeChapter = $event"
-      @graph-progress="graphProgress = $event"
-      @fallback="experienceQuality = 'fallback'; experienceFailed = true"
-    />
-    <SiteHeader />
+    <SiteHeader workbench />
 
-    <main id="main-content" class="cinematic-content">
-      <HeroChapter :person="person" />
+    <main id="main-content">
+      <WorkbenchHero :person="person" />
 
-      <section id="work" class="work-section" aria-labelledby="work-title">
-        <div class="work-prologue section-shell">
-          <div>
-            <p class="overline">01 · Selected work</p>
-            <h2 id="work-title">Three systems.<br><em>Presented as evidence.</em></h2>
-          </div>
-          <p>Product infrastructure, delivery infrastructure, and the operating context that connects people to both.</p>
-        </div>
-        <div class="project-list">
-          <ProjectEvidenceChapter
+      <section id="work" class="workbench-work" aria-labelledby="work-heading">
+        <header class="workbench-work__heading">
+          <p class="workbench-eyebrow">01 · Selected open-source work</p>
+          <h2 id="work-heading">Systems with<br>their source left open.</h2>
+          <p>Three repositories spanning interface infrastructure, repeatable deployment, and the operating context for AI-assisted delivery.</p>
+        </header>
+
+        <div class="project-release-list">
+          <ProjectRelease
             v-for="({ project, graph }, index) in evidenceProjects"
-            :key="project.path"
+            :key="project.slug"
             :project="project"
             :definition="graph"
             :index="index"
-            :experience-x="18 + index * 18"
-            :graph-progress="graphProgress[graph.id]"
-            :quality="experienceQuality"
           />
         </div>
       </section>
 
-      <ProfileArchive :person="person" />
-      <ContactDecision :person="person" />
+      <WorkbenchProfile :person="person" />
+      <WorkbenchContact :person="person" />
     </main>
 
-    <SiteFooter :replay-enabled="presentation !== 'static'" />
+    <SiteFooter :replay-enabled="false" />
   </div>
 </template>
