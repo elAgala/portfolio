@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { EvidenceGraphDefinition } from '~/types/experience'
 import type { Project } from '~/types/portfolio'
+import type { EvidenceGraphDefinition } from '~/types/workbench'
 import ArchitectureDiagram from './ArchitectureDiagram.vue'
 
 const props = defineProps<{

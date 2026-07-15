@@ -14,12 +14,11 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'en' },
       meta: [
-        { name: 'theme-color', content: '#0b0908' },
-        { name: 'color-scheme', content: 'dark' },
+        { name: 'theme-color', content: '#f2ebdd' },
+        { name: 'color-scheme', content: 'light' },
       ],
       link: [
         { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
-        { rel: 'preconnect', href: 'https://avatars.githubusercontent.com' },
       ],
     },
     pageTransition: { name: 'page', mode: 'out-in' },
@@ -40,5 +39,10 @@ export default defineNuxtConfig({
   },
   typescript: {
     typeCheck: true,
+  },
+  vite: {
+    optimizeDeps: {
+      include: ['three'],
+    },
   },
 })

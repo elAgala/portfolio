@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EvidenceGraphDefinition } from '~/types/experience'
+import type { EvidenceGraphDefinition } from '~/types/workbench'
 
 const props = defineProps<{
   definition: EvidenceGraphDefinition
@@ -21,10 +21,10 @@ function point(position: [number, number, number]) {
       <line
         v-for="edge in definition.edges"
         :key="edge.id"
-        :x1="point(nodeById.get(edge.source)!.position).x"
-        :y1="point(nodeById.get(edge.source)!.position).y"
-        :x2="point(nodeById.get(edge.target)!.position).x"
-        :y2="point(nodeById.get(edge.target)!.position).y"
+        :x1="String(point(nodeById.get(edge.source)!.position).x)"
+        :y1="String(point(nodeById.get(edge.source)!.position).y)"
+        :x2="String(point(nodeById.get(edge.target)!.position).x)"
+        :y2="String(point(nodeById.get(edge.target)!.position).y)"
       />
       <g
         v-for="node in definition.nodes"

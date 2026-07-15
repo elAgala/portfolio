@@ -1,4 +1,4 @@
-import type { EvidenceGraphDefinition } from '~/types/experience'
+import type { EvidenceGraphDefinition } from '~/types/workbench'
 
 export const evidenceGraphs = [
   {

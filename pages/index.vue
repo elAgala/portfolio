@@ -6,7 +6,7 @@ import WorkbenchProfile from '~/components/workbench/WorkbenchProfile.vue'
 import { evidenceGraphById } from '~/data/experience-graphs'
 import { profile as person } from '~/data/profile'
 import { projects } from '~/data/projects'
-import type { EvidenceGraphId } from '~/types/experience'
+import type { EvidenceGraphId } from '~/types/workbench'
 
 const evidenceProjects = projects.map(project => ({
   project,

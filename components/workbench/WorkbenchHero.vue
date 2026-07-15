@@ -1,9 +1,22 @@
 <script setup lang="ts">
+import KernelMachine from '~/components/kernel/KernelMachine.client.vue'
 import type { Profile } from '~/types/portfolio'
+import type { KernelQuality } from '~/types/workbench'
 
 defineProps<{
   person: Profile
 }>()
+
+const inspected = ref(false)
+const kernelStatus = ref('booting')
+
+function onKernelReady(quality: KernelQuality) {
+  kernelStatus.value = `${quality} render · 60 fps target`
+}
+
+function onKernelFallback() {
+  kernelStatus.value = 'static render · motion preference honored'
+}
 </script>
 
 <template>
@@ -35,17 +48,14 @@ defineProps<{
       <header class="system-window__bar">
         <div aria-hidden="true"><i /><i /><i /></div>
         <p>~/julian/system-viewer</p>
-        <span>GUI · TTY</span>
+        <button type="button" :aria-pressed="inspected" @click="inspected = !inspected">
+          {{ inspected ? 'assemble' : 'inspect' }} ↗
+        </button>
       </header>
       <div class="system-window__viewport">
-        <div class="kernel-placeholder" aria-hidden="true">
-          <div class="kernel-placeholder__layer kernel-placeholder__layer--interface"><span>interface</span></div>
-          <div class="kernel-placeholder__layer kernel-placeholder__layer--services"><span>services</span></div>
-          <div class="kernel-placeholder__layer kernel-placeholder__layer--platform"><span>platform</span></div>
-          <i class="kernel-placeholder__core" />
-        </div>
+        <KernelMachine :exploded="inspected" @ready="onKernelReady" @fallback="onKernelFallback" />
         <div class="system-window__console" aria-hidden="true">
-          <p><span>$</span> inspect --stack</p>
+          <p><span>$</span> kernel {{ inspected ? '--explode --verbose' : '--status' }}</p>
           <p><b>interface</b> vue / nuxt / typescript</p>
           <p><b>services</b> go / node / c#</p>
           <p><b>platform</b> linux / docker / ansible</p>
@@ -53,7 +63,7 @@ defineProps<{
       </div>
       <footer class="system-window__status">
         <span><i /> system ready</span>
-        <span>three.js module pending</span>
+        <span>{{ kernelStatus }}</span>
       </footer>
     </div>
   </section>

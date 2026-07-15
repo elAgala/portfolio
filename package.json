@@ -13,10 +13,7 @@
     "preview": "nuxt preview",
     "resume:pdf": "node scripts/generate-resume.mjs",
     "route:validate": "node scripts/validate-route-isolation.mjs",
-    "scene:build": "node scripts/build-estate-assets.mjs",
-    "scene:stills": "node scripts/capture-estate-stills.mjs",
     "visual:regression": "node scripts/capture-estate-stills.mjs http://127.0.0.1:43177 43178 --qa",
-    "scene:validate": "node scripts/validate-estate-assets.mjs",
     "test": "vitest run",
     "typecheck": "nuxt typecheck"
   },
@@ -24,13 +21,11 @@
     "@fontsource-variable/bodoni-moda": "^5.2.7",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/manrope": "^5.2.8",
-    "gsap": "^3.15.0",
     "nuxt": "^4.4.8",
     "three": "^0.185.1",
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
-    "@gltf-transform/cli": "^4.4.1",
     "@nuxt/eslint": "^1.16.0",
     "@types/three": "^0.185.1",
     "eslint": "^10.7.0",
