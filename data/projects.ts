@@ -115,6 +115,44 @@ export const projects = [
       },
     ],
   },
+  {
+    slug: 'agala-setup',
+    path: '/work/agala-setup',
+    title: 'Agala Setup',
+    description: 'A repeatable Fedora workstation bootstrap that turns a fresh Linux installation into a complete engineering environment.',
+    order: 4,
+    featured: true,
+    year: '2025–2026',
+    role: 'Creator & maintainer',
+    eyebrow: 'Linux & developer experience',
+    repository: 'https://github.com/elAgala/agala-setup',
+    stack: ['Bash', 'Fedora', 'DNF', 'Zsh', 'Neovim', 'tmux', 'Docker'],
+    outcome: 'A complete development workstation becomes reproducible: shell, terminal, editor, runtimes, containers, and daily utilities install through one inspectable system.',
+    challenge: 'A personal workstation accumulates years of undocumented decisions. Rebuilding it manually is slow, inconsistent, and nearly impossible to audit.',
+    approach: [
+      'Split setup into focused Bash scripts so every toolchain remains inspectable, rerunnable, and independently maintainable.',
+      'Established a Fedora baseline with DNF packages and utilities before layering shell, terminal, editor, and language runtimes.',
+      'Automated Zsh and Oh My Zsh, Neovim, Kitty, tmux, nvm and Node, .NET, Flutter, Docker, lazygit, and supporting developer tools.',
+      'Kept the implementation close to native Linux primitives instead of hiding workstation state behind an opaque desktop installer.',
+    ],
+    narrative: [
+      {
+        title: 'The workstation is infrastructure',
+        paragraphs: [
+          'Agala Setup treats the machine used to build software as part of the delivery system. The shell, editor, runtimes, container engine, and utilities are dependencies with the same need for repeatability as an application environment.',
+          'The repository documents those decisions as executable Bash. A new Fedora installation can be brought toward the same working state without relying on memory or a sequence of copied terminal commands.',
+        ],
+      },
+      {
+        title: 'Native, legible, rerunnable',
+        paragraphs: ['Each layer remains a small script with a clear responsibility. That keeps failure understandable, makes individual tools easy to change, and leaves the resulting workstation close to the operating system rather than a proprietary abstraction.'],
+      },
+      {
+        title: 'What it demonstrates',
+        points: ['Linux as a daily engineering environment', 'Automation built from transparent native tools', 'Developer experience treated as a systems problem', 'A bias for reproducibility from workstation to production'],
+      },
+    ],
+  },
 ] satisfies Project[]
 
 export function getProject(slug: string) {

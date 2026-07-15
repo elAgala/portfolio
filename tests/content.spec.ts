@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { careerEntries } from '../data/career'
 import { evidenceGraphs } from '../data/experience-graphs'
 import { profile } from '../data/profile'
 import { projects } from '../data/projects'
@@ -17,6 +18,12 @@ const terminalContext: TerminalContext = {
     title: project.title,
     path: project.path,
     repository: project.repository,
+  })),
+  experience: careerEntries.map(entry => ({
+    dates: entry.dates,
+    role: entry.role,
+    company: entry.company,
+    summary: entry.summary,
   })),
 }
 

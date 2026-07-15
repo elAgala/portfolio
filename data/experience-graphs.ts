@@ -91,6 +91,35 @@ export const evidenceGraphs = [
       { id: 'complete-product', source: 'complete', target: 'product', direction: 'forward', style: 'contract', activationPhase: 'completion', pulseDuration: 1.05 },
     ],
   },
+  {
+    id: 'agala-setup',
+    title: 'Agala Setup',
+    outcome: 'A ready, repeatable workstation.',
+    materialTheme: 'steel-brass',
+    staticCameraFrame: { position: [0, 3, 5], target: [0, 0.9, 0] },
+    phases: [
+      { id: 'baseline', label: 'OS baseline', start: 0, end: 0.28, annotation: 'Fedora and DNF establish the base.', activeNodeGroups: ['baseline'], activeEdgeGroups: ['baseline'], cameraEmphasis: [-0.8, 0.2, 0] },
+      { id: 'workspace', label: 'Daily workspace', start: 0.28, end: 0.7, annotation: 'Shell, terminal, and editor become one operating surface.', activeNodeGroups: ['baseline', 'workspace'], activeEdgeGroups: ['baseline', 'workspace'], cameraEmphasis: [0, 0.45, 0] },
+      { id: 'toolchains', label: 'Toolchains', start: 0.7, end: 1, annotation: 'Runtimes and containers complete the machine.', activeNodeGroups: ['baseline', 'workspace', 'toolchains'], activeEdgeGroups: ['baseline', 'workspace', 'toolchains'], cameraEmphasis: [0.8, 0.55, 0] },
+    ],
+    nodes: [
+      { id: 'fedora', label: 'Fedora and DNF baseline', kind: 'input', group: 'baseline', position: [-1.75, 0.35, 0.55], activationPhase: 'baseline', metadataRef: 'approach.1' },
+      { id: 'shell', label: 'Zsh shell environment', kind: 'runtime', group: 'workspace', position: [-0.9, 0.75, -0.05], activationPhase: 'workspace', metadataRef: 'approach.2' },
+      { id: 'terminal', label: 'Kitty and tmux', kind: 'runtime', group: 'workspace', position: [0, 0.35, 0.6], activationPhase: 'workspace', metadataRef: 'approach.2' },
+      { id: 'editor', label: 'Neovim workspace', kind: 'runtime', group: 'workspace', position: [0.65, 0.9, -0.1], activationPhase: 'workspace', metadataRef: 'approach.2' },
+      { id: 'runtimes', label: 'Node, .NET, Flutter', kind: 'runtime', group: 'toolchains', position: [1.15, 0.35, 0.6], activationPhase: 'toolchains', metadataRef: 'stack' },
+      { id: 'containers', label: 'Docker toolchain', kind: 'runtime', group: 'toolchains', position: [1.7, 0.95, -0.1], activationPhase: 'toolchains', metadataRef: 'approach.2' },
+      { id: 'ready', label: 'Ready workstation', kind: 'outcome', group: 'toolchains', position: [2, 1.75, -0.45], activationPhase: 'toolchains', metadataRef: 'outcome' },
+    ],
+    edges: [
+      { id: 'fedora-shell', source: 'fedora', target: 'shell', direction: 'forward', style: 'flow', activationPhase: 'baseline', pulseDuration: 1.3 },
+      { id: 'shell-terminal', source: 'shell', target: 'terminal', direction: 'forward', style: 'flow', activationPhase: 'workspace', pulseDuration: 1.2 },
+      { id: 'terminal-editor', source: 'terminal', target: 'editor', direction: 'forward', style: 'flow', activationPhase: 'workspace', pulseDuration: 1.15 },
+      { id: 'editor-runtimes', source: 'editor', target: 'runtimes', direction: 'forward', style: 'flow', activationPhase: 'toolchains', pulseDuration: 1.1 },
+      { id: 'runtimes-containers', source: 'runtimes', target: 'containers', direction: 'forward', style: 'flow', activationPhase: 'toolchains', pulseDuration: 1.05 },
+      { id: 'containers-ready', source: 'containers', target: 'ready', direction: 'forward', style: 'flow', activationPhase: 'toolchains', pulseDuration: 1 },
+    ],
+  },
 ] satisfies EvidenceGraphDefinition[]
 
 export const evidenceGraphById = Object.fromEntries(

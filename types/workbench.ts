@@ -1,5 +1,5 @@
 export type Vec3Tuple = [number, number, number]
-export type EvidenceGraphId = 'agala-ui' | 'agala-deploy' | 'agala-ai'
+export type EvidenceGraphId = 'agala-ui' | 'agala-deploy' | 'agala-ai' | 'agala-setup'
 export type EvidenceNodeKind = 'token' | 'primitive' | 'workflow' | 'input' | 'secret' | 'inventory' | 'runtime' | 'target' | 'role' | 'contract' | 'outcome'
 export type EvidenceEdgeStyle = 'flow' | 'contract' | 'assembly'
 export type EvidenceMaterialTheme = 'parchment-oxblood' | 'steel-brass' | 'glass-brass'

@@ -30,11 +30,11 @@ function onKernelFallback() {
         </div>
       </div>
 
-      <p class="workbench-eyebrow">Product · Backend · Platform</p>
+      <p class="workbench-eyebrow">Lead · Product · Backend · Platform</p>
       <h1 id="workbench-title">Built with intent.<br><em>Made to endure.</em></h1>
       <p class="workbench-hero__summary">{{ person.summary }}</p>
       <div class="workbench-actions">
-        <a class="workbench-button workbench-button--primary" href="#work">Inspect the work</a>
+        <a class="workbench-button workbench-button--primary" href="#experience">Review experience</a>
         <NuxtLink class="workbench-button" to="/resume">Open résumé <span aria-hidden="true">↗</span></NuxtLink>
       </div>
 

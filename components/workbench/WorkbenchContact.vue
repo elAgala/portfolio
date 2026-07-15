@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <section id="contact" class="workbench-contact" aria-labelledby="contact-heading">
-    <p class="workbench-eyebrow">03 · Start a conversation</p>
+    <p class="workbench-eyebrow">04 · Start a conversation</p>
     <div>
       <h2 id="contact-heading">Have a hard system<br>worth making simple?</h2>
       <a class="workbench-contact__email" :href="`mailto:${person.email}`">{{ person.email }} <span aria-hidden="true">↗</span></a>

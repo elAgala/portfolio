@@ -59,6 +59,7 @@ onBeforeUnmount(() => {
     </button>
 
     <nav id="primary-navigation" class="site-nav" :class="{ 'site-nav--open': menuOpen }" aria-label="Primary navigation">
+      <NuxtLink to="/#experience" @click="closeMenu">Experience</NuxtLink>
       <NuxtLink to="/#work" @click="closeMenu">Work</NuxtLink>
       <NuxtLink to="/#profile" @click="closeMenu">About</NuxtLink>
       <NuxtLink class="site-nav__resume" to="/resume" @click="closeMenu">Résumé <span aria-hidden="true">↗</span></NuxtLink>

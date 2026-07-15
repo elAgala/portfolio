@@ -31,7 +31,7 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: true,
-      routes: ['/', '/resume', '/work/agala-ui', '/work/agala-deploy', '/work/agala-ai'],
+      routes: ['/', '/resume', '/work/agala-ui', '/work/agala-deploy', '/work/agala-ai', '/work/agala-setup'],
     },
   },
   routeRules: {

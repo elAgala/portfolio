@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import ProjectRelease from '~/components/workbench/ProjectRelease.vue'
 import WorkbenchContact from '~/components/workbench/WorkbenchContact.vue'
+import WorkbenchExperience from '~/components/workbench/WorkbenchExperience.vue'
 import WorkbenchHero from '~/components/workbench/WorkbenchHero.vue'
 import WorkbenchProfile from '~/components/workbench/WorkbenchProfile.vue'
+import { careerEntries } from '~/data/career'
 import { evidenceGraphById } from '~/data/experience-graphs'
 import { profile as person } from '~/data/profile'
 import { projects } from '~/data/projects'
@@ -45,11 +47,13 @@ useHead({
     <main id="main-content">
       <WorkbenchHero :person="person" />
 
+      <WorkbenchExperience :entries="careerEntries" />
+
       <section id="work" class="workbench-work" aria-labelledby="work-heading">
         <header class="workbench-work__heading">
-          <p class="workbench-eyebrow">01 · Selected open-source work</p>
+          <p class="workbench-eyebrow">02 · Selected open-source work</p>
           <h2 id="work-heading">Systems with<br>their source left open.</h2>
-          <p>Three repositories spanning interface infrastructure, repeatable deployment, and the operating context for AI-assisted delivery.</p>
+          <p>Four repositories spanning interface infrastructure, repeatable deployment, AI-assisted delivery, and a Linux workstation built from first principles.</p>
         </header>
 
         <div class="project-release-list">

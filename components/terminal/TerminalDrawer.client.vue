@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { profile } from '~/data/profile'
+import { careerEntries } from '~/data/career'
 import { projects } from '~/data/projects'
 import { completeTerminalInput, runTerminalCommand, type TerminalContext } from '~/utils/terminal'
 
@@ -33,6 +34,12 @@ const context: TerminalContext = {
     title: project.title,
     path: project.path,
     repository: project.repository,
+  })),
+  experience: careerEntries.map(entry => ({
+    dates: entry.dates,
+    role: entry.role,
+    company: entry.company,
+    summary: entry.summary,
   })),
 }
 

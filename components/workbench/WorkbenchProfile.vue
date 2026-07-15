@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <section id="profile" class="workbench-profile" aria-labelledby="profile-heading">
     <div class="workbench-profile__intro">
-      <p class="workbench-eyebrow">02 · Operating principles</p>
+      <p class="workbench-eyebrow">03 · Operating principles</p>
       <h2 id="profile-heading">GUI instincts.<br>Terminal discipline.</h2>
       <p>{{ person.manifesto }}</p>
       <NuxtLink class="workbench-inline-link" to="/resume">Review the formal record <span aria-hidden="true">↗</span></NuxtLink>

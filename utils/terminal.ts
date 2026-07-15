@@ -12,6 +12,12 @@ export interface TerminalContext {
   email: string
   github: string
   projects: TerminalProjectTarget[]
+  experience: Array<{
+    dates: string
+    role: string
+    company: string
+    summary: string
+  }>
 }
 
 export type TerminalAction =
@@ -25,7 +31,7 @@ export interface TerminalResult {
   action?: TerminalAction
 }
 
-const commands = ['help', 'whoami', 'projects', 'open', 'source', 'resume', 'contact', 'clear', 'exit']
+const commands = ['help', 'whoami', 'experience', 'lab', 'projects', 'open', 'source', 'resume', 'contact', 'clear', 'exit']
 
 function projectFor(value: string | undefined, context: TerminalContext) {
   if (!value)
@@ -56,6 +62,8 @@ export function runTerminalCommand(rawInput: string, context: TerminalContext): 
         'AVAILABLE COMMANDS',
         'help                 show this reference',
         'whoami               print the operator profile',
+        'experience           print the professional record',
+        'lab                  inspect the private lab scope',
         'projects             list selected open-source work',
         'open <project>       open a case study',
         'source <project>     open repository source',
@@ -75,6 +83,29 @@ export function runTerminalCommand(rawInput: string, context: TerminalContext): 
         `${context.email} · ${context.github.replace('https://', '')}`,
         'Product interfaces / backend systems / platform craft',
       ],
+    }
+  }
+
+  if (normalizedCommand === 'experience') {
+    return {
+      output: context.experience.flatMap((entry, index) => [
+        `${String(index + 1).padStart(2, '0')}  ${entry.dates.padEnd(13, ' ')} ${entry.company} — ${entry.role}`,
+        `    ${entry.summary}`,
+      ]),
+    }
+  }
+
+  if (normalizedCommand === 'lab') {
+    const lab = context.experience.find(entry => entry.company === 'Agala Labs')
+    return {
+      output: lab
+        ? [
+            `${lab.company} — ${lab.role} · ${lab.dates}`,
+            lab.summary,
+            'layers: product surfaces / Go services / Linux platform',
+            'status: implementation disclosed · products private',
+          ]
+        : ['lab: record unavailable'],
     }
   }
 
