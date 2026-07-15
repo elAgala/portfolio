@@ -5,7 +5,7 @@ import { profile } from '../data/profile'
 import { projects } from '../data/projects'
 import { resume } from '../data/resume'
 import { completeTerminalInput, runTerminalCommand, type TerminalContext } from '../utils/terminal'
-import { chooseHeroSceneQuality, clampHeroPointer, getTracePhase, validateEvidenceGraph } from '../utils/workbench'
+import { chooseHeroSceneQuality, clampHeroPointer, validateEvidenceGraph } from '../utils/workbench'
 
 const terminalContext: TerminalContext = {
   name: profile.name,
@@ -89,14 +89,6 @@ describe('operator desk policy', () => {
     expect(clampHeroPointer(9)).toBe(1)
   })
 
-  it('maps the guided trace to explicit delivery phases', () => {
-    expect(getTracePhase(null)).toBe('idle')
-    expect(getTracePhase(0)).toBe('source')
-    expect(getTracePhase(2 / 11)).toBe('services')
-    expect(getTracePhase(5 / 11)).toBe('linux')
-    expect(getTracePhase(8.5 / 11)).toBe('complete')
-    expect(getTracePhase(4)).toBe('complete')
-  })
 })
 
 describe('project evidence diagrams', () => {

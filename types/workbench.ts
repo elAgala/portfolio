@@ -4,7 +4,22 @@ export type EvidenceNodeKind = 'token' | 'primitive' | 'workflow' | 'input' | 's
 export type EvidenceEdgeStyle = 'flow' | 'contract' | 'assembly'
 export type EvidenceMaterialTheme = 'parchment-oxblood' | 'steel-brass' | 'glass-brass'
 export type HeroSceneQuality = 'high' | 'balanced' | 'fallback'
-export type TracePhase = 'idle' | 'source' | 'services' | 'linux' | 'complete'
+export type OperatorTerminalMode = 'idle' | 'entering' | 'terminal' | 'leaving'
+export type TerminalLineKind = 'command' | 'output' | 'system' | 'error'
+
+export interface OperatorTerminalLine {
+  id: number
+  kind: TerminalLineKind
+  text: string
+}
+
+export interface OperatorTerminalFrame {
+  lines: OperatorTerminalLine[]
+  input: string
+  prompt: string
+  cursorVisible: boolean
+  booting: boolean
+}
 
 export interface EvidenceNode {
   id: string

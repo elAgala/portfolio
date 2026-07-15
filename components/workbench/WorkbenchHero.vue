@@ -1,84 +1,68 @@
 <script setup lang="ts">
 import OperatorDesk from '~/components/desk/OperatorDesk.client.vue'
 import type { Profile } from '~/types/portfolio'
-import type { HeroSceneQuality, TracePhase } from '~/types/workbench'
+import type { HeroSceneQuality, OperatorTerminalMode } from '~/types/workbench'
 
 defineProps<{
   person: Profile
 }>()
 
-const traceRun = ref(0)
-const tracePhase = ref<TracePhase>('idle')
-const traceHasRun = ref(false)
-const traceIsActive = ref(false)
+const { openRequest, closeRequest, mode, requestOpen, requestClose } = useOperatorTerminal()
 const sceneFallback = ref(false)
 const sceneStatus = ref('booting')
+let previousBodyOverflow = ''
 
-const traceRunning = computed(() => traceIsActive.value)
-
-const traceButtonLabel = computed(() => {
-  if (traceRunning.value)
-    return 'tracing…'
-  if (sceneFallback.value)
-    return traceHasRun.value ? 'show path again' : 'show delivery path'
-  return traceHasRun.value ? 'replay trace' : 'trace delivery'
+const transitionActive = computed(() => mode.value === 'entering' || mode.value === 'leaving')
+const terminalActive = computed(() => mode.value !== 'idle')
+const terminalButtonLabel = computed(() => {
+  if (mode.value === 'entering')
+    return 'acquiring terminal…'
+  if (mode.value === 'terminal')
+    return 'leave terminal'
+  if (mode.value === 'leaving')
+    return 'returning…'
+  return sceneFallback.value ? 'open accessible terminal' : 'enter terminal'
 })
-
-const traceConsole = computed(() => {
-  const lines: Record<TracePhase, Array<{ label: string, value: string }>> = {
-    idle: [
-      { label: 'source', value: 'vue / nuxt / typescript' },
-      { label: 'route', value: 'go / node / c#' },
-      { label: 'target', value: 'linux / docker / ansible' },
-    ],
-    source: [
-      { label: 'source', value: 'product interface compiled' },
-      { label: 'artifact', value: 'signed and ready' },
-      { label: 'next', value: 'service gateway' },
-    ],
-    services: [
-      { label: 'go', value: 'gateway ready' },
-      { label: 'c#', value: 'api ready' },
-      { label: 'node', value: 'worker ready' },
-    ],
-    linux: [
-      { label: 'deploy', value: 'ansible applying state' },
-      { label: 'runtime', value: 'containers starting' },
-      { label: 'target', value: 'linux host' },
-    ],
-    complete: [
-      { label: 'release', value: 'healthy' },
-      { label: 'host', value: 'operational' },
-      { label: 'path', value: 'source → services → linux' },
-    ],
-  }
-  return lines[tracePhase.value]
-})
-
-function startTrace() {
-  traceIsActive.value = true
-  tracePhase.value = 'source'
-  traceRun.value += 1
-}
 
 function onSceneReady(quality: HeroSceneQuality) {
-  sceneStatus.value = quality === 'fallback' ? 'static render · motion preference honored' : `${quality} render · 60 fps target`
+  sceneStatus.value = quality === 'fallback'
+    ? 'accessible render · motion preference honored'
+    : `${quality} render · terminal online`
 }
 
 function onSceneFallback() {
   sceneFallback.value = true
-  sceneStatus.value = 'static render · motion preference honored'
+  sceneStatus.value = 'accessible render · motion preference honored'
 }
 
-function onTracePhase(phase: TracePhase) {
-  tracePhase.value = phase
+function onMode(nextMode: OperatorTerminalMode) {
+  mode.value = nextMode
 }
 
-function onTraceComplete() {
-  traceIsActive.value = false
-  tracePhase.value = 'complete'
-  traceHasRun.value = true
+function toggleTerminal() {
+  if (mode.value === 'idle')
+    requestOpen()
+  else if (mode.value === 'terminal')
+    requestClose()
 }
+
+watch(terminalActive, (active) => {
+  if (!import.meta.client)
+    return
+  if (active) {
+    previousBodyOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+  }
+  else {
+    document.body.style.overflow = previousBodyOverflow
+  }
+})
+
+onBeforeUnmount(() => {
+  if (import.meta.client)
+    document.body.style.overflow = previousBodyOverflow
+  mode.value = 'idle'
+})
 </script>
 
 <template>
@@ -106,30 +90,37 @@ function onTraceComplete() {
       </dl>
     </div>
 
-    <div id="operator-desk" class="system-window" aria-label="Interactive source-to-Linux delivery scene">
+    <div
+      id="operator-desk"
+      class="system-window"
+      :class="{ 'system-window--terminal': terminalActive }"
+      :aria-label="terminalActive ? 'Interactive portfolio terminal' : 'Interactive Three.js operator desk'"
+    >
       <header class="system-window__bar">
         <div aria-hidden="true"><i /><i /><i /></div>
-        <p>~/julian/operator-desk</p>
-        <button type="button" :disabled="traceRunning" @click="startTrace">
-          {{ traceButtonLabel }} ↗
+        <p>{{ terminalActive ? 'julian@workbench: ~/portfolio' : '~/julian/operator-desk' }}</p>
+        <button
+          type="button"
+          :disabled="transitionActive"
+          :aria-expanded="terminalActive"
+          aria-controls="operator-terminal-input"
+          @click="toggleTerminal"
+        >
+          {{ terminalButtonLabel }} <span aria-hidden="true">{{ terminalActive ? '×' : '↗' }}</span>
         </button>
       </header>
       <div class="system-window__viewport">
         <OperatorDesk
-          :trace-run="traceRun"
+          :open-request="openRequest"
+          :close-request="closeRequest"
           @ready="onSceneReady"
           @fallback="onSceneFallback"
-          @phase="onTracePhase"
-          @complete="onTraceComplete"
+          @mode="onMode"
         />
-        <div class="system-window__console" aria-live="polite" aria-atomic="true">
-          <p><span>$</span> trace_delivery --{{ tracePhase === 'idle' ? 'ready' : tracePhase }}</p>
-          <p v-for="line in traceConsole" :key="line.label"><b>{{ line.label }}</b> {{ line.value }}</p>
-        </div>
       </div>
       <footer class="system-window__status">
-        <span><i /> {{ traceRunning ? `tracing ${tracePhase}` : traceHasRun ? 'delivery verified' : 'scene ready' }}</span>
-        <span>{{ sceneStatus }}</span>
+        <span><i /> {{ mode === 'terminal' ? 'tty attached' : transitionActive ? 'camera handoff' : 'scene ready' }}</span>
+        <span>{{ mode === 'terminal' ? 'Tab complete · ↑↓ history · Esc leave' : sceneStatus }}</span>
       </footer>
     </div>
   </section>

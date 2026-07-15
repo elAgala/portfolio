@@ -1,11 +1,13 @@
 import * as THREE from 'three'
-import type { HeroSceneQuality, TracePhase } from '~/types/workbench'
+import type { HeroSceneQuality, OperatorTerminalFrame, OperatorTerminalMode, TerminalLineKind } from '~/types/workbench'
 
 export interface OperatorDeskRuntime {
   resize: (width: number, height: number) => void
   setPointer: (x: number, y: number) => void
-  setTraceProgress: (progress: number | null) => void
-  setTracePhase: (phase: TracePhase) => void
+  setMode: (mode: OperatorTerminalMode) => void
+  setTransitionProgress: (progress: number) => void
+  setTerminalFrame: (frame: OperatorTerminalFrame) => void
+  hitTestTerminalControl: (x: number, y: number) => boolean
   render: (elapsed: number) => void
   dispose: () => void
 }
@@ -94,51 +96,101 @@ function createTextTexture(
   return { texture, canvas, context }
 }
 
-function updateMonitorTexture(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, phase: TracePhase) {
-  const phaseLines: Record<TracePhase, string[]> = {
-    idle: [
-      '$ whoami',
-      'julian / software engineer',
-      'tech lead / linux operator',
-      '> trace_delivery --ready',
-    ],
-    source: [
-      '$ git push origin main',
-      'source: product interface',
-      'build: compiling...',
-      '> artifact signed',
-    ],
-    services: [
-      '$ route artifact --services',
-      'go gateway       [ready]',
-      'c# api           [ready]',
-      'node worker      [ready]',
-    ],
-    linux: [
-      '$ deploy --target linux',
-      'ansible: applying state',
-      'containers: starting',
-      '> healthcheck pending',
-    ],
-    complete: [
-      '$ deploy --status',
-      'release: healthy',
-      'linux host: operational',
-      '> delivery complete',
-    ],
+function wrapTerminalLine(context: CanvasRenderingContext2D, text: string, maxWidth: number) {
+  if (!text)
+    return ['']
+  const words = text.split(' ')
+  const lines: string[] = []
+  let current = ''
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word
+    if (current && context.measureText(candidate).width > maxWidth) {
+      lines.push(current)
+      current = word
+    }
+    else {
+      current = candidate
+    }
+  }
+  lines.push(current)
+  return lines
+}
+
+function terminalColor(kind: TerminalLineKind) {
+  if (kind === 'command')
+    return '#f0e8d8'
+  if (kind === 'system')
+    return '#d7a957'
+  if (kind === 'error')
+    return '#e38a82'
+  return '#9da99e'
+}
+
+function updateMonitorTexture(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, frame: OperatorTerminalFrame) {
+  const scale = canvas.width / 1536
+  const compactTexture = canvas.width < 1400
+  const inset = 32 * scale
+  const headerHeight = 78 * scale
+  const fontSize = compactTexture ? 43 : 27 * scale
+  const lineHeight = compactTexture ? 61 : 43 * scale
+  const left = 58 * scale
+  const contentTop = inset + headerHeight + 34 * scale
+  const contentBottom = canvas.height - 54 * scale
+  const contentWidth = canvas.width - left * 2
+
+  context.fillStyle = '#050907'
+  context.fillRect(0, 0, canvas.width, canvas.height)
+  context.fillStyle = '#0d1510'
+  context.fillRect(inset, inset, canvas.width - inset * 2, headerHeight)
+  context.strokeStyle = '#304034'
+  context.lineWidth = 2 * scale
+  context.strokeRect(inset, inset, canvas.width - inset * 2, canvas.height - inset * 2)
+  context.beginPath()
+  context.moveTo(inset, inset + headerHeight)
+  context.lineTo(canvas.width - inset, inset + headerHeight)
+  context.stroke()
+
+  for (let index = 0; index < 3; index += 1) {
+    context.beginPath()
+    context.fillStyle = ['#657064', '#a57b3e', '#6b1f28'][index]!
+    context.arc(left + index * 24 * scale, inset + headerHeight / 2, 6 * scale, 0, Math.PI * 2)
+    context.fill()
   }
 
-  context.fillStyle = '#07100a'
-  context.fillRect(0, 0, canvas.width, canvas.height)
-  context.strokeStyle = '#26352a'
-  context.lineWidth = 3
-  context.strokeRect(12, 12, canvas.width - 24, canvas.height - 24)
-  context.font = '600 38px "JetBrains Mono", monospace'
+  context.textBaseline = 'middle'
+  context.font = `600 ${compactTexture ? 26 : 19 * scale}px "JetBrains Mono", monospace`
+  context.fillStyle = '#869187'
+  context.fillText('julian@workbench: ~/portfolio', 154 * scale, inset + headerHeight / 2)
+  context.textAlign = 'right'
+  context.fillStyle = '#9bbf72'
+  context.fillText('[ ESC / LEAVE ]', canvas.width - left, inset + headerHeight / 2)
+  context.textAlign = 'left'
   context.textBaseline = 'top'
-  phaseLines[phase].forEach((line, index) => {
-    context.fillStyle = line.startsWith('$') || line.startsWith('>') ? '#a8d17b' : '#ded7ca'
-    context.fillText(line, 44, 42 + index * 63)
+  context.font = `500 ${fontSize}px "JetBrains Mono", monospace`
+
+  const rendered = frame.lines.flatMap(line => wrapTerminalLine(context, line.text, contentWidth).map(text => ({ text, kind: line.kind })))
+  const promptRows = frame.booting ? 0 : 1
+  const maxRows = Math.max(3, Math.floor((contentBottom - contentTop) / lineHeight) - promptRows)
+  const visible = rendered.slice(-maxRows)
+  visible.forEach((line, index) => {
+    context.fillStyle = terminalColor(line.kind)
+    const prefix = line.kind === 'command' ? '$ ' : ''
+    context.fillText(`${prefix}${line.text}`, left, contentTop + index * lineHeight)
   })
+
+  if (!frame.booting) {
+    const promptY = contentTop + visible.length * lineHeight + 8 * scale
+    context.fillStyle = '#9bbf72'
+    context.fillText(frame.prompt, left, promptY)
+    const promptWidth = context.measureText(frame.prompt).width
+    context.fillStyle = '#f1eadc'
+    context.fillText(frame.input, left + promptWidth, promptY)
+    if (frame.cursorVisible) {
+      const inputWidth = context.measureText(frame.input).width
+      context.fillStyle = '#9bbf72'
+      context.fillRect(left + promptWidth + inputWidth + 3 * scale, promptY + 2 * scale, 14 * scale, fontSize + 3 * scale)
+    }
+  }
 }
 
 function labelPlane(text: string, width: number, height: number, color = '#d9a95c') {
@@ -247,7 +299,6 @@ export function createOperatorDesk(canvas: HTMLCanvasElement, quality: Exclude<H
   const statusOff = new THREE.MeshStandardMaterial({ color: 0x314034, roughness: 0.4, emissive: 0x08110a, emissiveIntensity: 0.3 })
   const statusOn = new THREE.MeshStandardMaterial({ color: palette.phosphorBright, roughness: 0.25, emissive: 0x4d7e2f, emissiveIntensity: 2.8 })
   const cableIdle = new THREE.MeshStandardMaterial({ color: 0x5b4527, roughness: 0.5, metalness: 0.72, emissive: 0x1a1005, emissiveIntensity: 0.2 })
-  const cableLive = new THREE.MeshStandardMaterial({ color: palette.brassBright, roughness: 0.25, metalness: 0.8, emissive: 0x6d3f0d, emissiveIntensity: 2.1 })
   const materials: Record<string, THREE.Material> = {
     walnut: new THREE.MeshStandardMaterial({ color: palette.walnut, map: woodTexture, roughness: 0.68, metalness: 0.08 }),
     brass: new THREE.MeshStandardMaterial({ color: palette.brass, roughness: 0.33, metalness: 0.92 }),
@@ -286,8 +337,20 @@ export function createOperatorDesk(canvas: HTMLCanvasElement, quality: Exclude<H
   const monitorBezel = box(3.05, 1.92, 0.09, materials.steel!)
   monitorBezel.position.z = 0.405
   monitor.add(monitorBezel)
-  const monitorTexture = createTextTexture([])
-  updateMonitorTexture(monitorTexture.canvas, monitorTexture.context, 'idle')
+  const monitorTexture = createTextTexture([], {
+    width: quality === 'high' ? 1536 : 1152,
+    height: quality === 'high' ? 872 : 654,
+  })
+  updateMonitorTexture(monitorTexture.canvas, monitorTexture.context, {
+    lines: [
+      { id: 1, kind: 'system', text: 'OPERATOR WORKBENCH / TTY READY' },
+      { id: 2, kind: 'output', text: 'Enter terminal to inspect the portfolio.' },
+    ],
+    input: '',
+    prompt: 'julian@workbench:~$ ',
+    cursorVisible: true,
+    booting: false,
+  })
   monitorTexture.texture.needsUpdate = true
   const screen = new THREE.Mesh(
     new THREE.PlaneGeometry(2.78, 1.58),
@@ -408,78 +471,53 @@ export function createOperatorDesk(canvas: HTMLCanvasElement, quality: Exclude<H
   screenLight.position.set(-0.7, 0.2, 1.3)
   scene.add(screenLight)
 
-  let traceProgress: number | null = null
-  let tracePhase: TracePhase = 'idle'
+  let sceneMode: OperatorTerminalMode = 'idle'
+  let transitionProgress = 0
   let pointerX = 0
   let pointerY = 0
-  const currentCamera = baseCamera.clone()
-  const currentTarget = baseTarget.clone()
   const desiredCamera = baseCamera.clone()
   const desiredTarget = baseTarget.clone()
+  const terminalCamera = new THREE.Vector3()
+  const terminalTarget = new THREE.Vector3()
+  const raycaster = new THREE.Raycaster()
+  const screenMaterial = screen.material as THREE.MeshBasicMaterial
 
-  function setStatusMaterial(match: 'serviceStatus' | 'hostStatus', active: boolean) {
-    desk.traverse((object) => {
-      if (object instanceof THREE.Mesh && object.userData[match])
-        object.material = active ? statusOn : statusOff
-    })
+  function updateTerminalCamera() {
+    monitor.updateWorldMatrix(true, false)
+    terminalTarget.copy(monitor.localToWorld(new THREE.Vector3(0, 0, 0.46)))
+    const verticalFov = THREE.MathUtils.degToRad(camera.fov)
+    const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect)
+    const verticalDistance = 1.14 / Math.tan(verticalFov / 2)
+    const horizontalDistance = 1.68 / Math.tan(horizontalFov / 2)
+    const distance = Math.max(verticalDistance, horizontalDistance) * 1.08
+    terminalCamera.copy(monitor.localToWorld(new THREE.Vector3(0, 0, distance + 0.46)))
   }
 
   function updateSceneState(elapsed: number) {
-    const progress = traceProgress
     sourcePulse.visible = false
     hostPulse.visible = false
     sourceCable.mesh.material = cableIdle
     hostCable.mesh.material = cableIdle
-    setStatusMaterial('serviceStatus', tracePhase === 'services' || tracePhase === 'linux' || tracePhase === 'complete')
-    setStatusMaterial('hostStatus', tracePhase === 'linux' || tracePhase === 'complete')
+    const eased = THREE.MathUtils.smoothstep(transitionProgress, 0, 1)
+    desiredCamera.lerpVectors(baseCamera, terminalCamera, eased)
+    desiredTarget.lerpVectors(baseTarget, terminalTarget, eased)
 
-    desiredCamera.copy(baseCamera)
-    desiredTarget.copy(baseTarget)
-
-    if (progress !== null) {
-      if (tracePhase === 'source') {
-        desiredCamera.set(5.35, 3.85, 7.15)
-        desiredTarget.set(-0.7, -0.05, -0.25)
-        sourceCable.mesh.material = cableLive
-        sourcePulse.visible = true
-        sourcePulse.position.copy(sourceCable.curve.getPoint(Math.min(1, progress / (2 / 11))))
-      }
-      else if (tracePhase === 'services') {
-        desiredCamera.set(6.15, 3.55, 6.6)
-        desiredTarget.set(1.55, -0.75, 0.45)
-        sourceCable.mesh.material = cableLive
-        sourcePulse.visible = true
-        sourcePulse.position.copy(sourceCable.curve.getPoint((elapsed * 0.55) % 1))
-      }
-      else if (tracePhase === 'linux') {
-        desiredCamera.set(6.6, 4.05, 6.7)
-        desiredTarget.set(2.35, -0.1, -0.62)
-        sourceCable.mesh.material = cableLive
-        hostCable.mesh.material = cableLive
-        hostPulse.visible = true
-        const local = (progress - 5 / 11) / (3.5 / 11)
-        hostPulse.position.copy(hostCable.curve.getPoint(Math.min(1, Math.max(0, local))))
-      }
-      else if (tracePhase === 'complete') {
-        const returnProgress = Math.min(1, Math.max(0, (progress - 10 / 11) / (1 / 11)))
-        desiredCamera.lerpVectors(new THREE.Vector3(6.2, 4.1, 6.9), baseCamera, returnProgress)
-        desiredTarget.lerpVectors(new THREE.Vector3(1.2, -0.3, -0.3), baseTarget, returnProgress)
-        sourceCable.mesh.material = cableLive
-        hostCable.mesh.material = cableLive
-      }
+    if (sceneMode === 'idle') {
+      desiredCamera.x += pointerX * 0.28
+      desiredCamera.y -= pointerY * 0.18
+      desiredTarget.x += pointerX * 0.08
+      desiredTarget.y -= pointerY * 0.06
     }
 
-    desiredCamera.x += pointerX * 0.28
-    desiredCamera.y -= pointerY * 0.18
-    desiredTarget.x += pointerX * 0.08
-    desiredTarget.y -= pointerY * 0.06
-    currentCamera.lerp(desiredCamera, 0.045)
-    currentTarget.lerp(desiredTarget, 0.055)
-    camera.position.copy(currentCamera)
-    camera.lookAt(currentTarget)
-    lampGlow.intensity = (quality === 'high' ? 12 : 7) + Math.sin(elapsed * 1.25) * 0.35
-    screenLight.intensity = tracePhase === 'complete' ? 3.4 : 2.2
+    camera.position.copy(desiredCamera)
+    camera.lookAt(desiredTarget)
+    const baseLampIntensity = quality === 'high' ? 12 : 7
+    lampGlow.intensity = THREE.MathUtils.lerp(baseLampIntensity + Math.sin(elapsed * 1.25) * 0.35, 1.1, eased)
+    screenLight.intensity = THREE.MathUtils.lerp(2.2, 5.8, eased)
+    screenMaterial.color.setScalar(THREE.MathUtils.lerp(0.88, 1.12, eased))
   }
+
+  updateTerminalCamera()
 
   return {
     resize(width, height) {
@@ -488,20 +526,28 @@ export function createOperatorDesk(canvas: HTMLCanvasElement, quality: Exclude<H
       renderer.setSize(safeWidth, safeHeight, false)
       camera.aspect = safeWidth / safeHeight
       camera.updateProjectionMatrix()
+      updateTerminalCamera()
     },
     setPointer(x, y) {
       pointerX = x
       pointerY = y
     },
-    setTraceProgress(progress) {
-      traceProgress = progress === null ? null : Math.min(1, Math.max(0, progress))
+    setMode(mode) {
+      sceneMode = mode
     },
-    setTracePhase(phase) {
-      if (phase === tracePhase)
-        return
-      tracePhase = phase
-      updateMonitorTexture(monitorTexture.canvas, monitorTexture.context, phase)
+    setTransitionProgress(progress) {
+      transitionProgress = Math.min(1, Math.max(0, progress))
+    },
+    setTerminalFrame(frame) {
+      updateMonitorTexture(monitorTexture.canvas, monitorTexture.context, frame)
       monitorTexture.texture.needsUpdate = true
+    },
+    hitTestTerminalControl(x, y) {
+      if (sceneMode !== 'terminal')
+        return false
+      raycaster.setFromCamera(new THREE.Vector2(x, y), camera)
+      const intersection = raycaster.intersectObject(screen, false)[0]
+      return Boolean(intersection?.uv && intersection.uv.x >= 0.7 && intersection.uv.y >= 0.84)
     },
     render(elapsed) {
       updateSceneState(elapsed)

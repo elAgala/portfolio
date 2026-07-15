@@ -124,49 +124,31 @@ async function runAudit(protocol) {
   if (!sceneStatus || sceneStatus === 'booting')
     throw new Error(`Operator desk did not initialize: ${sceneStatus || 'missing status'}`)
 
-  const traceButtonFound = await evaluate(protocol, `(() => {
-    const button = [...document.querySelectorAll('.system-window__bar button')].find(item => item.textContent.includes('trace delivery'))
+  const terminalButtonFound = await evaluate(protocol, `(() => {
+    const button = [...document.querySelectorAll('.system-window__bar button')].find(item => item.textContent.includes('enter terminal'))
     button?.click()
     return Boolean(button)
   })()`)
-  await sleep(400)
-  const traceState = await evaluate(protocol, `(() => {
-    const button = document.querySelector('.system-window__bar button')
-    return { disabled: button?.disabled, label: button?.textContent?.trim() }
-  })()`)
-  const traceOutput = await evaluate(protocol, 'document.querySelector(\'.system-window__console\')?.textContent')
-  if (!traceButtonFound || !traceState.disabled || !traceOutput?.includes('product interface compiled'))
-    throw new Error(`Operator desk trace did not enter source phase: ${JSON.stringify({ traceButtonFound, traceState, traceOutput })}`)
-
-  await sleep(10800)
-  const traceComplete = await evaluate(protocol, `({
-    button: document.querySelector('.system-window__bar button')?.textContent?.trim(),
-    console: document.querySelector('.system-window__console')?.textContent,
-    status: document.querySelector('.system-window__status span:first-child')?.textContent?.trim(),
-  })`)
-  if (!traceComplete.button?.includes('replay trace') || !traceComplete.console?.includes('release healthy') || !traceComplete.status?.includes('delivery verified'))
-    throw new Error(`Operator desk trace did not complete: ${JSON.stringify(traceComplete)}`)
-
-  await evaluate(protocol, 'document.querySelector(\'.terminal-launcher\')?.click()')
-  await sleep(350)
+  await sleep(1250)
   const terminalState = await evaluate(protocol, `(() => {
-    const input = document.querySelector('#terminal-input')
+    const input = document.querySelector('#operator-terminal-input')
     return {
-      dialog: document.querySelector('[role="dialog"]') !== null,
+      takeover: document.querySelector('.system-window')?.classList.contains('system-window--terminal'),
+      label: document.querySelector('.system-window__bar button')?.textContent?.trim(),
       focused: document.activeElement === input,
     }
   })()`)
-  if (!terminalState.dialog || !terminalState.focused)
+  if (!terminalButtonFound || !terminalState.takeover || !terminalState.label?.includes('leave terminal') || !terminalState.focused)
     throw new Error(`Terminal focus contract failed: ${JSON.stringify(terminalState)}`)
 
   await evaluate(protocol, `(() => {
-    const input = document.querySelector('#terminal-input')
+    const input = document.querySelector('#operator-terminal-input')
     input.value = 'projects'
     input.dispatchEvent(new Event('input', { bubbles: true }))
     input.form.requestSubmit()
   })()`)
   await sleep(150)
-  const terminalOutput = await evaluate(protocol, 'document.querySelector(\'.terminal-drawer__output\')?.textContent')
+  const terminalOutput = await evaluate(protocol, 'document.querySelector(\'.operator-desk__semantic-log\')?.textContent')
   if (!terminalOutput?.includes('agala-ui') || !terminalOutput.includes('agala-deploy') || !terminalOutput.includes('agala-setup'))
     throw new Error('Terminal projects command did not return project targets')
   await assertAccessibility(protocol, 'Open terminal')
@@ -178,10 +160,10 @@ async function runAudit(protocol) {
   await navigate(protocol, `${baseUrl}/`)
   const fallback = await evaluate(protocol, `({
     image: Boolean(document.querySelector('.operator-desk__fallback img')),
-    button: [...document.querySelectorAll('.system-window__bar button')].find(item => item.textContent.includes('show delivery path'))?.textContent?.trim(),
+    button: [...document.querySelectorAll('.system-window__bar button')].find(item => item.textContent.includes('accessible terminal'))?.textContent?.trim(),
     status: document.querySelector('.system-window__status span:last-child')?.textContent?.trim(),
   })`)
-  if (!fallback.image || !fallback.button || !fallback.status?.startsWith('static render'))
+  if (!fallback.image || !fallback.button || !fallback.status?.startsWith('accessible render'))
     throw new Error(`Reduced-motion fallback failed: ${JSON.stringify(fallback)}`)
 
   await evaluate(protocol, `(() => {
@@ -189,12 +171,12 @@ async function runAudit(protocol) {
     if (button && !button.disabled) button.click()
   })()`)
   await sleep(100)
-  const staticPath = await evaluate(protocol, `({
-    path: document.querySelector('.operator-desk__static-path')?.textContent,
-    output: document.querySelector('.system-window__console')?.textContent,
+  const fallbackTerminal = await evaluate(protocol, `({
+    terminal: Boolean(document.querySelector('.operator-terminal-fallback')),
+    focused: document.activeElement === document.querySelector('#operator-terminal-fallback-input'),
   })`)
-  if (!staticPath.path?.includes('source') || !staticPath.output?.includes('source → services → linux'))
-    throw new Error(`Reduced-motion delivery path failed: ${JSON.stringify(staticPath)}`)
+  if (!fallbackTerminal.terminal || !fallbackTerminal.focused)
+    throw new Error(`Reduced-motion terminal fallback failed: ${JSON.stringify(fallbackTerminal)}`)
   await assertAccessibility(protocol, 'Reduced-motion workbench')
 
   await protocol.send('Emulation.setEmulatedMedia', { media: 'screen', features: [] })
@@ -225,21 +207,14 @@ async function captureVisuals(protocol) {
       await writeFile(file, Buffer.from(screenshot.data, 'base64'))
       console.log(`Captured ${file}`)
 
-      if (section === 'operator-desk') {
-        await evaluate(protocol, `(() => {
-          const button = document.querySelector('.system-window__bar button')
-          if (button && !button.disabled) button.click()
-        })()`)
-        await sleep(3300)
-        const traceScreenshot = await protocol.send('Page.captureScreenshot', { format: 'png', fromSurface: true })
-        const traceFile = join(outputDirectory, `${viewport.width}-operator-desk-trace.png`)
-        await writeFile(traceFile, Buffer.from(traceScreenshot.data, 'base64'))
-        console.log(`Captured ${traceFile}`)
-      }
     }
 
-    await evaluate(protocol, 'document.querySelector(\'.terminal-launcher\')?.click()')
-    await sleep(350)
+    await evaluate(protocol, `(() => {
+      document.getElementById('operator-desk')?.scrollIntoView({ block: 'center' })
+      const button = document.querySelector('.system-window__bar button')
+      if (button && !button.disabled) button.click()
+    })()`)
+    await sleep(1250)
     const terminalScreenshot = await protocol.send('Page.captureScreenshot', { format: 'png', fromSurface: true })
     const terminalFile = join(outputDirectory, `${viewport.width}-terminal.png`)
     await writeFile(terminalFile, Buffer.from(terminalScreenshot.data, 'base64'))
