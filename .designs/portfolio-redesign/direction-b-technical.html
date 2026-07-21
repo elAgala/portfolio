@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction B — Dark Technical</title>
+<style>
+  :root {
+    --ink: #0b0908;
+    --ink-deep: #060403;
+    --ink-raised: #141009;
+    --paper: #eee4d5;
+    --muted: #a89a8a;
+    --faint: #5b5148;
+    --brass: #ad8a54;
+    --wine: #761f24;
+    --ok: #7da05c;
+    --line: rgb(238 228 213 / 14%);
+    --gutter: max(1.5rem, calc((100vw - 84rem) / 2));
+    --display: 'Inter Tight', 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--ink); color: var(--paper);
+    font-family: var(--display); font-size: 1rem; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  .design-badge {
+    position: fixed; bottom: 1rem; right: 1rem; z-index: 100;
+    padding: .4rem .7rem; background: var(--paper); color: var(--ink);
+    font: 600 .68rem/1 var(--mono); letter-spacing: .08em;
+  }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(1.6rem); } to { opacity: 1; transform: none; } }
+  @keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+  .rise { opacity: 0; animation: rise .9s cubic-bezier(.19, 1, .22, 1) forwards; }
+  .d1 { animation-delay: .06s; } .d2 { animation-delay: .16s; } .d3 { animation-delay: .28s; } .d4 { animation-delay: .42s; }
+  .cursor { display: inline-block; width: .55em; height: 1.05em; background: var(--brass); vertical-align: -.12em; animation: blink 1.1s steps(1) infinite; }
+  .dot { display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; background: var(--ok); animation: pulse 2.4s ease-in-out infinite; }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 var(--gutter); height: 3.6rem;
+    border-bottom: 1px solid var(--line);
+    font: 500 .74rem/1 var(--mono); letter-spacing: .06em;
+    position: sticky; top: 0; background: rgb(11 9 8 / .88); backdrop-filter: blur(10px); z-index: 50;
+  }
+  .mark { color: var(--paper); font-weight: 700; }
+  .mark em { font-style: normal; color: var(--brass); }
+  nav { display: flex; gap: 1.8rem; color: var(--muted); }
+  nav a::before { content: './'; color: var(--faint); }
+  nav a:hover { color: var(--paper); }
+
+  section { padding: clamp(4rem, 8vw, 7.5rem) var(--gutter); border-bottom: 1px solid var(--line); position: relative; }
+
+  /* section header styled like a log line */
+  .secline {
+    display: flex; align-items: center; gap: 1rem;
+    font: 500 .72rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+  .secline b { color: var(--brass); font-weight: 700; }
+  .secline::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .secline .stat { color: var(--ok); }
+
+  /* ---------- hero: terminal readout ---------- */
+  .hero { min-height: calc(100svh - 3.6rem); display: grid; align-content: center; gap: 0; }
+  .term {
+    max-width: 62rem; border: 1px solid var(--line); background: var(--ink-deep);
+    box-shadow: 0 2rem 6rem rgb(0 0 0 / .45);
+  }
+  .term-bar { display: flex; align-items: center; gap: .5rem; padding: .7rem 1rem; border-bottom: 1px solid var(--line); font: 500 .68rem/1 var(--mono); color: var(--faint); }
+  .term-bar i { width: .55rem; height: .55rem; border-radius: 50%; background: var(--faint); opacity: .5; }
+  .term-bar span { margin-left: .5rem; }
+  .term-body { padding: clamp(1.5rem, 4vw, 3rem); font-family: var(--mono); }
+  .term-body .cmd { font-size: .8rem; color: var(--faint); letter-spacing: .04em; }
+  .term-body .cmd b { color: var(--brass); font-weight: 600; }
+  .term-body h1 {
+    font-family: var(--display);
+    font-size: clamp(3rem, 8.5vw, 7.2rem); font-weight: 800; letter-spacing: -.04em; line-height: .94;
+    margin: 1.2rem 0 .4rem;
+  }
+  .term-body .title-line { font: 600 .82rem/1.8 var(--mono); color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+  .term-body .title-line b { color: var(--paper); }
+  .term-body .manifesto {
+    margin-top: 1.8rem; max-width: 38rem;
+    font: 400 .92rem/1.75 var(--mono); color: var(--muted);
+  }
+  .term-body .manifesto b { color: var(--paper); font-weight: 600; }
+  .term-body .links { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
+  .term-body .links a {
+    font: 600 .72rem/1 var(--mono); letter-spacing: .08em;
+    padding: .7rem 1rem; border: 1px solid var(--line); color: var(--muted);
+    transition: border-color .2s, color .2s, background .2s;
+  }
+  .term-body .links a:hover { border-color: var(--brass); color: var(--paper); background: rgb(173 138 84 / .08); }
+  .hero .statusrow {
+    display: flex; gap: 2rem; margin-top: 1.6rem; flex-wrap: wrap;
+    font: 500 .72rem/1.6 var(--mono); color: var(--faint); letter-spacing: .05em;
+  }
+  .hero .statusrow span { display: flex; align-items: center; gap: .55rem; }
+
+  /* ---------- spec panels ---------- */
+  .panel {
+    position: relative; border: 1px solid var(--line); background: var(--ink-raised);
+    padding: clamp(1.5rem, 3vw, 2.4rem);
+  }
+  .panel::before, .panel::after {
+    content: ''; position: absolute; width: .6rem; height: .6rem; border: 1px solid var(--brass);
+  }
+  .panel::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+  .panel::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+  .work-grid { display: grid; gap: 1.2rem; }
+  .work-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(1.5rem, 3vw, 3rem); }
+  .work-panel .pid { font: 600 .68rem/1 var(--mono); color: var(--brass); letter-spacing: .16em; }
+  .work-panel h3 { font-size: clamp(1.7rem, 3vw, 2.5rem); font-weight: 780; letter-spacing: -.03em; margin: .9rem 0 .8rem; }
+  .kv { font: 500 .74rem/2 var(--mono); color: var(--muted); }
+  .kv b { color: var(--faint); font-weight: 500; display: inline-block; min-width: 6.5rem; }
+  .kv span { color: var(--paper); }
+  .work-panel .desc { color: var(--muted); font-size: .98rem; max-width: 34rem; }
+  .work-panel .co { margin-top: 1.1rem; font: 400 .8rem/1.8 var(--mono); color: var(--muted); }
+  .work-panel .co b { color: var(--ok); font-weight: 600; }
+  .work-panel .co s { color: var(--wine); text-decoration: none; font-weight: 600; }
+  .work-panel .repo { display: inline-block; margin-top: 1.3rem; font: 600 .72rem/1 var(--mono); letter-spacing: .1em; color: var(--brass); border-bottom: 1px solid rgb(173 138 84 / .4); padding-bottom: .3em; }
+  .work-panel .repo:hover { color: var(--paper); border-color: var(--paper); }
+
+  /* ---------- products ---------- */
+  .product { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 1.2rem; margin-bottom: 1.2rem; }
+  .product .shot { border: 1px solid var(--line); position: relative; background: var(--ink-deep); }
+  .product .shot img { filter: saturate(.9); }
+  .product .shot .tag {
+    position: absolute; top: .7rem; left: .7rem;
+    font: 600 .64rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase;
+    background: rgb(6 4 3 / .82); border: 1px solid var(--line); color: var(--muted);
+    padding: .4rem .6rem; backdrop-filter: blur(6px);
+  }
+  .product .info { display: flex; flex-direction: column; }
+  .product h3 { font-size: clamp(1.8rem, 3.4vw, 2.8rem); font-weight: 780; letter-spacing: -.03em; margin: .8rem 0; }
+  .product p { color: var(--muted); font-size: .95rem; }
+  .product .url { margin-top: auto; padding-top: 1.4rem; font: 600 .76rem/1 var(--mono); color: var(--brass); letter-spacing: .06em; }
+  .product .url:hover { color: var(--paper); }
+
+  /* ---------- decisions ---------- */
+  .decision-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+  .decision .dnum { font: 700 .68rem/1 var(--mono); color: var(--brass); letter-spacing: .16em; }
+  .decision h3 { font-size: 1.18rem; font-weight: 700; letter-spacing: -.015em; line-height: 1.25; margin-top: 1rem; }
+  .decision p { margin-top: .9rem; color: var(--muted); font-size: .9rem; }
+  .decision .tools { margin-top: 1.2rem; padding-top: 1rem; border-top: 1px dashed var(--line); font: 500 .7rem/1.7 var(--mono); color: var(--faint); }
+
+  /* ---------- career: log table ---------- */
+  .log { border: 1px solid var(--line); }
+  .log-row {
+    display: grid; grid-template-columns: 10rem 13rem minmax(0, 1fr);
+    gap: clamp(1rem, 3vw, 3rem); padding: 1.6rem clamp(1.2rem, 2.5vw, 2rem);
+    border-bottom: 1px solid var(--line); transition: background .2s;
+  }
+  .log-row:last-child { border-bottom: 0; }
+  .log-row:hover { background: var(--ink-raised); }
+  .log-row .dates { font: 600 .74rem/1.8 var(--mono); color: var(--brass); letter-spacing: .06em; }
+  .log-row h3 { font-size: 1.15rem; font-weight: 720; letter-spacing: -.01em; }
+  .log-row .role { font: 500 .74rem/1.7 var(--mono); color: var(--faint); margin-top: .3rem; }
+  .log-row ul { list-style: none; padding: 0; font: 400 .82rem/1.8 var(--mono); color: var(--muted); }
+  .log-row li::before { content: '› '; color: var(--brass); }
+
+  /* ---------- contact ---------- */
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: clamp(3.5rem, 7vw, 6rem); }
+  .principle h3 { font-size: 1.15rem; font-weight: 700; margin-top: .9rem; }
+  .principle p { margin-top: .7rem; color: var(--muted); font-size: .9rem; }
+  .contact-cta { font-family: var(--mono); }
+  .contact-cta .cmd { font-size: .8rem; color: var(--faint); margin-bottom: 1.2rem; }
+  .contact-cta .cmd b { color: var(--brass); font-weight: 600; }
+  .contact-cta a.big {
+    display: inline-block; font-size: clamp(1.6rem, 4.5vw, 3.4rem); font-weight: 700;
+    color: var(--paper); letter-spacing: -.02em; border-bottom: 2px solid var(--brass);
+  }
+  .contact-cta a.big:hover { color: var(--brass); }
+  .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 3rem; font: 500 .72rem/1.8 var(--mono); color: var(--faint); letter-spacing: .05em; }
+  .foot a { color: var(--muted); }
+  .foot a:hover { color: var(--paper); }
+
+  @media (max-width: 900px) {
+    .work-panel, .product, .decision-grid, .principles { grid-template-columns: 1fr; }
+    .log-row { grid-template-columns: 1fr; gap: .6rem; }
+    nav { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="design-badge">B — Dark Technical</div>
+
+<header>
+  <a class="mark" href="#">agala<em>@</em>labs <span style="color:var(--faint)">~</span></a>
+  <nav>
+    <a href="#work">work</a><a href="#products">products</a>
+    <a href="#decisions">decisions</a><a href="#career">career</a>
+    <a href="#contact">contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="term rise d1">
+    <div class="term-bar"><i></i><i></i><i></i><span>julian@agala — zsh — 80×24</span></div>
+    <div class="term-body">
+      <p class="cmd"><b>$</b> whoami --verbose</p>
+      <h1>Julián Benitez<span class="cursor"></span></h1>
+      <p class="title-line">SOFTWARE ENGINEER / TECH LEAD — <b>Buenos Aires, AR</b></p>
+      <p class="manifesto">I'm a software engineer and tech lead in Buenos Aires. I lead product teams at AlixPartners, and through Agala Labs I build my own software — interfaces in Vue and React, services in Go and C#, and the Linux automation that ships them. <b>If I can't understand a system six months later, I didn't build it well enough.</b></p>
+      <div class="links">
+        <a href="https://github.com/elAgala">github/elAgala ↗</a>
+        <a href="mailto:julian@benitez.com.ar">julian@benitez.com.ar</a>
+        <a href="/resume">./resume.pdf</a>
+      </div>
+    </div>
+  </div>
+  <div class="statusrow rise d3">
+    <span><span class="dot"></span> status: open to the right engineering challenge</span>
+    <span>uptime: 8+ yrs shipping</span>
+    <span>tz: UTC-3</span>
+  </div>
+</section>
+
+<section id="work">
+  <p class="secline"><b>[01]</b> featured_work <span class="stat">3 repos, public</span></p>
+  <div class="work-grid">
+    <article class="panel work-panel rise">
+      <div>
+        <p class="pid">REPO-001</p>
+        <h3>Agala UI</h3>
+        <p class="kv"><b>domain</b> <span>design systems</span><br><b>year</b> <span>2026</span><br><b>role</b> <span>creator &amp; maintainer</span><br><b>stack</b> <span>vue3 · ts · vite · css-tokens</span></p>
+        <a class="repo" href="https://github.com/elAgala/agala-ui">git clone →</a>
+      </div>
+      <div>
+        <p class="desc">A Vue 3 component library. Forty-plus component families, zero runtime dependencies, one shared interface language for Agala products.</p>
+        <p class="co"><s>− problem:</s> every new product rebuilt the same controls. slow. incoherent.<br><b>+ result:</b> 40+ component families, calendar views, shared interaction logic, companion chart package. accessibility as contract.</p>
+      </div>
+    </article>
+
+    <article class="panel work-panel rise">
+      <div>
+        <p class="pid">REPO-002</p>
+        <h3>Agala AI</h3>
+        <p class="kv"><b>domain</b> <span>developer experience</span><br><b>year</b> <span>2026</span><br><b>role</b> <span>designer &amp; author</span><br><b>stack</b> <span>agents · markdown · nuxt · go</span></p>
+        <a class="repo" href="https://github.com/elAgala/agala-ai">git clone →</a>
+      </div>
+      <div>
+        <p class="desc">Plain-text agents, focused skills, and stack guides. Coding assistants get the project context they need to build the right thing.</p>
+        <p class="co"><s>− problem:</s> fast assistants miss local conventions, ownership, verification habits.<br><b>+ result:</b> planning, design, implementation, review and QA follow reusable workflows carrying each project's expectations.</p>
+      </div>
+    </article>
+
+    <article class="panel work-panel rise">
+      <div>
+        <p class="pid">REPO-003</p>
+        <h3>Agala Setup</h3>
+        <p class="kv"><b>domain</b> <span>linux &amp; dx</span><br><b>year</b> <span>2025–2026</span><br><b>role</b> <span>creator &amp; maintainer</span><br><b>stack</b> <span>bash · fedora · zsh · neovim</span></p>
+        <a class="repo" href="https://github.com/elAgala/agala-setup">git clone →</a>
+      </div>
+      <div>
+        <p class="desc">Bash scripts that turn a fresh Fedora install into my daily workstation. One readable system, rebuilt on demand.</p>
+        <p class="co"><s>− problem:</s> years of setup decisions lived in memory. slow, unauditable rebuilds.<br><b>+ result:</b> shell, editor, runtimes, containers — the whole machine from one readable system.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="products">
+  <p class="secline"><b>[02]</b> products <span class="stat">2 live in production</span></p>
+
+  <article class="product rise">
+    <div class="shot"><span class="tag">● live — dental software</span><img src="../../public/images/agala-product-smaltt.webp" alt="Screenshot of the Smaltt product"></div>
+    <div class="info panel">
+      <p class="pid" style="font:600 .68rem/1 var(--mono);color:var(--brass);letter-spacing:.16em">PROD-001</p>
+      <h3>Smaltt</h3>
+      <p>Connected software for dental clinics. Scheduling, patients, clinical records, management, Bianca — one system. Original Agala Labs product, product direction through delivery.</p>
+      <a class="url" href="https://smaltt.agala.com.ar">https://smaltt.agala.com.ar ↗</a>
+    </div>
+  </article>
+
+  <article class="product rise">
+    <div class="shot"><span class="tag">● live — retail operations</span><img src="../../public/images/agala-product-kervo.webp" alt="Screenshot of the Kervo product"></div>
+    <div class="info panel">
+      <p class="pid" style="font:600 .68rem/1 var(--mono);color:var(--brass);letter-spacing:.16em">PROD-002</p>
+      <h3>Kervo</h3>
+      <p>An operating system for growing retailers. Sales, stock, catalog, pricing, channels, intelligence. One coherent operational system.</p>
+      <a class="url" href="https://kervo.agala.com.ar">https://kervo.agala.com.ar ↗</a>
+    </div>
+  </article>
+</section>
+
+<section id="decisions">
+  <p class="secline"><b>[03]</b> engineering_decisions <span class="stat">how i think</span></p>
+  <div class="decision-grid">
+    <article class="panel decision rise">
+      <p class="dnum">DEC-01</p>
+      <h3>One product language, many applications</h3>
+      <p>Repeated interface behavior slowed every new product. So: typed Vue primitives, tokens, and composables built once. Each product keeps its own look. The shared layer stays small.</p>
+      <p class="tools">vue · nuxt · typescript · css-tokens</p>
+    </article>
+    <article class="panel decision rise">
+      <p class="dnum">DEC-02</p>
+      <h3>Small services, legible boundaries</h3>
+      <p>Integrations rot when one service accumulates implicit jobs. So: focused Go gateways, PostgreSQL, explicit contracts, predictable failures. More interfaces. Fewer surprises.</p>
+      <p class="tools">go · postgresql · http-contracts</p>
+    </article>
+    <article class="panel decision rise">
+      <p class="dnum">DEC-03</p>
+      <h3>Make delivery reproducible</h3>
+      <p>Infrastructure knowledge dies in shell history. So: versioned OpenTofu, Ansible, containers, secrets tooling, CI. Pays back on every rebuild.</p>
+      <p class="tools">linux · opentofu · ansible · docker · ci/cd</p>
+    </article>
+  </div>
+</section>
+
+<section id="career">
+  <p class="secline"><b>[04]</b> career.log <span class="stat">2018 → now</span></p>
+  <div class="log rise">
+    <article class="log-row">
+      <span class="dates">2021—present</span>
+      <div><h3>AlixPartners</h3><p class="role">software engineer / tech lead · global</p></div>
+      <ul>
+        <li>Architecture and delivery decisions, made with the team, verified in the code.</li>
+        <li>Co-lead the Frontend Guild across React, Next.js, and Vue teams.</li>
+        <li>Day to day: product interfaces, services, data, Azure.</li>
+      </ul>
+    </article>
+    <article class="log-row">
+      <span class="dates">2026—present</span>
+      <div><h3>Agala Labs</h3><p class="role">creator / software engineer · independent</p></div>
+      <ul>
+        <li>Nuxt and Vue foundations. New products start coherent, not empty.</li>
+        <li>Small Go services and PostgreSQL integrations with legible contracts.</li>
+        <li>Linux, secrets, deployment: automated until shipping feels routine.</li>
+      </ul>
+    </article>
+    <article class="log-row">
+      <span class="dates">2018—2021</span>
+      <div><h3>Freelance</h3><p class="role">software engineer · buenos aires</p></div>
+      <ul>
+        <li>Web and mobile products in Node.js, C#, Vue, Flutter.</li>
+        <li>The invisible parts too: data models, AWS servers, deployments, fixes.</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section id="contact">
+  <p class="secline"><b>[05]</b> principles <span class="stat">&amp; contact</span></p>
+  <div class="principles">
+    <article class="panel principle rise"><p class="dnum" style="font:700 .68rem/1 var(--mono);color:var(--brass);letter-spacing:.16em">P-01</p><h3>Start with the real problem</h3><p>One concrete constraint beats a framework for ten imaginary ones.</p></article>
+    <article class="panel principle rise"><p class="dnum" style="font:700 .68rem/1 var(--mono);color:var(--brass);letter-spacing:.16em">P-02</p><h3>Design the awkward paths</h3><p>Loading, errors, and recovery get the same care as the happy path.</p></article>
+    <article class="panel principle rise"><p class="dnum" style="font:700 .68rem/1 var(--mono);color:var(--brass);letter-spacing:.16em">P-03</p><h3>Make the next change easier</h3><p>Good names, visible decisions, useful automation.</p></article>
+  </div>
+  <div class="contact-cta rise">
+    <p class="cmd"><b>$</b> mail -s "engineering challenge" julian@benitez.com.ar</p>
+    <a class="big" href="mailto:julian@benitez.com.ar">julian@benitez.com.ar</a>
+  </div>
+  <div class="foot">
+    <span>© 2026 julián benitez — agala labs</span>
+    <span><a href="https://github.com/elAgala">github</a> · <a href="mailto:julian@benitez.com.ar">email</a> · <a href="/resume">résumé</a></span>
+    <span>built with nuxt · deployed on linux</span>
+  </div>
+</section>
+
+</body>
+</html>

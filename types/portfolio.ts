@@ -4,6 +4,9 @@ export interface Link {
 }
 
 export interface Profile {
+  brand: string
+  organization: string
+  organizationUrl: string
   name: string
   initials: string
   title: string
@@ -15,15 +18,32 @@ export interface Profile {
   manifesto: string
   avatar: string
   links: Link[]
-  capabilities: Array<{
+}
+
+export interface ProductProof {
+  name: string
+  href: string
+  category: string
+  description: string
+  contribution: string
+  image: string
+}
+
+export interface AgalaLabsStory {
+  name: string
+  url: string
+  introduction: string
+  responsibility: string
+  products: ProductProof[]
+  architecture: Array<{
+    title: string
+    description: string
+    items: string[]
+  }>
+  agenticWork: Array<{
     title: string
     description: string
     tools: string[]
-  }>
-  principles: Array<{
-    number: string
-    title: string
-    description: string
   }>
 }
 
@@ -40,6 +60,8 @@ export interface CareerEntry {
   location?: string
   summary: string
   bullets: string[]
+  portfolioSummary: string
+  portfolioBullets: string[]
   stack: string[]
   layers?: CareerLayer[]
 }
@@ -65,7 +87,6 @@ export interface Resume {
 
 export interface Project {
   slug: string
-  path: string
   title: string
   description: string
   order: number

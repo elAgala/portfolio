@@ -1,15 +1,16 @@
-# Julián Benitez — Operator Workbench
+# Agala / Julián Benitez — Portfolio
 
-A distinctive software-engineering portfolio and a formal, exportable résumé. The homepage combines a warm editorial GUI, Linux/OSS details, a procedural Three.js system model, and a functional terminal drawer without compromising the recruiter-facing content.
+A Nuxt portfolio for Julián “Agala” Benitez. The homepage presents Agala Labs as his software factory and documents the products, shared architecture, self-hosted delivery platform, agentic workflows, and public engineering work behind it.
 
 ## Experience
 
-- **GUI-first portfolio:** selected work, architecture diagrams, verified project links, capability record, and direct contact paths.
-- **Operator’s desk:** a procedural Three.js workstation diorama that traces source code through Go, C#, and Node services into a Linux host. It supports restrained pointer parallax, an accessible guided delivery sequence, adaptive rendering, and a static fallback for reduced motion or unavailable WebGL.
-- **Portfolio TTY:** open it with the fixed launcher or `Ctrl + backtick`. Supported commands are `help`, `whoami`, `projects`, `open`, `source`, `resume`, `contact`, `clear`, and `exit`. It uses an explicit parser; arbitrary code is never evaluated.
-- **Formal résumé:** `/resume` is intentionally restrained, photo-free, print-safe, and available as a generated PDF.
+- **Agala Labs:** a flagship editorial chapter for Smaltt and Kervo, followed by the shared product platform and delivery architecture Julián builds and operates.
+- **Agentic engineering:** concrete coverage of the Codex, Claude Code, and OpenCode workflow, Agala AI agents and skills, Context MCP, and AI features built into the products.
+- **Public work:** three source-linked projects presented as straightforward evidence rather than faux case-study cards.
+- **Accessible by default:** semantic sections, visible headings, keyboard navigation, responsive layouts, and reduced-motion handling.
+- **Formal resume:** `/resume` is intentionally restrained, photo-free, print-safe, and available as a generated PDF.
 
-The visual language borrows restraint, ceremony, oxblood, brass, and typography from *The Godfather* rather than reproducing film imagery or turning the page into a theme park.
+The visual language uses ink, paper, brass, and wine with restrained editorial typography. A small terminal motif is confined to the hero. The rest of the page avoids fake IDs, shell chrome, code-like headings, decorative status indicators, invented metrics, and generic glass-and-glow effects.
 
 ## Development
 
@@ -24,36 +25,26 @@ The development server uses `http://127.0.0.1:43177` by default—never port 300
 
 Typed content lives in `data/`:
 
-- `profile.ts` — identity, contact, positioning, capabilities, and principles
-- `projects.ts` — featured open-source projects and case-study narratives
-- `experience-graphs.ts` — semantic nodes and edges used by the GUI architecture diagrams
+- `profile.ts` — identity, contact information, and positioning
+- `lab.ts` — Agala Labs products, architecture, tooling, and agentic work
+- `projects.ts` — public open-source projects and supporting narratives
+- `career.ts` — the shared career record used by the homepage and resume
 - `resume.ts` — experience, education, skills, and languages
 
-The formal résumé and project case-study routes remain regular semantic pages; the Three.js runtime is homepage-only.
+The formal resume is the only secondary route.
 
 ## Verification
-
-With the development server running:
 
 ```bash
 npm run lint
 npm run typecheck
 npm run test
-npm run visual:regression
-npm run accessibility:audit
-```
-
-The browser checks cover 320, 390, 768, 1024, and 1440 pixel viewports, horizontal overflow, named controls, required landmarks, terminal focus/command behavior, reduced-motion fallback, and the résumé route.
-
-For the production output:
-
-```bash
 npm run generate
 npm run route:validate
 npm run resume:pdf
 ```
 
-`resume:pdf` prints the generated `/resume` route and writes `public/julian-benitez-resume.pdf` as well as the matching file in `.output/public`.
+`resume:pdf` prints the generated `/resume` route and writes `public/julian-benitez-resume.pdf` as well as the matching file in `.output/public`. Homepage content tests also reject the faux-terminal and decorative-status patterns intentionally removed from the site.
 
 Set `NUXT_PUBLIC_SITE_URL` when the production canonical URL differs from `https://julian.benitez.ar`.
 

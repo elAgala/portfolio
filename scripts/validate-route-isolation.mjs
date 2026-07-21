@@ -7,14 +7,14 @@ const requestedChunks = [...resumeHtml.matchAll(/(?:src|href)="\/?(_nuxt\/[^"?]+
   .map(match => match[1])
 
 if (!requestedChunks.length)
-  throw new Error('No résumé JavaScript chunks found; generate the site before checking route isolation')
+  throw new Error('No resume JavaScript chunks found; generate the site before checking route isolation')
 
-const forbiddenMarkers = ['operator-desk', 'OperatorDesk', 'three.module', 'trace_delivery']
+const forbiddenMarkers = ['agala-constellation', 'AgalaConstellation', 'three.module']
 for (const chunk of new Set(requestedChunks)) {
   const source = readFileSync(resolve(publicDirectory, chunk), 'utf8')
   const marker = forbiddenMarkers.find(value => source.includes(value))
   if (marker)
-    throw new Error(`Résumé route chunk ${chunk} contains interactive portfolio marker ${marker}`)
+    throw new Error(`Resume route chunk ${chunk} contains interactive portfolio marker ${marker}`)
 }
 
-console.log(`Résumé isolation passed across ${new Set(requestedChunks).size} requested JavaScript chunks.`)
+console.log(`Resume isolation passed across ${new Set(requestedChunks).size} requested JavaScript chunks.`)

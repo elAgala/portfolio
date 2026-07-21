@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "accessibility:audit": "node scripts/verify-workbench.mjs http://127.0.0.1:43177 43178 --audit",
     "dev": "nuxt dev --port 43177",
     "generate": "nuxt generate",
     "lint": "eslint .",
@@ -14,21 +13,17 @@
     "resume:pdf": "node scripts/generate-resume.mjs",
     "resume:verify": "node scripts/verify-resume.mjs",
     "route:validate": "node scripts/validate-route-isolation.mjs",
-    "visual:regression": "node scripts/verify-workbench.mjs http://127.0.0.1:43177 43178",
     "test": "vitest run",
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@fontsource-variable/inter-tight": "^5.2.7",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
-    "@fontsource-variable/manrope": "^5.2.8",
     "nuxt": "^4.4.8",
-    "three": "^0.185.1",
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",
-    "@types/three": "^0.185.1",
     "eslint": "^10.7.0",
     "typescript": "^5.7.3",
     "vitest": "^4.1.10",

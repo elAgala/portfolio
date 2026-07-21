@@ -7,8 +7,8 @@ useHead({
 })
 
 useSeoMeta({
-  title: 'Résumé',
-  description: `Résumé for ${person.name}, ${person.title} in ${person.location}.`,
+  title: 'Resume',
+  description: `Resume for ${person.name}, ${person.title} in ${person.location}.`,
   robots: 'index, follow',
 })
 
@@ -19,10 +19,10 @@ function printResume() {
 
 <template>
   <div class="resume-route">
-    <nav class="resume-toolbar" aria-label="Résumé actions">
-      <NuxtLink to="/">← Portfolio</NuxtLink>
+    <nav class="resume-toolbar" aria-label="Resume actions">
+      <NuxtLink to="/">← Back to portfolio</NuxtLink>
       <div>
-        <button type="button" @click="printResume">Save as PDF</button>
+        <button type="button" @click="printResume">Print or save as PDF</button>
         <a href="/julian-benitez-resume.pdf" download>Download PDF</a>
       </div>
     </nav>
@@ -30,6 +30,7 @@ function printResume() {
     <main class="resume-sheet">
       <header class="resume-header">
         <div>
+          <p class="resume-brand">AGALA / {{ person.name }}</p>
           <h1>{{ person.name }}</h1>
           <p>{{ person.title }}</p>
         </div>

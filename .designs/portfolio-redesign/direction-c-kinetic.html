@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction C — Kinetic Editorial</title>
+<style>
+  :root {
+    --bg: #0c0b09;
+    --bg-alt: #12100c;
+    --ink: #efe9dc;
+    --muted: #9c917e;
+    --faint: #57503f;
+    --volt: #d8f34f;
+    --line: rgb(239 233 220 / 13%);
+    --gutter: max(1.25rem, calc((100vw - 90rem) / 2));
+    --display: 'Inter Tight', 'Inter', system-ui, sans-serif;
+    --serif: 'Georgia', 'Times New Roman', serif;
+    --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--display); font-size: 1rem; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; overflow-x: clip;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  .design-badge {
+    position: fixed; bottom: 1rem; right: 1rem; z-index: 100;
+    padding: .4rem .7rem; background: var(--volt); color: var(--bg);
+    font: 700 .68rem/1 var(--mono); letter-spacing: .08em;
+  }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(3rem) rotate(.6deg); } to { opacity: 1; transform: none; } }
+  @keyframes slidein { from { transform: translateX(-4rem); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .rise { opacity: 0; animation: rise 1.1s cubic-bezier(.16, 1, .3, 1) forwards; }
+  .d1 { animation-delay: .1s; } .d2 { animation-delay: .24s; } .d3 { animation-delay: .4s; }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.4rem var(--gutter);
+    font: 600 .72rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase;
+  }
+  .mark b { color: var(--volt); }
+  nav { display: flex; gap: 1.8rem; color: var(--muted); }
+  nav a:hover { color: var(--volt); }
+
+  section { padding: clamp(4rem, 8vw, 8rem) var(--gutter); position: relative; }
+
+  /* giant ghost numerals behind sections */
+  .ghost {
+    position: absolute; top: 1rem; right: var(--gutter);
+    font-size: clamp(6rem, 18vw, 16rem); font-weight: 800; letter-spacing: -.05em; line-height: 1;
+    color: transparent; -webkit-text-stroke: 1px var(--faint); opacity: .35;
+    pointer-events: none; user-select: none;
+  }
+
+  /* ---------- hero: type wall ---------- */
+  .hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-top: 2rem; }
+  .hero .kicker {
+    font: 600 .78rem/1 var(--mono); letter-spacing: .3em; text-transform: uppercase; color: var(--volt);
+    margin-bottom: 2rem;
+  }
+  .hero h1 {
+    font-size: clamp(3.4rem, 12.5vw, 12rem);
+    font-weight: 800; letter-spacing: -.05em; line-height: .88; text-transform: uppercase;
+  }
+  .hero h1 .row { display: block; overflow: hidden; }
+  .hero h1 .row span { display: inline-block; animation: slidein 1s cubic-bezier(.16, 1, .3, 1) both; }
+  .hero h1 .row:nth-child(2) span { animation-delay: .12s; }
+  .hero h1 .ital { font-family: var(--serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -.02em; color: var(--volt); }
+  .hero .sub {
+    display: flex; gap: 3rem; align-items: flex-end; justify-content: space-between; flex-wrap: wrap;
+    margin-top: clamp(2rem, 4vw, 3.5rem); padding-top: 2rem; border-top: 1px solid var(--line);
+  }
+  .hero .manifesto { max-width: 30rem; font-size: 1.06rem; color: var(--muted); }
+  .hero .manifesto b { color: var(--ink); font-weight: 640; }
+  .hero .links { display: flex; gap: 1.6rem; font: 600 .76rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+  .hero .links a { border-bottom: 1px solid var(--faint); padding-bottom: .35em; }
+  .hero .links a:hover { color: var(--volt); border-color: var(--volt); }
+
+  /* marquee divider — kinetic signature */
+  .marquee {
+    overflow: hidden; white-space: nowrap; border-block: 1px solid var(--line);
+    padding: 1.1rem 0; background: var(--bg-alt);
+  }
+  .marquee .track {
+    display: inline-block; animation: marquee 28s linear infinite;
+    font-size: clamp(1.3rem, 2.6vw, 2.1rem); font-weight: 750; letter-spacing: -.02em; text-transform: uppercase;
+  }
+  .marquee .track em { font-family: var(--serif); font-style: italic; font-weight: 400; text-transform: none; color: var(--volt); }
+  .marquee .track span { margin-right: 3rem; }
+
+  /* ---------- work: giant index list ---------- */
+  .work-item {
+    display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: clamp(1.5rem, 4vw, 5rem);
+    padding: clamp(2.5rem, 5vw, 4.5rem) 0; border-top: 1px solid var(--line); align-items: start;
+  }
+  .work-item:first-of-type { border-top: 0; }
+  .work-item .no { font: 700 .8rem/1 var(--mono); color: var(--volt); letter-spacing: .2em; }
+  .work-item h3 {
+    font-size: clamp(2.6rem, 6.5vw, 5.6rem); font-weight: 800; letter-spacing: -.045em; line-height: .92;
+    text-transform: uppercase; margin-top: 1rem; transition: color .25s;
+  }
+  .work-item:hover h3 { color: var(--volt); }
+  .work-item h3 em { font-family: var(--serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -.01em; }
+  .work-item .meta { margin-top: 1.4rem; font: 500 .74rem/1.9 var(--mono); color: var(--faint); letter-spacing: .08em; text-transform: uppercase; }
+  .work-item .desc { font-size: 1.05rem; color: var(--ink); max-width: 30rem; }
+  .work-item .sub { margin-top: 1rem; color: var(--muted); font-size: .93rem; max-width: 30rem; }
+  .work-item .sub b { color: var(--volt); font-weight: 640; }
+  .work-item .repo {
+    display: inline-block; margin-top: 1.5rem;
+    font: 700 .74rem/1 var(--mono); letter-spacing: .16em; text-transform: uppercase;
+    color: var(--bg); background: var(--volt); padding: .75rem 1.1rem;
+    transition: transform .2s;
+  }
+  .work-item .repo:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--faint); }
+
+  /* ---------- products: editorial spread ---------- */
+  #products { background: var(--bg-alt); border-block: 1px solid var(--line); }
+  .section-label { font: 600 .74rem/1 var(--mono); letter-spacing: .3em; text-transform: uppercase; color: var(--volt); margin-bottom: 3rem; }
+  .product { margin-bottom: clamp(3.5rem, 7vw, 6rem); }
+  .product:last-child { margin-bottom: 0; }
+  .product .frame { position: relative; }
+  .product img { width: 100%; border: 1px solid var(--line); }
+  .product h3 {
+    position: absolute; left: -.05em; bottom: -.28em;
+    font-size: clamp(3.4rem, 10vw, 9rem); font-weight: 800; letter-spacing: -.05em; line-height: 1;
+    text-transform: uppercase; color: var(--ink);
+    text-shadow: 0 0 2rem rgb(12 11 9 / .9);
+  }
+  .product h3 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--volt); }
+  .product .below { display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap; margin-top: clamp(2.4rem, 5vw, 4rem); }
+  .product .below p { max-width: 34rem; color: var(--muted); font-size: 1rem; }
+  .product .below .cat { font: 600 .72rem/1.8 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
+  .product .below a { color: var(--volt); border-bottom: 1px solid var(--volt); padding-bottom: .2em; font-weight: 640; }
+
+  /* ---------- decisions: big statements ---------- */
+  .decision { padding: clamp(2.5rem, 5vw, 4rem) 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 5rem); align-items: baseline; }
+  .decision:first-of-type { border-top: 0; }
+  .decision h3 { font-size: clamp(1.7rem, 3.6vw, 3rem); font-weight: 780; letter-spacing: -.035em; line-height: 1.05; }
+  .decision h3 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--volt); }
+  .decision p { color: var(--muted); font-size: .97rem; max-width: 32rem; }
+  .decision .tools { margin-top: 1rem; font: 500 .72rem/1.8 var(--mono); color: var(--faint); letter-spacing: .1em; text-transform: uppercase; }
+
+  /* ---------- career: kinetic rows ---------- */
+  .career-row {
+    display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1rem, 3vw, 4rem);
+    padding: clamp(2rem, 4vw, 3.4rem) 0; border-top: 1px solid var(--line); align-items: baseline;
+  }
+  .career-row:first-of-type { border-top: 0; }
+  .career-row .when { font: 700 .78rem/1 var(--mono); color: var(--volt); letter-spacing: .18em; text-transform: uppercase; }
+  .career-row h3 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 800; letter-spacing: -.04em; line-height: .95; text-transform: uppercase; margin-top: .8rem; }
+  .career-row .role { color: var(--muted); margin-top: .6rem; font-size: .95rem; }
+  .career-row ul { list-style: none; padding: 0; }
+  .career-row li { color: var(--muted); font-size: .95rem; }
+  .career-row li + li { margin-top: .65rem; }
+  .career-row li b { color: var(--ink); font-weight: 620; }
+
+  /* ---------- contact ---------- */
+  #contact { text-align: left; }
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3vw, 3rem); margin-bottom: clamp(4rem, 8vw, 7rem); }
+  .principle .num { font: 700 .78rem/1 var(--mono); color: var(--volt); letter-spacing: .2em; }
+  .principle h3 { font-size: clamp(1.3rem, 2.2vw, 1.8rem); font-weight: 740; letter-spacing: -.025em; margin-top: 1rem; line-height: 1.1; }
+  .principle p { margin-top: .8rem; color: var(--muted); font-size: .92rem; }
+  .contact-h2 {
+    font-size: clamp(3rem, 10vw, 9.5rem); font-weight: 800; letter-spacing: -.05em; line-height: .9; text-transform: uppercase;
+  }
+  .contact-h2 a { color: var(--volt); }
+  .contact-h2 a em { font-family: var(--serif); font-style: italic; font-weight: 400; text-transform: none; }
+  .contact-h2 a:hover { text-decoration: underline; text-decoration-thickness: .04em; text-underline-offset: .12em; }
+  .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--line); font: 600 .72rem/1.8 var(--mono); color: var(--faint); letter-spacing: .12em; text-transform: uppercase; }
+  .foot a { color: var(--muted); }
+  .foot a:hover { color: var(--volt); }
+
+  @media (max-width: 900px) {
+    .work-item, .decision, .career-row, .principles { grid-template-columns: 1fr; }
+    .ghost { display: none; }
+    nav { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="design-badge">C — Kinetic Editorial</div>
+
+<header>
+  <a class="mark" href="#"><b>AGALA</b> — JULIÁN BENITEZ</a>
+  <nav>
+    <a href="#work">Work</a><a href="#products">Products</a>
+    <a href="#decisions">Decisions</a><a href="#career">Career</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <p class="kicker rise d1">Software Engineer / Tech Lead — Buenos Aires</p>
+  <h1>
+    <span class="row"><span>Julián</span></span>
+    <span class="row"><span>Benitez <span class="ital">builds</span></span></span>
+    <span class="row"><span>calm systems<span style="color:var(--volt)">.</span></span></span>
+  </h1>
+  <div class="sub rise d3">
+    <p class="manifesto">I work close to the problem. I write the code, argue the tradeoffs, and leave systems that still make sense six months later. <b>Useful abstractions. Calm systems. Clear decisions.</b></p>
+    <div class="links">
+      <a href="https://github.com/elAgala">GitHub ↗</a>
+      <a href="mailto:julian@benitez.com.ar">Email</a>
+      <a href="/resume">Résumé</a>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <span class="track">
+    <span>Useful abstractions</span><span><em>calm</em> systems</span><span>Clear decisions</span><span>Vue · Nuxt · Go</span><span><em>since</em> 2018</span>
+    <span>Useful abstractions</span><span><em>calm</em> systems</span><span>Clear decisions</span><span>Vue · Nuxt · Go</span><span><em>since</em> 2018</span>
+  </span>
+</div>
+
+<section id="work">
+  <span class="ghost" aria-hidden="true">01</span>
+  <p class="section-label">01 / Featured work</p>
+
+  <article class="work-item">
+    <div>
+      <p class="no">P—01</p>
+      <h3>Agala <em>UI</em></h3>
+      <p class="meta">Design systems · 2026 · Creator &amp; maintainer<br>Vue 3 — TypeScript — Vite — CSS tokens</p>
+      <a class="repo" href="https://github.com/elAgala/agala-ui">View repo ↗</a>
+    </div>
+    <div>
+      <p class="desc">A Vue 3 component library. Forty-plus component families, zero runtime dependencies, one shared interface language for Agala products.</p>
+      <p class="sub"><b>Problem —</b> every new product rebuilt the same controls. Slow. Incoherent.</p>
+      <p class="sub"><b>Result —</b> calendar views, shared interaction logic, companion chart package. Accessibility as part of the contract.</p>
+    </div>
+  </article>
+
+  <article class="work-item">
+    <div>
+      <p class="no">P—02</p>
+      <h3>Agala <em>AI</em></h3>
+      <p class="meta">Developer experience · 2026 · Designer &amp; author<br>Agent workflows — Markdown contracts — Go</p>
+      <a class="repo" href="https://github.com/elAgala/agala-ai">View repo ↗</a>
+    </div>
+    <div>
+      <p class="desc">Plain-text agents, focused skills, and stack guides. Coding assistants get the project context they need to build the right thing.</p>
+      <p class="sub"><b>Problem —</b> fast assistants miss local conventions, ownership boundaries, verification habits.</p>
+      <p class="sub"><b>Result —</b> planning, design, implementation, review and QA follow reusable workflows.</p>
+    </div>
+  </article>
+
+  <article class="work-item">
+    <div>
+      <p class="no">P—03</p>
+      <h3>Agala <em>Setup</em></h3>
+      <p class="meta">Linux &amp; DX · 2025–2026 · Creator &amp; maintainer<br>Bash — Fedora — Zsh — Neovim — Docker</p>
+      <a class="repo" href="https://github.com/elAgala/agala-setup">View repo ↗</a>
+    </div>
+    <div>
+      <p class="desc">Bash scripts that turn a fresh Fedora install into my daily workstation. One readable system, rebuilt on demand.</p>
+      <p class="sub"><b>Problem —</b> years of setup decisions lived in memory. Rebuilds slow, inconsistent, unauditable.</p>
+      <p class="sub"><b>Result —</b> shell, editor, runtimes, containers from one readable system.</p>
+    </div>
+  </article>
+</section>
+
+<section id="products">
+  <span class="ghost" aria-hidden="true">02</span>
+  <p class="section-label">02 / Products — live in production</p>
+
+  <article class="product">
+    <div class="frame">
+      <img src="../../public/images/agala-product-smaltt.webp" alt="Screenshot of the Smaltt product">
+      <h3>Sm<em>a</em>ltt</h3>
+    </div>
+    <div class="below">
+      <p>Connected software for dental clinics. Scheduling, patients, clinical records, management, Bianca — one system. Original Agala Labs product, product direction through delivery.</p>
+      <p class="cat">Dental software<br><a href="https://smaltt.agala.com.ar">smaltt.agala.com.ar ↗</a></p>
+    </div>
+  </article>
+
+  <article class="product">
+    <div class="frame">
+      <img src="../../public/images/agala-product-kervo.webp" alt="Screenshot of the Kervo product">
+      <h3>Kervo<em>.</em></h3>
+    </div>
+    <div class="below">
+      <p>An operating system for growing retailers. Sales, stock, catalog, pricing, channels, intelligence. One coherent operational system.</p>
+      <p class="cat">Retail operations<br><a href="https://kervo.agala.com.ar">kervo.agala.com.ar ↗</a></p>
+    </div>
+  </article>
+</section>
+
+<section id="decisions">
+  <span class="ghost" aria-hidden="true">03</span>
+  <p class="section-label">03 / Engineering decisions</p>
+
+  <article class="decision">
+    <h3>One product language, <em>many</em> applications</h3>
+    <div><p>Repeated interface behavior slowed every new product. So: typed Vue primitives, tokens, and composables built once. Each product keeps its own look. The shared layer stays small — product workflows stay with the product.</p><p class="tools">Vue · Nuxt · TypeScript · CSS tokens</p></div>
+  </article>
+  <article class="decision">
+    <h3>Small services, <em>legible</em> boundaries</h3>
+    <div><p>Integrations rot when one service accumulates implicit jobs. So: focused Go gateways, PostgreSQL, explicit contracts, predictable failures. More interfaces to maintain. Fewer surprises.</p><p class="tools">Go · PostgreSQL · HTTP contracts</p></div>
+  </article>
+  <article class="decision">
+    <h3>Make delivery <em>reproducible</em></h3>
+    <div><p>Infrastructure knowledge dies in shell history. So: versioned OpenTofu, Ansible, containers, secrets tooling, CI. Automation costs more than a one-off command. It pays back on every rebuild.</p><p class="tools">Linux · OpenTofu · Ansible · Docker · CI/CD</p></div>
+  </article>
+</section>
+
+<section id="career">
+  <span class="ghost" aria-hidden="true">04</span>
+  <p class="section-label">04 / Career</p>
+
+  <article class="career-row">
+    <div>
+      <p class="when">2021 — Present</p>
+      <h3>AlixPartners</h3>
+      <p class="role">Software Engineer / Tech Lead · Global / Buenos Aires</p>
+    </div>
+    <ul>
+      <li><b>Architecture and delivery decisions,</b> made with the team, verified in the code.</li>
+      <li>Co-lead the Frontend Guild. React, Next.js, and Vue teams raise the bar.</li>
+      <li>Day to day: product interfaces, services, data, Azure.</li>
+    </ul>
+  </article>
+  <article class="career-row">
+    <div>
+      <p class="when">2026 — Present</p>
+      <h3>Agala Labs</h3>
+      <p class="role">Creator / Software Engineer · Independent engineering</p>
+    </div>
+    <ul>
+      <li><b>Nuxt and Vue foundations.</b> New products start coherent, not empty.</li>
+      <li>Small Go services and PostgreSQL integrations. Contracts I understand months later.</li>
+      <li>Linux, secrets, deployment: automated until shipping feels routine.</li>
+    </ul>
+  </article>
+  <article class="career-row">
+    <div>
+      <p class="when">2018 — 2021</p>
+      <h3>Freelance</h3>
+      <p class="role">Software Engineer · Buenos Aires</p>
+    </div>
+    <ul>
+      <li><b>Web and mobile products</b> in Node.js, C#, Vue, Flutter. Direct with the people who needed them.</li>
+      <li>The invisible parts too: data models, AWS servers, deployments, post-launch fixes.</li>
+    </ul>
+  </article>
+</section>
+
+<section id="contact">
+  <span class="ghost" aria-hidden="true">05</span>
+  <p class="section-label">05 / Principles &amp; contact</p>
+  <div class="principles">
+    <div class="principle"><span class="num">01</span><h3>Start with the real problem</h3><p>One concrete constraint beats a framework for ten imaginary ones.</p></div>
+    <div class="principle"><span class="num">02</span><h3>Design the awkward paths</h3><p>Loading, errors, and recovery get the same care as the happy path.</p></div>
+    <div class="principle"><span class="num">03</span><h3>Make the next change easier</h3><p>Good names, visible decisions, useful automation. Gifts to whoever works here next.</p></div>
+  </div>
+  <h2 class="contact-h2 rise">Say<br><a href="mailto:julian@benitez.com.ar"><em>hola</em> →</a></h2>
+  <div class="foot">
+    <span>© 2026 Julián Benitez — Agala Labs</span>
+    <span><a href="https://github.com/elAgala">GitHub</a> / <a href="mailto:julian@benitez.com.ar">Email</a> / <a href="/resume">Résumé</a></span>
+    <span>Buenos Aires — UTC-3</span>
+  </div>
+</section>
+
+</body>
+</html>

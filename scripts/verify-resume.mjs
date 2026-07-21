@@ -5,7 +5,7 @@ import { resolve } from 'node:path'
 const pdf = resolve('public/julian-benitez-resume.pdf')
 
 if (!existsSync(pdf))
-  throw new Error('Résumé PDF is missing; run `npm run generate && npm run resume:pdf` first')
+  throw new Error('Resume PDF is missing; run `npm run generate && npm run resume:pdf` first')
 
 function run(command, args) {
   const result = spawnSync(command, args, { encoding: 'utf8' })
@@ -25,7 +25,7 @@ const requiredMetadata = [
 
 for (const [label, pattern] of requiredMetadata) {
   if (!pattern.test(metadata))
-    throw new Error(`Résumé verification failed: expected ${label}`)
+    throw new Error(`Resume verification failed: expected ${label}`)
 }
 
 const requiredClaims = [
@@ -39,10 +39,10 @@ const requiredClaims = [
 
 for (const claim of requiredClaims) {
   if (!text.includes(claim))
-    throw new Error(`Résumé verification failed: missing ${claim}`)
+    throw new Error(`Resume verification failed: missing ${claim}`)
 }
 
 if (text.toLowerCase().includes('github.com/agala-labs'))
-  throw new Error('Résumé verification failed: private organization link is public')
+  throw new Error('Resume verification failed: private organization link is public')
 
-console.log('Résumé verification passed: one tagged A4 page with leadership and Agala Labs evidence.')
+console.log('Resume verification passed: one tagged A4 page with leadership and Agala Labs evidence.')

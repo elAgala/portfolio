@@ -1,57 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#f2ebdd"/>
-  <g stroke="#d5ccbc" stroke-width="1">
-    <path d="M64 0v630M128 0v630M192 0v630M256 0v630M320 0v630M384 0v630M448 0v630M512 0v630M576 0v630M640 0v630M704 0v630M768 0v630M832 0v630M896 0v630M960 0v630M1024 0v630M1088 0v630M1152 0v630"/>
-  </g>
-  <rect x="38" y="34" width="46" height="46" fill="none" stroke="#111713" transform="rotate(-2 61 57)"/>
-  <text x="61" y="63" fill="#111713" font-family="monospace" font-size="16" text-anchor="middle">JB</text>
-  <text x="54" y="162" fill="#6b1f28" font-family="monospace" font-size="14" font-weight="700" letter-spacing="2">LEAD · PRODUCT · BACKEND · PLATFORM</text>
-  <text x="50" y="272" fill="#11110f" font-family="Inter Tight,Arial,sans-serif" font-size="82" font-weight="700" letter-spacing="-3">Built with</text>
-  <text x="50" y="350" fill="#11110f" font-family="Inter Tight,Arial,sans-serif" font-size="82" font-weight="700" letter-spacing="-3">intent.</text>
-  <text x="50" y="432" fill="#6b1f28" font-family="Inter Tight,Arial,sans-serif" font-size="76" font-weight="700" letter-spacing="-2">Made to endure.</text>
-  <text x="54" y="535" fill="#575148" font-family="Arial,sans-serif" font-size="19">Julián Benitez · Software Engineer / Tech Lead</text>
-  <text x="54" y="568" fill="#746d62" font-family="monospace" font-size="13" letter-spacing="1">LINUX · OSS · BUENOS AIRES</text>
-
-  <rect x="650" y="54" width="504" height="522" fill="#0b0f0d" stroke="#252c26"/>
-  <rect x="650" y="54" width="504" height="46" fill="#111713"/>
-  <circle cx="674" cy="77" r="5" fill="#596259"/>
-  <circle cx="692" cy="77" r="5" fill="#a57b3e"/>
-  <circle cx="710" cy="77" r="5" fill="#6b1f28"/>
-  <text x="902" y="82" fill="#b9b3a7" font-family="monospace" font-size="11" text-anchor="middle">~/julian/operator-desk</text>
-  <text x="1128" y="82" fill="#9bbf72" font-family="monospace" font-size="10" text-anchor="end">TRACE DELIVERY</text>
-
-  <path d="M702 418l345-78 76 47-346 84z" fill="#342017" stroke="#a57b3e" stroke-width="2"/>
-  <path d="M777 471v31M1084 398v31" stroke="#50301f" stroke-width="12"/>
-  <g fill="#0b0f0d" stroke="#39433b" stroke-width="2">
-    <path d="M773 208h191v146H773z"/>
-    <path d="M792 228h153v94H792z"/>
-    <path d="M845 354h48v31h-48z"/>
-    <path d="M817 383h104v14H817z"/>
-  </g>
-  <g fill="#9bbf72" font-family="monospace" font-size="10">
-    <text x="804" y="254">$ whoami</text>
-    <text x="804" y="276">julian / engineer</text>
-    <text x="804" y="298">trace_delivery --ready</text>
-  </g>
-  <path d="M785 407l119-25 57 27-119 28z" fill="#0b0f0d" stroke="#39433b"/>
-  <g fill="#39433b" stroke="#59655b">
-    <path d="M804 403l15-3 9 4-15 4z"/><path d="M828 398l15-3 9 4-15 4z"/><path d="M852 393l15-3 9 4-15 4z"/>
-    <path d="M817 414l15-3 9 4-15 4z"/><path d="M841 409l15-3 9 4-15 4z"/><path d="M865 404l15-3 9 4-15 4z"/>
-  </g>
-  <path d="M990 351l84-17 32 17-83 18z" fill="#0b0f0d" stroke="#a57b3e"/>
-  <path d="M1004 340l18-4 12 7-18 4z" fill="#6b1f28"/><path d="M1030 334l18-4 12 7-18 4z" fill="#39433b"/><path d="M1056 329l18-4 12 7-18 4z" fill="#39433b"/>
-  <path d="M1061 190h62v154h-62z" fill="#080b09" stroke="#39433b" stroke-width="2"/>
-  <path d="M1074 232h36M1074 249h36M1074 266h36M1074 283h36" stroke="#536158"/>
-  <circle cx="1081" cy="320" r="4" fill="#9bbf72"/><circle cx="1094" cy="320" r="4" fill="#9bbf72"/><circle cx="1107" cy="320" r="4" fill="#9bbf72"/>
-  <path d="M720 355v-150" stroke="#a57b3e" stroke-width="8"/><path d="M720 205l48-42" stroke="#a57b3e" stroke-width="8"/><path d="M746 150l44 39-72 26z" fill="#a57b3e"/>
-  <circle cx="745" cy="205" r="58" fill="#d0a455" opacity=".08"/>
-  <path d="M956 399c32-4 35-34 45-43M1076 350c10-2 17-9 18-18" fill="none" stroke="#d0a455" stroke-width="2"/>
-  <g fill="#9bbf72" font-family="monospace" font-size="10" letter-spacing="1">
-    <text x="681" y="139">01 / WORKSTATION</text>
-    <text x="974" y="386">02 / SERVICE BAY</text>
-    <text x="1052" y="173">03 / LINUX HOST</text>
-  </g>
-  <rect x="676" y="477" width="452" height="70" fill="#080b09" stroke="#303a32"/>
-  <text x="696" y="503" fill="#9bbf72" font-family="monospace" font-size="12">$ trace_delivery --ready</text>
-  <text x="696" y="528" fill="#a57b3e" font-family="monospace" font-size="11">source → services → linux</text>
+  <rect width="1200" height="630" fill="#0b0908"/>
+  <path d="M0 78h1200M0 552h1200" stroke="#3a2e22"/>
+  <text x="64" y="75" fill="#eee4d5" font-family="Arial,sans-serif" font-size="24" font-weight="800" letter-spacing="5">AGALA</text>
+  <text x="190" y="75" fill="#a89a8a" font-family="Arial,sans-serif" font-size="18">/ Julián Benitez</text>
+  <text x="64" y="236" fill="#eee4d5" font-family="Arial,sans-serif" font-size="86" font-weight="700" letter-spacing="-5">Julián Benitez</text>
+  <text x="67" y="305" fill="#ad8a54" font-family="Arial,sans-serif" font-size="25">Software Engineer · Tech Lead</text>
+  <text x="67" y="410" fill="#eee4d5" font-family="Arial,sans-serif" font-size="42" font-weight="700" letter-spacing="-2">Agala Labs</text>
+  <text x="67" y="456" fill="#a89a8a" font-family="Arial,sans-serif" font-size="20">Products, shared architecture, self-hosted delivery</text>
+  <text x="67" y="505" fill="#a89a8a" font-family="Arial,sans-serif" font-size="20">Agentic workflows, tools, and product AI</text>
+  <rect x="918" y="184" width="190" height="190" fill="#761f24"/>
+  <text x="1013" y="300" fill="#eee4d5" font-family="Arial,sans-serif" font-size="78" font-weight="800" text-anchor="middle">A</text>
 </svg>

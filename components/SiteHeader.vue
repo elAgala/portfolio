@@ -1,19 +1,9 @@
 <script setup lang="ts">
-const props = defineProps<{
-  light?: boolean
-  workbench?: boolean
-}>()
-
 const route = useRoute()
 const menuOpen = ref(false)
-const scrolled = ref(false)
 
 function closeMenu() {
   menuOpen.value = false
-}
-
-function handleScroll() {
-  scrolled.value = window.scrollY > 24
 }
 
 function handleKeydown(event: KeyboardEvent) {
@@ -24,27 +14,19 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 watch(() => route.fullPath, closeMenu)
-watch(menuOpen, (isOpen) => {
-  document.body.classList.toggle('menu-open', isOpen)
-})
+watch(menuOpen, open => document.body.classList.toggle('menu-open', open))
 
-onMounted(() => {
-  handleScroll()
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  window.addEventListener('keydown', handleKeydown)
-})
-
+onMounted(() => window.addEventListener('keydown', handleKeydown))
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('keydown', handleKeydown)
   document.body.classList.remove('menu-open')
 })
 </script>
 
 <template>
-  <header class="site-header" :class="{ 'site-header--light': light, 'site-header--scrolled': scrolled, 'site-header--menu-open': menuOpen, 'site-header--workbench': props.workbench }">
-    <NuxtLink class="site-mark" to="/" aria-label="Julián Benitez, home">
-      <span aria-hidden="true">JB</span>
+  <header class="site-header">
+    <NuxtLink class="site-mark" to="/" aria-label="Agala, Julián Benitez, home">
+      Agala
     </NuxtLink>
 
     <button
@@ -52,19 +34,17 @@ onBeforeUnmount(() => {
       type="button"
       :aria-expanded="menuOpen"
       aria-controls="primary-navigation"
-      aria-label="Toggle primary navigation"
       @click="menuOpen = !menuOpen"
     >
-      <span>{{ menuOpen ? 'Close' : 'Menu' }}</span>
+      {{ menuOpen ? 'close' : 'menu' }}
     </button>
 
     <nav id="primary-navigation" class="site-nav" :class="{ 'site-nav--open': menuOpen }" aria-label="Primary navigation">
-      <NuxtLink to="/#experience" @click="closeMenu">Experience</NuxtLink>
-      <NuxtLink to="/#work" @click="closeMenu">Work</NuxtLink>
-      <NuxtLink to="/#profile" @click="closeMenu">About</NuxtLink>
-      <NuxtLink class="site-nav__resume" to="/resume" @click="closeMenu">Résumé <span aria-hidden="true">↗</span></NuxtLink>
-      <a v-if="props.workbench" href="https://github.com/elAgala" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
-      <NuxtLink v-else to="/#contact" @click="closeMenu">Contact</NuxtLink>
+      <a href="https://agala.com.ar" target="_blank" rel="noreferrer" @click="closeMenu">Agala Labs ↗</a>
+      <a href="/#work" @click="closeMenu">Public work</a>
+      <a href="/#career" @click="closeMenu">Experience</a>
+      <a href="/#contact" @click="closeMenu">Contact</a>
+      <NuxtLink class="site-nav__resume" to="/resume" @click="closeMenu">Resume</NuxtLink>
     </nav>
   </header>
 </template>

@@ -71,7 +71,7 @@ async function main() {
   if (exitCode !== 0) throw new Error(`Chrome exited with code ${exitCode}`)
 
   await copyFile(publicPdf, outputPdf)
-  console.log(`Résumé PDF written to ${publicPdf}`)
+  console.log(`Resume PDF written to ${publicPdf}`)
 }
 
 main().catch((error) => {

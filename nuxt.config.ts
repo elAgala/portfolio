@@ -4,17 +4,15 @@ export default defineNuxtConfig({
   modules: ['@nuxt/eslint'],
   css: [
     '@fontsource-variable/inter-tight/wght.css',
-    '@fontsource-variable/manrope/wght.css',
     '@fontsource-variable/jetbrains-mono/wght.css',
     '~/assets/css/main.css',
-    '~/assets/css/portfolio.css',
   ],
   app: {
     head: {
       htmlAttrs: { lang: 'en' },
       meta: [
-        { name: 'theme-color', content: '#f2ebdd' },
-        { name: 'color-scheme', content: 'light' },
+        { name: 'theme-color', content: '#0b0908' },
+        { name: 'color-scheme', content: 'dark' },
       ],
       link: [
         { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
@@ -30,7 +28,7 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: true,
-      routes: ['/', '/resume', '/work/agala-ui', '/work/agala-deploy', '/work/agala-ai', '/work/agala-setup'],
+      routes: ['/', '/resume'],
     },
   },
   routeRules: {
@@ -43,9 +41,6 @@ export default defineNuxtConfig({
     build: {
       chunkSizeWarningLimit: 550,
       modulePreload: false,
-    },
-    optimizeDeps: {
-      include: ['three'],
     },
   },
 })

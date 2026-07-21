@@ -4,12 +4,12 @@ const config = useRuntimeConfig()
 const canonicalUrl = computed(() => `${config.public.siteUrl}${route.path}`)
 
 useHead({
-  titleTemplate: (title) => title ? `${title} — Julián Benitez` : 'Julián Benitez — Software Engineer / Tech Lead',
+  titleTemplate: (title) => title ? `${title} — Agala / Julián Benitez` : 'Agala / Julián Benitez — Software Engineer / Tech Lead',
   link: [{ rel: 'canonical', href: canonicalUrl }],
 })
 
 useSeoMeta({
-  ogSiteName: 'Julián Benitez',
+  ogSiteName: 'Agala / Julián Benitez',
   ogType: 'website',
   ogImage: () => `${config.public.siteUrl}/og-image.png`,
   ogUrl: canonicalUrl,
