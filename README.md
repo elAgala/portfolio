@@ -5,8 +5,8 @@ A Nuxt portfolio for Julián “Agala” Benitez. The homepage presents Agala La
 ## Experience
 
 - **Agala Labs:** a flagship editorial chapter for Smaltt and Kervo, followed by the shared product platform and delivery architecture Julián builds and operates.
-- **Agentic engineering:** concrete coverage of the Codex, Claude Code, and OpenCode workflow, Agala AI agents and skills, Context MCP, and AI features built into the products.
-- **Public work:** three source-linked projects presented as straightforward evidence rather than faux case-study cards.
+- **Agentic engineering:** concrete coverage of the Codex, Claude Code, and OpenCode workflow, Context MCP, and AI features built into the products.
+- **Public work:** two source-linked projects presented as straightforward evidence rather than faux case-study cards.
 - **Accessible by default:** semantic sections, visible headings, keyboard navigation, responsive layouts, and reduced-motion handling.
 - **Formal resume:** `/resume` is intentionally restrained, photo-free, print-safe, and available as a generated PDF.
 

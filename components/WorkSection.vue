@@ -8,7 +8,7 @@ defineProps<{ projects: Project[] }>()
   <section id="work" class="section" aria-labelledby="work-heading">
     <div class="section-heading">
       <h2 id="work-heading">Public work</h2>
-      <p>Agala UI, Agala AI and Agala Setup are public tools I maintain and use in my own work.</p>
+      <p>Agala UI and Agala Setup are public tools I maintain and use in my own work.</p>
     </div>
 
     <div class="work-list">

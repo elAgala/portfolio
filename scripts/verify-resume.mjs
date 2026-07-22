@@ -16,6 +16,7 @@ function run(command, args) {
 
 const metadata = run('pdfinfo', [pdf])
 const text = run('pdftotext', ['-layout', pdf, '-'])
+const normalizedText = text.replace(/\s+/g, ' ')
 
 const requiredMetadata = [
   ['one page', /Pages:\s+1\b/],
@@ -29,16 +30,19 @@ for (const [label, pattern] of requiredMetadata) {
 }
 
 const requiredClaims = [
-  'Software Engineer / Tech Lead',
+  'Technical Lead / Software Engineer',
+  'multidisciplinary product teams across Argentina and Europe',
   'Frontend Guild',
+  'shared design-system library',
   'technical interviews',
   'Agala Labs',
   'Next.js',
   'OpenTofu',
+  'Cambridge English B2',
 ]
 
 for (const claim of requiredClaims) {
-  if (!text.includes(claim))
+  if (!normalizedText.includes(claim))
     throw new Error(`Resume verification failed: missing ${claim}`)
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { careerEntries } from '~/data/career'
+import { careerEntries, experienceSignals } from '~/data/career'
 import { agalaLabs } from '~/data/lab'
 import { profile as person } from '~/data/profile'
 import { projects } from '~/data/projects'
@@ -40,7 +40,7 @@ useHead({
       <HeroTerminal :person="person" />
       <AgalaLabsSection :story="agalaLabs" />
       <WorkSection :projects="projects" />
-      <CareerSection :entries="careerEntries" />
+      <CareerSection :entries="careerEntries" :signals="experienceSignals" />
       <ContactSection :person="person" />
     </main>
 

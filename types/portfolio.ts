@@ -53,6 +53,11 @@ export interface CareerLayer {
   tools: string[]
 }
 
+export interface ExperienceSignal {
+  title: string
+  detail: string
+}
+
 export interface CareerEntry {
   dates: string
   role: string
@@ -60,8 +65,6 @@ export interface CareerEntry {
   location?: string
   summary: string
   bullets: string[]
-  portfolioSummary: string
-  portfolioBullets: string[]
   stack: string[]
   layers?: CareerLayer[]
 }

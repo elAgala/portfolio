@@ -6,7 +6,7 @@ export const profile = {
   organizationUrl: 'https://agala.com.ar',
   name: 'Julián Benitez',
   initials: 'A',
-  title: 'Software Engineer / Tech Lead',
+  title: 'Technical Lead / Software Engineer',
   location: 'Buenos Aires, Argentina',
   availability: 'Open to the right engineering challenge',
   email: 'julian@benitez.com.ar',
