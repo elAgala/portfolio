@@ -30,7 +30,6 @@ function printResume() {
     <main class="resume-sheet">
       <header class="resume-header">
         <div>
-          <p class="resume-brand">AGALA / {{ person.name }}</p>
           <h1>{{ person.name }}</h1>
           <p>{{ person.title }}</p>
         </div>
@@ -80,7 +79,7 @@ function printResume() {
             </div>
           </dl>
           <h2 class="resume-languages-title">Languages</h2>
-          <p class="resume-languages">{{ details.languages.map(item => `${item.language} — ${item.level}`).join(' · ') }}</p>
+          <p class="resume-languages">{{ details.languages.map(item => `${item.language}: ${item.level}`).join(' · ') }}</p>
         </div>
       </section>
     </main>

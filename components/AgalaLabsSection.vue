@@ -35,8 +35,8 @@ defineProps<{ story: AgalaLabsStory }>()
 
     <div class="architecture" aria-labelledby="architecture-heading">
       <div class="architecture__heading">
-        <h3 id="architecture-heading">How Agala Labs is built</h3>
-        <p>The shared architecture I use to build, deploy and operate Agala Labs products.</p>
+        <h3 id="architecture-heading">The Agala Labs stack</h3>
+        <p>The applications, services, data and self-hosted infrastructure behind Agala Labs products.</p>
       </div>
       <ol class="architecture__layers">
         <li v-for="layer in story.architecture" :key="layer.title">

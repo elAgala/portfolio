@@ -8,7 +8,7 @@ defineProps<{ entries: CareerEntry[] }>()
   <section id="career" class="section" aria-labelledby="career-heading">
     <div class="section-heading">
       <h2 id="career-heading">Experience</h2>
-      <p>I lead distributed product teams at AlixPartners and build Agala Labs products and platform.</p>
+      <p>I lead engineering at AlixPartners and own the products and platform at Agala Labs.</p>
     </div>
 
     <div class="experience-list">

@@ -44,13 +44,13 @@ describe('Agala portfolio content', () => {
     expect(agalaLabs.url).toBe('https://agala.com.ar')
     expect(agalaLabs.products).toBe(productProofs)
     expect(agalaLabs.architecture.map(layer => layer.title)).toEqual([
-      'Agala Labs products',
-      'Shared application platform',
-      'Self-hosted delivery',
+      'Product applications',
+      'Services and data',
+      'Infrastructure and delivery',
     ])
     expect(agalaLabs.agenticWork.map(area => area.title)).toEqual([
       'Delivery workflow',
-      'Agent tooling',
+      'Noema',
       'AI in Agala Labs products',
     ])
     expect(agalaLabs.agenticWork.flatMap(area => area.tools)).toEqual(expect.arrayContaining([
@@ -86,6 +86,7 @@ describe('Agala portfolio content', () => {
     expect(careerEntries.every(entry => entry.portfolioBullets.length > 0)).toBe(true)
     expect(profile.email).toBe('julian@benitez.com.ar')
     expect(resume.languages.map(item => item.language)).toEqual(['Spanish', 'English'])
+    expect(resume.skillGroups.find(group => group.label === 'Backend & data')?.skills).toContain('Go')
   })
 
   it('contains no decorative status theater or presence signals', () => {

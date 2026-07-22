@@ -53,6 +53,9 @@ onBeforeUnmount(() => clearTimeout(timer))
         </div>
       </div>
     </div>
+    <figure class="hero-portrait">
+      <img :src="person.avatar" :alt="`Portrait of ${person.name}`" width="360" height="360">
+    </figure>
     <p class="hero-meta">{{ person.availability }}. Buenos Aires · UTC−3.</p>
   </section>
 </template>
