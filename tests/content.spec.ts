@@ -13,7 +13,8 @@ describe('Agala portfolio content', () => {
     expect(profile.organization).toBe('Agala Labs')
     expect(profile.organizationUrl).toBe('https://agala.com.ar')
     expect(profile.name).toBe('Julián Benitez')
-    expect(profile.manifesto).toContain('Agala is the name people know me by')
+    expect(profile.manifesto).toContain('I lead distributed product teams at AlixPartners')
+    expect(profile.manifesto).not.toContain('people know me by')
     expect(profile.avatar).toBe('/images/julian-avatar.webp')
     expect(productProofs.map(product => product.name)).toEqual(['Smaltt', 'Kervo'])
     expect(productProofs.map(product => product.href)).toEqual([

@@ -39,23 +39,24 @@ onBeforeUnmount(() => clearTimeout(timer))
       <div class="term-body">
         <p class="term-cmd" aria-hidden="true"><b>$</b> <span>{{ typedCommand }}</span><span class="term-cmd-caret" /></p>
         <div class="term-output">
-          <h1 id="hero-heading" class="term-title">
-            {{ person.name }}<span class="term-cursor" aria-hidden="true" />
-          </h1>
-          <p class="term-role">{{ person.title }} <span>·</span> {{ person.location }}</p>
-          <p class="term-manifesto">{{ person.manifesto }}</p>
-          <div class="term-links">
-            <a href="https://github.com/elAgala" target="_blank" rel="noreferrer">GitHub ↗</a>
-            <a :href="person.organizationUrl" target="_blank" rel="noreferrer">Agala Labs ↗</a>
-            <a :href="`mailto:${person.email}`">Email</a>
-            <NuxtLink to="/resume">Resume</NuxtLink>
+          <div class="term-copy">
+            <h1 id="hero-heading" class="term-title">
+              {{ person.name }}<span class="term-cursor" aria-hidden="true" />
+            </h1>
+            <p class="term-role"><span>{{ person.brand }}</span> · {{ person.title }} <span>·</span> {{ person.location }}</p>
+            <p class="term-manifesto">{{ person.manifesto }}</p>
+            <div class="term-links">
+              <a href="https://github.com/elAgala" target="_blank" rel="noreferrer">GitHub ↗</a>
+              <a :href="person.organizationUrl" target="_blank" rel="noreferrer">Agala Labs ↗</a>
+              <a :href="`mailto:${person.email}`">Email</a>
+              <NuxtLink to="/resume">Resume</NuxtLink>
+            </div>
           </div>
+          <figure class="hero-portrait">
+            <img :src="person.avatar" :alt="`Portrait of ${person.name}`" width="360" height="360">
+          </figure>
         </div>
       </div>
     </div>
-    <figure class="hero-portrait">
-      <img :src="person.avatar" :alt="`Portrait of ${person.name}`" width="360" height="360">
-    </figure>
-    <p class="hero-meta">{{ person.availability }}. Buenos Aires · UTC−3.</p>
   </section>
 </template>

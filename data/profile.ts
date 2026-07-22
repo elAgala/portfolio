@@ -12,7 +12,7 @@ export const profile = {
   email: 'julian@benitez.com.ar',
   website: 'julian.benitez.ar',
   summary: 'Software engineer and tech lead in Buenos Aires. I lead distributed product teams at AlixPartners and run Agala Labs, where I design and operate Smaltt, Kervo and the shared platform behind them.',
-  manifesto: 'Agala is the name people know me by. I lead distributed product teams at AlixPartners and run Agala Labs, where I design and operate Smaltt, Kervo and the shared platform behind them.',
+  manifesto: 'I lead distributed product teams at AlixPartners. At Agala Labs, I design and operate Smaltt, Kervo and the platform they share.',
   avatar: '/images/julian-avatar.webp',
   links: [
     { label: 'GitHub', url: 'https://github.com/elAgala' },
