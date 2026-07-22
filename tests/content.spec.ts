@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { careerEntries } from '../data/career'
@@ -14,6 +14,7 @@ describe('Agala portfolio content', () => {
     expect(profile.organizationUrl).toBe('https://agala.com.ar')
     expect(profile.name).toBe('Julián Benitez')
     expect(profile.manifesto).toContain('Agala is the name people know me by')
+    expect(profile.avatar).toBe('/images/julian-avatar.webp')
     expect(productProofs.map(product => product.name)).toEqual(['Smaltt', 'Kervo'])
     expect(productProofs.map(product => product.href)).toEqual([
       'https://smaltt.agala.com.ar',
@@ -43,14 +44,14 @@ describe('Agala portfolio content', () => {
     expect(agalaLabs.url).toBe('https://agala.com.ar')
     expect(agalaLabs.products).toBe(productProofs)
     expect(agalaLabs.architecture.map(layer => layer.title)).toEqual([
-      'Products',
-      'Shared product platform',
+      'Agala Labs products',
+      'Shared application platform',
       'Self-hosted delivery',
     ])
     expect(agalaLabs.agenticWork.map(area => area.title)).toEqual([
-      'How I work with agents',
-      'The tooling I built',
-      'AI inside products',
+      'Delivery workflow',
+      'Agent tooling',
+      'AI in Agala Labs products',
     ])
     expect(agalaLabs.agenticWork.flatMap(area => area.tools)).toEqual(expect.arrayContaining([
       'Codex',
@@ -63,6 +64,20 @@ describe('Agala portfolio content', () => {
     const publicContent = JSON.stringify({ agalaLabs, profile, projects }).toLowerCase()
     expect(publicContent).not.toContain('github.com/agala-labs')
     expect(publicContent).not.toMatch(/customer count|revenue|active users|10\.10\.|(?:dev|ci|monitoring|vault|mcp)\.agala\.com\.ar/)
+    expect(publicContent).not.toMatch(/both products|same self-hosted platform/)
+  })
+
+  it('uses the portrait identity in navigation and browser icons', () => {
+    expect(existsSync(resolve('public/images/julian-avatar.webp'))).toBe(true)
+    expect(existsSync(resolve('public/favicon.png'))).toBe(true)
+    expect(existsSync(resolve('public/apple-touch-icon.png'))).toBe(true)
+
+    const header = readFileSync(resolve('components/SiteHeader.vue'), 'utf8')
+    const config = readFileSync(resolve('nuxt.config.ts'), 'utf8')
+    expect(header).toContain(':src="person.avatar"')
+    expect(header).toContain('site-mark__avatar')
+    expect(config).toContain("href: '/favicon.png'")
+    expect(config).toContain("href: '/apple-touch-icon.png'")
   })
 
   it('uses one career record for the portfolio and resume', () => {

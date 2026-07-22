@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type { Profile } from '~/types/portfolio'
+
+defineProps<{ person: Pick<Profile, 'avatar' | 'brand' | 'name'> }>()
+
 const route = useRoute()
 const menuOpen = ref(false)
 
@@ -25,8 +29,9 @@ onBeforeUnmount(() => {
 
 <template>
   <header class="site-header">
-    <NuxtLink class="site-mark" to="/" aria-label="Agala, Julián Benitez, home">
-      Agala
+    <NuxtLink class="site-mark" to="/" :aria-label="`${person.brand}, ${person.name}, home`">
+      <img class="site-mark__avatar" :src="person.avatar" alt="" width="32" height="32">
+      <span>{{ person.brand }}</span>
     </NuxtLink>
 
     <button

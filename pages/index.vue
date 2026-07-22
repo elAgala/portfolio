@@ -34,7 +34,7 @@ useHead({
 <template>
   <div class="agala-page">
     <a class="skip-link" href="#main-content">Skip to the portfolio</a>
-    <SiteHeader />
+    <SiteHeader :person="person" />
 
     <main id="main-content">
       <HeroTerminal :person="person" />

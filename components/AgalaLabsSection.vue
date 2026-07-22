@@ -8,7 +8,7 @@ defineProps<{ story: AgalaLabsStory }>()
   <section id="labs" class="section labs" aria-labelledby="labs-heading">
     <div class="labs-intro">
       <div>
-        <p class="section-context">My software factory</p>
+        <p class="section-context">Independent software factory</p>
         <h2 id="labs-heading">{{ story.name }}</h2>
       </div>
       <div class="labs-intro__copy">
@@ -35,8 +35,8 @@ defineProps<{ story: AgalaLabsStory }>()
 
     <div class="architecture" aria-labelledby="architecture-heading">
       <div class="architecture__heading">
-        <h3 id="architecture-heading">The system behind the products</h3>
-        <p>A public view of the real layers I build and operate across both products.</p>
+        <h3 id="architecture-heading">How Agala Labs is built</h3>
+        <p>The shared architecture I use to build, deploy and operate Agala Labs products.</p>
       </div>
       <ol class="architecture__layers">
         <li v-for="layer in story.architecture" :key="layer.title">
@@ -53,8 +53,8 @@ defineProps<{ story: AgalaLabsStory }>()
 
     <div class="agentic" aria-labelledby="agentic-heading">
       <div class="agentic__heading">
-        <p class="section-context">AI and agentic engineering</p>
-        <h3 id="agentic-heading">How I use agents, and what I built with them</h3>
+        <p class="section-context">Agentic engineering at Agala Labs</p>
+        <h3 id="agentic-heading">How I work with coding agents</h3>
       </div>
       <div class="agentic__list">
         <article v-for="area in story.agenticWork" :key="area.title">
