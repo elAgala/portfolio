@@ -5,8 +5,8 @@ export const resume = {
   summary: 'Hands-on software engineer and technical lead spanning product interfaces, backend services, and production infrastructure. Leads multidisciplinary teams across Argentina and Europe and improves engineering quality through architecture, shared standards, automation, and mentoring.',
   experience: careerEntries,
   education: [
-    { dates: '2022–Present', degree: 'B.S. Computer Engineering — In progress', institution: 'UADE, Universidad Argentina de la Empresa' },
-    { dates: '2019–2021', degree: 'Computer Engineering coursework', institution: 'UBA, Universidad de Buenos Aires', detail: 'Five semesters' },
+    { dates: '2022–Present', degree: 'B.S. Computer Engineering', institution: 'UADE, Universidad Argentina de la Empresa' },
+    { dates: '2019–2021', degree: 'B.S. Computer Engineering', institution: 'UBA, Universidad de Buenos Aires', detail: 'Five semesters completed' },
   ],
   skillGroups: [
     { label: 'Frontend', skills: ['TypeScript', 'React', 'Next.js', 'Vue', 'Nuxt', 'Flutter'] },

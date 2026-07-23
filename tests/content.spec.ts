@@ -102,9 +102,10 @@ describe('Agala portfolio content', () => {
     expect(resume.experience[0]?.bullets[0]).toContain('multidisciplinary product teams across Argentina and Europe')
     expect(resume.experience[0]?.bullets[2]).toContain('shared design-system library')
     expect(resume.education.map(item => item.degree)).toEqual([
-      'B.S. Computer Engineering — In progress',
-      'Computer Engineering coursework',
+      'B.S. Computer Engineering',
+      'B.S. Computer Engineering',
     ])
+    expect(resume.education[1]?.detail).toBe('Five semesters completed')
     expect(resume.skillGroups.find(group => group.label === 'Backend & Data')?.skills).toContain('Go')
     expect(resume.skillGroups.find(group => group.label === 'Platform & Delivery')?.skills).toContain('OpenTofu')
     expect(resume.languages.find(item => item.language === 'English')?.level).toContain('Cambridge English B2')
