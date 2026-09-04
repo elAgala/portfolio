@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import resumeStyles from '~/assets/css/main.css?inline'
+
 const route = useRoute()
 const config = useRuntimeConfig()
 const canonicalUrl = computed(() => `${config.public.siteUrl}${route.path}`)
 
 useHead({
+  style: computed(() => route.path === '/resume' ? [{ key: 'resume-design', innerHTML: resumeStyles }] : []),
   titleTemplate: (title) => title ? `${title} — Agala / Julián Benitez` : 'Agala / Julián Benitez — Software Engineer / Tech Lead',
   link: [{ rel: 'canonical', href: canonicalUrl }],
 })

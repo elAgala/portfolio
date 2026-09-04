@@ -9,11 +9,16 @@ const heroRef = ref<HTMLElement | null>(null)
 let timer: ReturnType<typeof setTimeout> | undefined
 
 onMounted(() => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-    return
-
   const hero = heroRef.value
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    typedCommand.value = command
+    hero?.classList.remove('is-pending')
+    return
+  }
+
   hero?.classList.add('is-typing')
+  hero?.classList.remove('is-pending')
   typedCommand.value = ''
 
   let index = 0
@@ -34,7 +39,7 @@ onBeforeUnmount(() => clearTimeout(timer))
 </script>
 
 <template>
-  <section ref="heroRef" class="hero" aria-labelledby="hero-heading">
+  <section ref="heroRef" class="hero is-pending" aria-labelledby="hero-heading">
     <div class="term">
       <div class="term-body">
         <p class="term-cmd" aria-hidden="true"><b>$</b> <span>{{ typedCommand }}</span><span class="term-cmd-caret" /></p>

@@ -1,12 +1,12 @@
 # Agala / Julián Benitez — Portfolio
 
-A Nuxt portfolio for Julián “Agala” Benitez. The homepage presents Agala Labs as his software factory and documents the products, shared architecture, self-hosted delivery platform, agentic workflows, and public engineering work behind it.
+A Nuxt portfolio for Julián “Agala” Benitez. The homepage reproduces the Portfolio project in OpenDesign: identity, working approach, AI workflow, Agala Labs architecture, and contact.
 
 ## Experience
 
-- **Agala Labs:** a flagship editorial chapter for Smaltt and Kervo, followed by the shared product platform and delivery architecture Julián builds and operates.
-- **Agentic engineering:** concrete coverage of the Codex, Claude Code, and OpenCode workflow, Context MCP, and AI features built into the products.
-- **Public work:** two source-linked projects presented as straightforward evidence rather than faux case-study cards.
+- **Original design:** Archivo and JetBrains Mono, the original portrait, responsive composition, and the typing/correction introduction.
+- **Agala Labs:** the original architecture chapter covering applications, shared services, data, infrastructure, and delivery.
+- **SoundCloud:** Audio Junkies — “Aspects Of Rhythm” (3:02), Sako Isoyan — “Wow” (2:55), and Breezy S — “UFO On A Limousine” (3:28). Playback begins on interaction; switching tracks reapplies the selected offset, while pause/resume retains the current position.
 - **Accessible by default:** semantic sections, visible headings, keyboard navigation, responsive layouts, and reduced-motion handling.
 - **Formal resume:** `/resume` is intentionally restrained, photo-free, print-safe, and available as a generated PDF.
 
@@ -25,10 +25,14 @@ The development server uses `http://127.0.0.1:43177` by default—never port 300
 
 Typed content lives in `data/`:
 
+The imported homepage lives in `components/PortfolioDesign.vue`, with its original styles in `assets/css/portfolio.css`, local assets in `public/portfolio/`, and lifecycle-managed interactions in `utils/portfolio.js`. Homepage and résumé styles are loaded separately to preserve the formal résumé layout. SoundCloud requires network access; errors expose the original track link as a fallback.
+
+The Breezy S track uses the BELTERS 4U release premiere on SoundCloud. During verification, the artist upload returned HTTP 404 from both stream endpoints; the premiere played the same 6:32 recording from 3:28.
+
 - `profile.ts` — identity, contact information, and positioning
 - `lab.ts` — Agala Labs products, architecture, tooling, and agentic work
 - `projects.ts` — public open-source projects and supporting narratives
-- `career.ts` — the shared career record used by the homepage and resume
+- `career.ts` — the career record used by the resume
 - `resume.ts` — experience, education, skills, and languages
 
 The formal resume is the only secondary route.

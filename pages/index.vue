@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { careerEntries, experienceSignals } from '~/data/career'
-import { agalaLabs } from '~/data/lab'
 import { profile as person } from '~/data/profile'
-import { projects } from '~/data/projects'
 
 useSeoMeta({
-  title: 'Agala / Software Engineer & Tech Lead',
+  title: 'Julián Benitez | Technical Lead & Software Engineer',
   description: person.summary,
   ogTitle: 'Agala / Julián Benitez — Software Engineer & Tech Lead',
   ogDescription: person.summary,
 })
 
 useHead({
-  bodyAttrs: { class: 'agala-body' },
+  titleTemplate: null,
+  bodyAttrs: { class: 'portfolio-body' },
   script: [{
     type: 'application/ld+json',
     innerHTML: JSON.stringify({
@@ -32,18 +30,5 @@ useHead({
 </script>
 
 <template>
-  <div class="agala-page">
-    <a class="skip-link" href="#main-content">Skip to the portfolio</a>
-    <SiteHeader :person="person" />
-
-    <main id="main-content">
-      <HeroTerminal :person="person" />
-      <AgalaLabsSection :story="agalaLabs" />
-      <WorkSection :projects="projects" />
-      <CareerSection :entries="careerEntries" :signals="experienceSignals" />
-      <ContactSection :person="person" />
-    </main>
-
-    <SiteFooter />
-  </div>
+  <PortfolioDesign />
 </template>

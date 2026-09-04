@@ -5,7 +5,6 @@ export default defineNuxtConfig({
   css: [
     '@fontsource-variable/inter-tight/wght.css',
     '@fontsource-variable/jetbrains-mono/wght.css',
-    '~/assets/css/main.css',
   ],
   app: {
     head: {
@@ -15,8 +14,11 @@ export default defineNuxtConfig({
         { name: 'color-scheme', content: 'dark' },
       ],
       link: [
-        { rel: 'icon', href: '/favicon.png', type: 'image/png', sizes: '64x64' },
-        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' },
+        { rel: 'icon', href: '/favicon.png?v=opendesign', type: 'image/png', sizes: '64x64' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png?v=opendesign', sizes: '180x180' },
+      ],
+      script: [
+        { innerHTML: "document.documentElement.classList.add('js')" },
       ],
     },
     pageTransition: { name: 'page', mode: 'out-in' },

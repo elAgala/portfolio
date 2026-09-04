@@ -82,8 +82,8 @@ describe('Agala portfolio content', () => {
     const config = readFileSync(resolve('nuxt.config.ts'), 'utf8')
     expect(header).toContain(':src="person.avatar"')
     expect(header).toContain('site-mark__avatar')
-    expect(config).toContain("href: '/favicon.png'")
-    expect(config).toContain("href: '/apple-touch-icon.png'")
+    expect(config).toContain("href: '/favicon.png?v=opendesign'")
+    expect(config).toContain("href: '/apple-touch-icon.png?v=opendesign'")
   })
 
   it('uses one career record for the portfolio and resume', () => {
@@ -109,6 +109,34 @@ describe('Agala portfolio content', () => {
     expect(resume.skillGroups.find(group => group.label === 'Backend & Data')?.skills).toContain('Go')
     expect(resume.skillGroups.find(group => group.label === 'Platform & Delivery')?.skills).toContain('OpenTofu')
     expect(resume.languages.find(item => item.language === 'English')?.level).toContain('Cambridge English B2')
+  })
+
+  it('uses the OpenDesign homepage and retains complete career records', () => {
+    const homepage = readFileSync(resolve('pages/index.vue'), 'utf8')
+    const career = readFileSync(resolve('components/CareerSection.vue'), 'utf8')
+    const labs = readFileSync(resolve('components/AgalaLabsSection.vue'), 'utf8')
+
+    expect(homepage).toContain('<PortfolioDesign />')
+    const design = readFileSync(resolve('components/PortfolioDesign.vue'), 'utf8')
+    expect(design).toContain('I lead by building.')
+    expect(design).toContain('href="/resume"')
+    expect(design.indexOf('id="identity"')).toBeLessThan(design.indexOf('id="systems"'))
+    expect(career).toContain('entry.bullets')
+    expect(career).toContain('entry.stack')
+    expect(careerEntries[0]?.stack).toEqual(expect.arrayContaining(['React', 'Next.js', 'Vue']))
+    expect(labs).not.toContain('story.architecture')
+    expect(labs).not.toContain('story.agenticWork')
+  })
+
+  it('ships the hero hidden before client-side animation starts', () => {
+    const hero = readFileSync(resolve('components/PortfolioDesign.vue'), 'utf8')
+    const styles = readFileSync(resolve('assets/css/portfolio.css'), 'utf8')
+    const runtime = readFileSync(resolve('utils/portfolio.js'), 'utf8')
+
+    expect(hero).toContain("document.documentElement.classList.add('booting')")
+    expect(hero).toContain('prefers-reduced-motion: reduce')
+    expect(styles).toContain('html.booting .hero > .hero-main')
+    expect(runtime).toContain('onComplete')
   })
 
   it('contains no decorative status theater or presence signals', () => {

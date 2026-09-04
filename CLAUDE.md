@@ -4,20 +4,23 @@ Guidance for working in this repo (Julián Benitez / Agala's personal portfolio,
 
 ## Current design
 
-Single-page editorial portfolio plus the frozen `/resume`. The homepage starts
-with one restrained terminal interaction, then leaves the terminal metaphor
-behind. Agala Labs is the flagship chapter, with product screenshots, a real
-architecture breakdown, agentic engineering work, public repositories, and
-experience. There are no `/work/[slug]` routes.
+Single-page editorial portfolio imported from the user-approved OpenDesign
+Portfolio project, plus the frozen `/resume`. Preserve the original composition,
+copy, Archivo typography, portrait and responsive rules. There are no
+`/work/[slug]` routes.
 
-- Components: `SiteHeader`, `HeroTerminal`, `AgalaLabsSection`, `WorkSection`,
-  `CareerSection`, `ContactSection`, and `SiteFooter`.
-- Motion: the hero types the real `whoami` command once. Product screenshots
-  have a small hover scale. Reduced-motion visitors receive the content
-  immediately.
+- Homepage: `PortfolioDesign.vue`, `assets/css/portfolio.css`, and
+  `utils/portfolio.js`. Original assets live in `public/portfolio/`. Existing
+  standalone section components are not used by this homepage.
+- Motion: the hero types and corrects `whoami` once. Reduced-motion visitors
+  receive the content immediately.
+- Audio: SoundCloud playlist with offsets 3:02, 2:55, and 3:28. Apply offsets
+  when playback is requested, never on initial widget readiness. Pause/resume
+  retains position. The Breezy S artist upload has broken streams, so use the
+  verified BELTERS 4U premiere of the same recording.
 - Brand semantics: “Agala” is Julián's nickname and personal mark. “Agala Labs”
   is his software factory and links to `https://agala.com.ar`.
-- Content order: identity → Agala Labs → public work → experience → contact.
+- Content order: identity → working approach → AI workflow → Agala Labs → contact.
 - No status theater: never show availability with dots, pulses, badges, or words
   like ONLINE/OPERATIONAL/READY. Plain sentences only — enforced by
   `tests/content.spec.ts` and the `design-with-intent` skill.

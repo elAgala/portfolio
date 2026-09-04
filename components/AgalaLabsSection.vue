@@ -33,36 +33,5 @@ defineProps<{ story: AgalaLabsStory }>()
       </article>
     </div>
 
-    <div class="architecture" aria-labelledby="architecture-heading">
-      <div class="architecture__heading">
-        <h3 id="architecture-heading">The Agala Labs stack</h3>
-        <p>The applications, services, data and self-hosted infrastructure behind Agala Labs products.</p>
-      </div>
-      <ol class="architecture__layers">
-        <li v-for="layer in story.architecture" :key="layer.title">
-          <div>
-            <h4>{{ layer.title }}</h4>
-            <p>{{ layer.description }}</p>
-          </div>
-          <ul>
-            <li v-for="item in layer.items" :key="item">{{ item }}</li>
-          </ul>
-        </li>
-      </ol>
-    </div>
-
-    <div class="agentic" aria-labelledby="agentic-heading">
-      <div class="agentic__heading">
-        <p class="section-context">Agentic engineering at Agala Labs</p>
-        <h3 id="agentic-heading">How I work with coding agents</h3>
-      </div>
-      <div class="agentic__list">
-        <article v-for="area in story.agenticWork" :key="area.title">
-          <h4>{{ area.title }}</h4>
-          <p>{{ area.description }}</p>
-          <p class="agentic__tools">{{ area.tools.join(' · ') }}</p>
-        </article>
-      </div>
-    </div>
   </section>
 </template>
