@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import portfolioStyles from "~/assets/css/portfolio.css?inline";
 import { mountPortfolio } from "~/utils/portfolio";
+import { initialMusicState, type MusicActions } from "~/utils/music";
+
+const music = shallowRef({ ...initialMusicState });
+const musicActions = shallowRef<MusicActions | null>(null);
 
 useHead({
   style: [{ key: "portfolio-design", innerHTML: portfolioStyles }],
@@ -13,7 +17,10 @@ useHead({
 });
 let dispose: (() => void) | undefined;
 onMounted(() => {
-  dispose = mountPortfolio();
+  dispose = mountPortfolio({
+    onMusicState: (state) => { music.value = state; },
+    onMusicActions: (actions) => { musicActions.value = actions; },
+  });
 });
 onBeforeUnmount(() => {
   dispose?.();
@@ -22,6 +29,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="portfolio-page">
+    <SoundCloudBackdrop :music="music" />
+    <FloatingMusicPlayer :music="music" :actions="musicActions" />
     <a class="skip-link" href="#main-content">Skip to the portfolio</a>
     <span class="reading-progress" aria-hidden="true" />
 
@@ -51,7 +60,7 @@ onBeforeUnmount(() => {
             >Identity</a
           >
           <a href="#systems" data-section-link="systems">Agala Labs</a>
-          <a href="/resume" target="_blank" rel="noopener noreferrer">Résumé</a>
+          <a href="/resume" target="_blank" rel="noopener noreferrer">Resume</a>
           <a href="#contact" data-section-link="contact">Contact</a>
         </nav>
 
@@ -120,7 +129,7 @@ onBeforeUnmount(() => {
           <div class="hero-identity">
             <div class="music-player" data-music-player data-state="paused">
               <div class="music-heading">
-                <span class="meta-label">I like house music.</span>
+                <span class="meta-label">Listen to some house music I like</span>
                 <span class="music-eq" aria-hidden="true"
                   ><span /><span /><span /><span
                 /></span>
@@ -253,7 +262,7 @@ onBeforeUnmount(() => {
             <a class="text-link" href="#systems"
               ><span>Explore Agala Labs</span></a
             >
-            <a class="text-link" href="mailto:julian@benitez.com.ar"
+            <a class="text-link" href="#contact"
               ><span>Email me</span></a
             >
           </div>
@@ -342,7 +351,7 @@ onBeforeUnmount(() => {
         <header class="section-heading">
           <p class="section-index">Software platform</p>
           <h2 id="systems-title">Agala Labs.</h2>
-          <p>
+          <p class="section-description">
             The technical home for my applications, shared services, UI library,
             infrastructure and this portfolio.
           </p>
@@ -469,7 +478,7 @@ onBeforeUnmount(() => {
           </div>
           <p class="copy-status" role="status" aria-live="polite" />
           <nav class="contact-links" aria-label="Contact links">
-            <a href="/resume" target="_blank" rel="noopener noreferrer">Résumé ↗</a>
+            <a href="/resume" target="_blank" rel="noopener noreferrer">Resume ↗</a>
             <a
               href="https://github.com/elAgala"
               target="_blank"
@@ -483,6 +492,10 @@ onBeforeUnmount(() => {
 
       <footer class="site-footer">
         <span>© 2026 Julián Benitez</span>
+        <a class="site-footer__brand" href="https://agala.com.ar" target="_blank" rel="noopener noreferrer">
+          <span>Part of</span>
+          <img src="/portfolio/images/agala-logo.png" alt="Agala Labs" width="1074" height="476" loading="lazy">
+        </a>
         <span>Buenos Aires, Argentina</span>
       </footer>
     </main>

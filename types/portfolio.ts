@@ -60,16 +60,20 @@ export interface ExperienceSignal {
 
 export interface CareerEntry {
   dates: string
-  role: string
   company: string
   location?: string
   summary: string
-  bullets: string[]
+  positions: Array<{
+    role: string
+    dates: string
+    bullets: string[]
+  }>
   stack: string[]
   layers?: CareerLayer[]
 }
 
 export interface Resume {
+  headline: string
   summary: string
   experience: CareerEntry[]
   education: Array<{

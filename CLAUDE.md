@@ -10,7 +10,7 @@ copy, Archivo typography, portrait and responsive rules. There are no
 `/work/[slug]` routes.
 
 - Homepage: `PortfolioDesign.vue`, `assets/css/portfolio.css`, and
-  `utils/portfolio.js`. Original assets live in `public/portfolio/`. Existing
+  `utils/portfolio.ts`. Original assets live in `public/portfolio/`. Existing
   standalone section components are not used by this homepage.
 - Motion: the hero types and corrects `whoami` once. Reduced-motion visitors
   receive the content immediately.
@@ -18,16 +18,20 @@ copy, Archivo typography, portrait and responsive rules. There are no
   when playback is requested, never on initial widget readiness. Pause/resume
   retains position. The Breezy S artist upload has broken streams, so use the
   verified BELTERS 4U premiere of the same recording.
+- Keep one SoundCloud widget. `utils/soundcloud-player.ts` publishes typed
+  state and actions to `FloatingMusicPlayer` and `SoundCloudBackdrop`. The
+  ambient waveform uses real track samples and stays hidden while paused,
+  muted or unavailable. Keep maintained source in TypeScript.
 - Brand semantics: “Agala” is Julián's nickname and personal mark. “Agala Labs”
   is his software factory and links to `https://agala.com.ar`.
-- Content order: identity → working approach → AI workflow → Agala Labs → contact.
+- Content order: identity → working approach → AI workflow → everyday tools → Agala Labs → contact.
 - No status theater: never show availability with dots, pulses, badges, or words
   like ONLINE/OPERATIONAL/READY. Plain sentences only — enforced by
   `tests/content.spec.ts` and the `design-with-intent` skill.
 - No interface theater: do not add fake IDs, terminal window chrome, code-like
   section names, fake file names, or decorative build metadata.
 - Copy voice: direct and evidence-led. Resume-facing fields in `data/career.ts`
-  (`summary`, `bullets`) stay formal — the frozen resume consumes them via
+  (`summary`, `positions[].bullets`) stay formal — the resume consumes them via
   `data/resume.ts`.
 
 ## Personal-Iconography Doctrine
@@ -52,6 +56,9 @@ inventing a new object.
 
 ## Frozen surfaces
 
-- `pages/resume.vue`, `scripts/generate-resume.mjs`, and all `.resume-*` / `@layer print`
+- `pages/resume.vue`, `scripts/generate-resume.ts`, and all `.resume-*` / `@layer print`
   CSS rules are frozen — plain black-and-white, ATS-scanner-friendly, matching the
-  project's first iteration. Do not restyle without an explicit request.
+  approved formal design. The user-approved revision groups positions under
+  each company (AlixPartners: Technical Lead / Software Engineer 2024–Present,
+  Software Engineer 2021–2024), with technical skills before education. Do not restyle without an
+  explicit request.

@@ -3,7 +3,7 @@ import type { CareerEntry, ExperienceSignal } from '~/types/portfolio'
 export const experienceSignals = [
   {
     title: 'Lead multidisciplinary teams',
-    detail: 'At AlixPartners, I lead the technical direction of multidisciplinary product teams spanning Argentina and Europe while staying hands-on in architecture and delivery.',
+    detail: 'At AlixPartners, I lead the technical direction of multidisciplinary product teams spanning Argentina, the US, and Europe while staying hands-on in architecture and delivery.',
   },
   {
     title: 'Build the foundations',
@@ -18,46 +18,49 @@ export const experienceSignals = [
 export const careerEntries = [
   {
     dates: '2021–Present',
-    role: 'Technical Lead / Software Engineer',
     company: 'AlixPartners',
     location: 'Buenos Aires, Argentina',
-    summary: 'Technical leadership and hands-on delivery across multidisciplinary product teams in Argentina and Europe.',
-    bullets: [
-      'Lead technical direction for multidisciplinary product teams across Argentina and Europe, turning product requirements into architecture and delivery plans while remaining hands-on in implementation and code review.',
-      'Architect and build product systems from scratch across frontend applications, backend services, data, and Azure infrastructure.',
-      'Co-lead the Frontend Guild and develop a shared design-system library, standardizing interface patterns and engineering practices across applications.',
-      'Improve delivery and support workflows through automation and repeatable processes; mentor engineers and conduct structured technical interviews.',
+    summary: 'Architecture and hands-on delivery of client-facing and internal tools, with engineering standards and cross-team integrations across the organization.',
+    positions: [
+      {
+        role: 'Technical Lead / Software Engineer',
+        dates: '2024–Present',
+        bullets: [
+          'Design and build client-facing and internal tools from the ground up, owning technical architecture while staying hands-on in implementation and code review.',
+          'Co-lead the Frontend Guild and develop a shared design-system library, defining reusable interface patterns and engineering standards across the organization.',
+          'Coordinate integrations between systems owned by different teams, aligning architecture and implementation so the applications work together.',
+          'Automate delivery and support workflows, mentor engineers through implementation and design decisions, and conduct technical interviews.',
+        ],
+      },
+      {
+        role: 'Software Engineer',
+        dates: '2021–2024',
+        bullets: [
+          'Built product systems from the ground up across frontend applications, backend services, databases, and Azure infrastructure.',
+        ],
+      },
     ],
-    stack: ['Next.js', 'React', 'Vue', 'C#', 'NestJS', 'SQL Server', 'Azure'],
+    stack: ['Next.js', 'React', 'Vue', 'C#', 'NestJS', 'SQL Server', 'Kafka', 'Redis', 'Azure'],
   },
   {
     dates: '2026–Present',
-    role: 'Creator / Software Engineer',
     company: 'Agala Labs',
-    location: 'Independent engineering',
+    location: 'Independent product engineering',
     summary: 'A private product engineering lab spanning reusable interfaces, services, and automated Linux infrastructure.',
-    bullets: [
-      'Build and operate Smaltt and Kervo, production applications for dental-practice management and retail operations.',
-      'Architect their shared Nuxt, Go, and PostgreSQL foundation and integrations for payments, billing, messaging, object storage, and AI features.',
-      'Own production infrastructure end to end, including Hetzner and Linux provisioning, OpenTofu, Ansible, Docker delivery, Woodpecker CI, observability, and secrets management.',
-    ],
+    positions: [{
+      role: 'Creator / Software Engineer',
+      dates: '2026–Present',
+      bullets: [
+        'Build and operate Smaltt and Kervo: production software for dental-practice management and retail operations.',
+        'Design Nuxt applications and Go services with PostgreSQL, integrating payments, billing, messaging, and AI capabilities.',
+        'Own the path from implementation to production: Linux infrastructure, automated provisioning and deployment, observability, and secrets management.',
+      ],
+    }],
     stack: ['Nuxt', 'Vue', 'TypeScript', 'Go', 'PostgreSQL', 'Linux', 'OpenTofu', 'Ansible', 'Docker'],
     layers: [
       { label: 'Interfaces', detail: 'The shared pieces I use to start and shape Nuxt applications.', tools: ['Nuxt', 'Vue', 'TypeScript'] },
       { label: 'Go services', detail: 'Small gateways and PostgreSQL integrations with clear jobs.', tools: ['Go', 'PostgreSQL'] },
       { label: 'Linux platform', detail: 'Servers and deployments I can rebuild instead of remember.', tools: ['OpenTofu', 'Ansible', 'Docker', 'CI/CD'] },
     ],
-  },
-  {
-    dates: '2018–2021',
-    role: 'Freelance Software Engineer',
-    company: 'Self-employed',
-    location: 'Buenos Aires',
-    summary: 'End-to-end delivery of web and mobile products, from interface through deployment.',
-    bullets: [
-      'Delivered web and mobile products from requirements through launch and support using Vue, Flutter, Node.js, C#, MongoDB, and PostgreSQL.',
-      'Deployed and supported production workloads across AWS and Linux infrastructure.',
-    ],
-    stack: ['Node.js', 'C#', 'Vue', 'Flutter', 'MongoDB', 'PostgreSQL', 'AWS', 'Linux'],
   },
 ] satisfies CareerEntry[]

@@ -10,9 +10,9 @@
     "lint": "eslint .",
     "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
-    "resume:pdf": "node scripts/generate-resume.mjs",
-    "resume:verify": "node scripts/verify-resume.mjs",
-    "route:validate": "node scripts/validate-route-isolation.mjs",
+    "resume:pdf": "node --experimental-strip-types scripts/generate-resume.ts",
+    "resume:verify": "node --experimental-strip-types scripts/verify-resume.ts",
+    "route:validate": "node --experimental-strip-types scripts/validate-route-isolation.ts",
     "test": "vitest run",
     "typecheck": "nuxt typecheck"
   },

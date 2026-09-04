@@ -7,7 +7,7 @@ const root = join(process.cwd(), '.output', 'public')
 const publicPdf = join(process.cwd(), 'public', 'julian-benitez-resume.pdf')
 const outputPdf = join(root, 'julian-benitez-resume.pdf')
 
-const mimeTypes = {
+const mimeTypes: Record<string, string> = {
   '.css': 'text/css',
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript',
@@ -16,7 +16,7 @@ const mimeTypes = {
   '.woff2': 'font/woff2',
 }
 
-async function resolveRequestPath(requestUrl) {
+async function resolveRequestPath(requestUrl: string) {
   const pathname = decodeURIComponent(new URL(requestUrl, 'http://localhost').pathname)
   const safePath = normalize(pathname).replace(/^(\.\.[/\\])+/, '')
   let filePath = join(root, safePath)
@@ -48,12 +48,12 @@ async function main() {
     }
   })
 
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
   const address = server.address()
   const port = typeof address === 'object' && address ? address.port : 0
   const chrome = process.env.CHROME_PATH || 'google-chrome'
 
-  const exitCode = await new Promise((resolve, reject) => {
+  const exitCode = await new Promise<number | null>((resolve, reject) => {
     const chromeProcess = spawn(chrome, [
       '--headless=new',
       '--no-sandbox',

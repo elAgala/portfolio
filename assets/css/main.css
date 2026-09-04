@@ -281,10 +281,9 @@
 
   .resume-body { background: #e9e9e7; color: #111; }
   .resume-route { min-height: 100vh; padding: 2rem; font-family: Arial, Helvetica, sans-serif; }
-  .resume-toolbar { display: flex; justify-content: space-between; width: min(100%, 210mm); margin: 0 auto 1.25rem; color: #333; font-size: .78rem; }
+  .resume-toolbar { display: flex; justify-content: flex-end; width: min(100%, 210mm); margin: 0 auto 1.25rem; color: #333; font-size: .78rem; }
   .resume-toolbar div { display: flex; gap: .6rem; }
   .resume-toolbar a, .resume-toolbar button { border: 1px solid #222; background: transparent; color: #111; cursor: pointer; padding: .55rem .8rem; text-decoration: none; }
-  .resume-toolbar > a { border: 0; padding-left: 0; }
   .resume-toolbar a:hover, .resume-toolbar button:hover { background: #111; color: white; }
   .resume-sheet { width: min(100%, 210mm); min-height: 297mm; margin: 0 auto; padding: 15mm 16mm 13mm; background: white; box-shadow: 0 1rem 4rem rgb(0 0 0 / 15%); font-size: 9.7pt; line-height: 1.4; }
   .resume-header { display: flex; justify-content: space-between; gap: 2rem; padding-bottom: 4mm; border-bottom: 1.5px solid #111; }
@@ -300,7 +299,12 @@
   .resume-entry__heading p, .resume-education p { font-size: 8.6pt; }
   .resume-entry time, .resume-education time { flex: none; font-size: 8.5pt; font-weight: 700; }
   .resume-entry ul { display: grid; gap: .7mm; margin-top: 1.5mm; padding-left: 4mm; }
-  .resume-section--split { display: grid; grid-template-columns: 1fr 1.2fr; gap: 7mm; }
+  .resume-positions { margin-top: 1.5mm; }
+  .resume-positions--progression { margin-left: 1mm; padding-left: 3mm; border-left: 1px solid #bbb; }
+  .resume-position + .resume-position { margin-top: 2.5mm; }
+  .resume-position__heading { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  .resume-position h4 { margin: 0; font-size: 9.3pt; font-weight: 600; }
+  .resume-section--split { display: grid; grid-template-columns: 1.2fr 1fr; gap: 7mm; }
   .resume-education + .resume-education { margin-top: 2.1mm; }
   .resume-education h3 { max-width: 35ch; }
   .resume-skills { display: grid; gap: 1.2mm; }
@@ -362,6 +366,7 @@
     .resume-header, .resume-section--split { grid-template-columns: 1fr; flex-direction: column; }
     .resume-header address { justify-items: start; }
     .resume-entry__heading, .resume-education { align-items: flex-start; flex-direction: column; gap: .2rem; }
+    .resume-position__heading { align-items: flex-start; flex-direction: column; gap: .2rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -375,6 +380,7 @@
 @layer print {
   @media print {
     @page { size: A4; margin: 10mm 11mm; }
+    html { background: white; color-scheme: light; }
     body.resume-body { background: white; }
     .resume-toolbar { display: none; }
     .resume-route { padding: 0; }
@@ -391,7 +397,8 @@
     .resume-entry h3, .resume-education h3 { font-size: 9.5pt; }
     .resume-entry__heading p, .resume-education p, .resume-entry time, .resume-education time { font-size: 8.5pt; }
     .resume-entry ul { gap: .16rem; margin-top: .35rem; padding-left: .9rem; font-size: 9.2pt; line-height: 1.3; }
-    .resume-section--split { grid-template-columns: 1fr 1.2fr; gap: 1.4rem; }
+    .resume-position__heading { flex-direction: row; align-items: baseline; }
+    .resume-section--split { grid-template-columns: 1.2fr 1fr; gap: 1.4rem; }
     .resume-education { padding: .45rem 0; }
     .resume-skills { gap: .34rem; padding-top: .45rem; }
     .resume-skills div { grid-template-columns: 6.8rem 1fr; gap: .55rem; font-size: 8.5pt; }

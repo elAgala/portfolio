@@ -88,27 +88,40 @@ describe('Agala portfolio content', () => {
 
   it('uses one career record for the portfolio and resume', () => {
     expect(resume.experience).toBe(careerEntries)
-    expect(careerEntries.map(entry => entry.company)).toEqual(['AlixPartners', 'Agala Labs', 'Self-employed'])
+    expect(resume.experience[0]?.dates).toBe('2021–Present')
+    expect(resume.experience[0]?.positions.map(({ role, dates }) => ({ role, dates }))).toEqual([
+      { role: 'Technical Lead / Software Engineer', dates: '2024–Present' },
+      { role: 'Software Engineer', dates: '2021–2024' },
+    ])
+    expect(resume.headline).toBe('Technical Lead · Hands-on Software Engineer')
+    expect(careerEntries.map(entry => entry.company)).toEqual(['AlixPartners', 'Agala Labs'])
+    expect(careerEntries[1]?.location).toBe('Independent product engineering')
+    expect(careerEntries[0]?.stack).toEqual(expect.arrayContaining(['Kafka', 'Redis']))
     expect(experienceSignals.map(signal => signal.title)).toEqual([
       'Lead multidisciplinary teams',
       'Build the foundations',
       'Improve the delivery loop',
     ])
     expect(experienceSignals[0]?.detail).toContain('technical direction of multidisciplinary product teams')
-    expect(experienceSignals[0]?.detail).toContain('spanning Argentina and Europe')
+    expect(experienceSignals[0]?.detail).toContain('spanning Argentina, the US, and Europe')
     expect(profile.email).toBe('julian@benitez.com.ar')
     expect(resume.languages.map(item => item.language)).toEqual(['Spanish', 'English'])
-    expect(resume.summary).toContain('Hands-on software engineer and technical lead')
-    expect(resume.experience[0]?.bullets[0]).toContain('multidisciplinary product teams across Argentina and Europe')
-    expect(resume.experience[0]?.bullets[2]).toContain('shared design-system library')
+    expect(resume.summary).toContain('Hands-on technical lead')
+    expect(resume.summary).not.toMatch(/AlixPartners|Agala Labs/)
+    expect(resume.experience[0]?.positions[0]?.bullets[0]).toContain('client-facing and internal tools from the ground up')
+    expect(resume.experience[0]?.positions[0]?.bullets[1]).toContain('shared design-system library')
+    expect(resume.experience[0]?.positions[0]?.bullets[1]).toContain('across the organization')
+    expect(resume.experience[0]?.positions[0]?.bullets[2]).toContain('systems owned by different teams')
     expect(resume.education.map(item => item.degree)).toEqual([
-      'B.S. Computer Engineering',
-      'B.S. Computer Engineering',
+      'Computer Engineering — in progress',
+      'Computer Engineering coursework',
     ])
     expect(resume.education[1]?.detail).toBe('Five semesters completed')
     expect(resume.skillGroups.find(group => group.label === 'Backend & Data')?.skills).toContain('Go')
+    expect(resume.skillGroups.find(group => group.label === 'Backend & Data')?.skills).toEqual(expect.arrayContaining(['Kafka', 'Redis']))
+    expect(resume.skillGroups.find(group => group.label === 'Observability')?.skills).toEqual(['Prometheus', 'Grafana'])
     expect(resume.skillGroups.find(group => group.label === 'Platform & Delivery')?.skills).toContain('OpenTofu')
-    expect(resume.languages.find(item => item.language === 'English')?.level).toContain('Cambridge English B2')
+    expect(resume.languages.find(item => item.language === 'English')?.level).toBe('Professional working proficiency')
   })
 
   it('uses the OpenDesign homepage and retains complete career records', () => {
@@ -121,7 +134,8 @@ describe('Agala portfolio content', () => {
     expect(design).toContain('I lead by building.')
     expect(design).toContain('href="/resume"')
     expect(design.indexOf('id="identity"')).toBeLessThan(design.indexOf('id="systems"'))
-    expect(career).toContain('entry.bullets')
+    expect(career).toContain('entry.positions')
+    expect(career).toContain('position.bullets')
     expect(career).toContain('entry.stack')
     expect(careerEntries[0]?.stack).toEqual(expect.arrayContaining(['React', 'Next.js', 'Vue']))
     expect(labs).not.toContain('story.architecture')
@@ -131,12 +145,41 @@ describe('Agala portfolio content', () => {
   it('ships the hero hidden before client-side animation starts', () => {
     const hero = readFileSync(resolve('components/PortfolioDesign.vue'), 'utf8')
     const styles = readFileSync(resolve('assets/css/portfolio.css'), 'utf8')
-    const runtime = readFileSync(resolve('utils/portfolio.js'), 'utf8')
+    const runtime = readFileSync(resolve('utils/portfolio.ts'), 'utf8')
 
     expect(hero).toContain("document.documentElement.classList.add('booting')")
     expect(hero).toContain('prefers-reduced-motion: reduce')
     expect(styles).toContain('html.booting .hero > .hero-main')
     expect(runtime).toContain('onComplete')
+  })
+
+  it('keeps homepage calls to action aligned with real section targets', () => {
+    const design = readFileSync(resolve('components/PortfolioDesign.vue'), 'utf8')
+    const styles = readFileSync(resolve('assets/css/portfolio.css'), 'utf8')
+    expect(design).toMatch(/class="text-link" href="#contact"/)
+    expect(design).toMatch(/class="text-link" href="#systems"/)
+    expect(styles).not.toMatch(/\[id\]\s*\{\s*scroll-margin-top/)
+    expect(design).toContain('Listen to some house music I like')
+  })
+
+  it('renders company history with nested positions and skills before education', () => {
+    const source = readFileSync(resolve('pages/resume.vue'), 'utf8')
+    expect(source).toContain('<h3>{{ item.company }}</h3>')
+    expect(source).toContain('v-for="position in item.positions"')
+    expect(source).toContain('<h4>{{ position.role }}</h4>')
+    expect(source.indexOf('<h2>Technical skills</h2>')).toBeLessThan(source.indexOf('<h2>Education</h2>'))
+  })
+
+  it('opens the resume separately without a return link', () => {
+    const resumePage = readFileSync(resolve('pages/resume.vue'), 'utf8')
+    const homepage = readFileSync(resolve('components/PortfolioDesign.vue'), 'utf8')
+    expect(resumePage).not.toContain('Back to portfolio')
+    expect(resumePage).not.toMatch(/(?:href|to)="\/"/)
+    const resumeLinks = homepage.match(/<a\b[^>]*href="\/resume"[^>]*>/g) ?? []
+    expect(resumeLinks).toHaveLength(2)
+    for (const link of resumeLinks) expect(link).toContain('target="_blank"')
+    expect(resumePage).toContain('@click="printResume"')
+    expect(resumePage).toContain('href="/julian-benitez-resume.pdf" download')
   })
 
   it('contains no decorative status theater or presence signals', () => {

@@ -25,21 +25,23 @@ defineProps<{
     <div class="career-history">
       <div class="career-history__heading">
         <h3>Career history</h3>
-        <NuxtLink to="/resume">Open full résumé →</NuxtLink>
+        <NuxtLink to="/resume">Open full resume →</NuxtLink>
       </div>
       <ol class="career-history__list">
         <li v-for="entry in entries" :key="entry.company" class="career-entry">
           <div class="career-entry__identity">
             <span class="career-entry__dates">{{ entry.dates }}</span>
             <h4>{{ entry.company === 'Self-employed' ? 'Freelance' : entry.company }}</h4>
-            <p class="career-entry__role">{{ entry.role }}</p>
             <p v-if="entry.location" class="career-entry__location">{{ entry.location }}</p>
           </div>
           <div class="career-entry__detail">
             <p class="career-entry__summary">{{ entry.summary }}</p>
-            <ul class="career-entry__bullets">
-              <li v-for="bullet in entry.bullets" :key="bullet">{{ bullet }}</li>
-            </ul>
+            <div v-for="position in entry.positions" :key="position.role">
+              <p class="career-entry__role">{{ position.role }} · {{ position.dates }}</p>
+              <ul class="career-entry__bullets">
+                <li v-for="bullet in position.bullets" :key="bullet">{{ bullet }}</li>
+              </ul>
+            </div>
             <p class="career-entry__stack" :aria-label="`Technologies used at ${entry.company}`">
               {{ entry.stack.join(' · ') }}
             </p>

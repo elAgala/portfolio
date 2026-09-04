@@ -25,7 +25,11 @@ The development server uses `http://127.0.0.1:43177` by default—never port 300
 
 Typed content lives in `data/`:
 
-The imported homepage lives in `components/PortfolioDesign.vue`, with its original styles in `assets/css/portfolio.css`, local assets in `public/portfolio/`, and lifecycle-managed interactions in `utils/portfolio.js`. Homepage and résumé styles are loaded separately to preserve the formal résumé layout. SoundCloud requires network access; errors expose the original track link as a fallback.
+The imported homepage lives in `components/PortfolioDesign.vue`, with styles in `assets/css/portfolio.css` and local assets in `public/portfolio/`. Interactions are TypeScript: `utils/portfolio.ts` owns navigation, the introduction and clipboard; `utils/soundcloud-player.ts` owns the single SoundCloud widget and publishes typed state/actions to the floating player and waveform background. Homepage and résumé styles are loaded separately to preserve the formal résumé layout.
+
+“Listen to some house music I like” becomes a compact floating invitation after the original player scrolls above the header. After interaction, it exposes the same playback controls without creating another iframe. The real SoundCloud waveform appears only during confirmed, unmuted playback. A softly smoothed 24-second window scrolls with the current audio position centered, without a visible cursor. Waveform data is loaded on demand, validated and cached in memory; failures leave audio untouched. Drawing stops in hidden tabs, and reduced-motion visitors get a static waveform. Keyboard focus is retained when scrolling back to the original player.
+
+The app, maintenance scripts and ESLint configuration use TypeScript. The maintenance commands run with Node 22's native type stripping; generated JavaScript in Nuxt build output is not maintained source.
 
 The Breezy S track uses the BELTERS 4U release premiere on SoundCloud. During verification, the artist upload returned HTTP 404 from both stream endpoints; the premiere played the same 6:32 recording from 3:28.
 

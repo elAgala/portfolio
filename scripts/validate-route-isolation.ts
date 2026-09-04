@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 const publicDirectory = resolve('.output/public')
 const resumeHtml = readFileSync(resolve(publicDirectory, 'resume/index.html'), 'utf8')
 const requestedChunks = [...resumeHtml.matchAll(/(?:src|href)="\/?(_nuxt\/[^"?]+\.js)/g)]
-  .map(match => match[1])
+  .map(match => match[1]!)
 
 if (!requestedChunks.length)
   throw new Error('No resume JavaScript chunks found; generate the site before checking route isolation')

@@ -284,14 +284,35 @@ img {
   max-width: 100%;
 }
 
-[id] {
-  scroll-margin-top: calc(var(--nav-height) + 24px);
+/* The root owns the sticky-header offset; never add it again on targets. */
+#systems {
+  scroll-margin-top: calc(-1 * var(--section-space));
+}
+
+#contact {
+  scroll-margin-top: -72px;
 }
 
 .shell {
   width: min(100%, var(--content-max));
   margin-inline: auto;
   border-inline: 1px solid var(--line);
+}
+
+.portfolio-page {
+  isolation: isolate;
+  padding-bottom: calc(var(--floating-music-space, 112px) + env(safe-area-inset-bottom));
+}
+
+/* Section backgrounds stay below the waveform; content stays above it. */
+.portfolio-page #main-content > section > *,
+.portfolio-page .site-footer {
+  position: relative;
+  z-index: 2;
+}
+
+@media print {
+  .portfolio-page { padding-bottom: 0; }
 }
 
 .skip-link {
@@ -808,7 +829,8 @@ html.boot-complete .hero-bottom {
 
 .music-control--playback {
   margin-inline: 4px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid rgb(138 163 146 / 55%);
+  background: rgb(138 163 146 / 10%);
   border-radius: 50%;
 }
 
@@ -1088,8 +1110,8 @@ html.boot-complete .hero-bottom {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 32px 24px;
-  align-items: end;
-  margin-bottom: clamp(64px, 8vw, 120px);
+  align-items: start;
+  margin-bottom: clamp(48px, 5vw, 80px);
 }
 
 .section-heading .section-index {
@@ -1098,7 +1120,8 @@ html.boot-complete .hero-bottom {
 }
 
 .section-heading h2 {
-  grid-column: 4 / 10;
+  grid-column: 4 / 13;
+  grid-row: 1;
   font-size: clamp(54px, 7.4vw, 118px);
   font-stretch: 86%;
   font-weight: 700;
@@ -1106,10 +1129,12 @@ html.boot-complete .hero-bottom {
   line-height: 0.86;
 }
 
-.section-heading > p {
-  grid-column: 10 / 13;
+.section-description {
+  grid-column: 4 / 13;
+  grid-row: 2;
+  max-width: 58ch;
   color: var(--stone);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.6;
 }
 
@@ -1511,7 +1536,8 @@ html.boot-complete .hero-bottom {
 
 .site-footer {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   gap: 24px;
   padding: 24px var(--gutter);
   color: var(--faint);
@@ -1522,8 +1548,36 @@ html.boot-complete .hero-bottom {
   text-transform: uppercase;
 }
 
-.site-footer span:last-child {
+.site-footer > span:last-child {
   text-align: right;
+}
+
+.site-footer__brand {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  gap: 12px;
+  min-height: 44px;
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.site-footer__brand img {
+  display: block;
+  width: 90px;
+  height: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.75;
+}
+
+.site-footer__brand:focus-visible {
+  outline: 1px solid var(--paper);
+  outline-offset: 6px;
+}
+
+.site-footer__brand:hover img,
+.site-footer__brand:focus-visible img {
+  opacity: 1;
 }
 
 @media (hover: hover) {
@@ -1592,14 +1646,6 @@ html.boot-complete .hero-bottom {
 
   .hero-identity {
     grid-column: 7 / 10;
-  }
-
-  .section-heading h2 {
-    grid-column: 4 / 9;
-  }
-
-  .section-heading > p {
-    grid-column: 9 / 13;
   }
 
   .resume-intro {
@@ -1691,7 +1737,7 @@ html.boot-complete .hero-bottom {
   .intro-statement,
   .operating-range,
   .section-heading h2,
-  .section-heading > p {
+  .section-description {
     grid-column: 4 / 13;
   }
 
@@ -1711,7 +1757,7 @@ html.boot-complete .hero-bottom {
     grid-column: 1 / 13;
   }
 
-  .section-heading > p {
+  .section-description {
     max-width: 56ch;
   }
 
@@ -1815,7 +1861,7 @@ html.boot-complete .hero-bottom {
   .ai-workflow,
   .section-heading .section-index,
   .section-heading h2,
-  .section-heading > p,
+  .section-description,
   .architecture-foundation,
   .architecture-layers,
   .architecture-link,
@@ -1868,8 +1914,14 @@ html.boot-complete .hero-bottom {
     margin-bottom: 56px;
   }
 
-  .section-heading > p {
+  .section-heading h2,
+  .section-description {
+    grid-row: auto;
+  }
+
+  .section-description {
     max-width: 50ch;
+    font-size: 16px;
   }
 
   .architecture-overview {
@@ -1923,10 +1975,12 @@ html.boot-complete .hero-bottom {
 
   .site-footer {
     grid-template-columns: 1fr;
+    gap: 12px;
+    text-align: center;
   }
 
-  .site-footer span:last-child {
-    text-align: left;
+  .site-footer > span:last-child {
+    text-align: center;
   }
 }
 
