@@ -4,7 +4,7 @@ A Nuxt portfolio for Julián “Agala” Benitez. The homepage reproduces the Po
 
 ## Experience
 
-- **Original design:** Archivo and JetBrains Mono, the original portrait, responsive composition, and the introduction typing `whoami`.
+- **Original design:** Archivo and JetBrains Mono, the original portrait, responsive composition, and the introduction intentionally typing `whoaim` before correcting it to `whoami`.
 - **Agala Labs:** the original architecture chapter covering applications, shared services, data, infrastructure, and delivery.
 - **SoundCloud:** Audio Junkies — “Aspects Of Rhythm” (3:02), Sako Isoyan — “Wow” (2:55), Breezy S — “UFO On A Limousine” (3:28), Alpyren — “Cold Case (ODTF002)” (1:59), Known Artist — “I Need (Rosa Red Remix)” (1:27), and Voodoos and Taboos — “Witch House [PHONICAM001]” (3:27). Playback begins on interaction; switching tracks reapplies the selected offset, while pause/resume retains the current position.
 - **Accessible by default:** semantic sections, visible headings, keyboard navigation, responsive layouts, and reduced-motion handling.
