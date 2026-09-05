@@ -10,6 +10,10 @@ useHead({
 useSeoMeta({
   title: 'Resume',
   description: `Resume for ${person.name}, ${person.title} in ${person.location}.`,
+  ogTitle: `Resume — ${person.name}`,
+  ogDescription: details.summary,
+  twitterTitle: `Resume — ${person.name}`,
+  twitterDescription: details.summary,
   robots: 'index, follow',
 })
 

@@ -25,7 +25,6 @@ export function mountPortfolio(options: MusicObserver = {}) {
   const bootCommand = requireElement('[data-boot-command]')
   const bootStatus = requireElement('[data-boot-status]')
   const command = 'whoami'
-  const mistypedCommand = 'whoaim'
   let bootTimer = 0
   let bootComplete = false
 
@@ -77,36 +76,8 @@ export function mountPortfolio(options: MusicObserver = {}) {
       typeNextCharacter()
     }
 
-    const deleteCharacters = (
-      count: number,
-      delay: number,
-      onComplete: () => void,
-    ) => {
-      let remaining = count
-      const deleteNextCharacter = () => {
-        if (remaining === 0) {
-          onComplete()
-          return
-        }
-
-        bootCommand.textContent = (bootCommand.textContent ?? '').slice(0, -1)
-        remaining -= 1
-        schedule(deleteNextCharacter, delay)
-      }
-      deleteNextCharacter()
-    }
-
     schedule(() => {
-      typeCharacters(mistypedCommand, 72, () => {
-        bootStatus.textContent = 'Correcting command'
-        schedule(() => {
-          deleteCharacters(2, 95, () => {
-            schedule(() => {
-              typeCharacters('mi', 90, () => schedule(finishBoot, 240))
-            }, 120)
-          })
-        }, 420)
-      })
+      typeCharacters(command, 90, () => schedule(finishBoot, 240))
     }, 280)
     listen(window, 'hashchange', finishBoot)
     listen(document, 'keydown', skipBootWithKey)

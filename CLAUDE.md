@@ -12,7 +12,7 @@ copy, Archivo typography, portrait and responsive rules. There are no
 - Homepage: `PortfolioDesign.vue`, `assets/css/portfolio.css`, and
   `utils/portfolio.ts`. Original assets live in `public/portfolio/`. Existing
   standalone section components are not used by this homepage.
-- Motion: the hero types and corrects `whoami` once. Reduced-motion visitors
+- Motion: the hero types `whoami` once. Reduced-motion visitors
   receive the content immediately.
 - Audio: SoundCloud playlist with offsets 3:02, 2:55, 3:28, 1:59, 1:27, and
   3:27. Apply offsets

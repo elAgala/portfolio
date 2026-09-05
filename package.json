@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
+    "social:image": "node --experimental-strip-types scripts/generate-social.ts",
     "resume:pdf": "node --experimental-strip-types scripts/generate-resume.ts",
     "resume:verify": "node --experimental-strip-types scripts/verify-resume.ts",
     "route:validate": "node --experimental-strip-types scripts/validate-route-isolation.ts",

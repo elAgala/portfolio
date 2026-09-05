@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Portfolio social preview</title>
+<style>
+  @font-face { font-family: Archivo; src: url('{{font}}'); font-weight: 100 900; }
+  @font-face { font-family: Mono; src: url('{{mono}}'); font-weight: 100 900; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body { background: #0b0908; color: #eee4d5; font-family: Archivo, sans-serif; }
+  main { height: 100%; padding: 48px 56px 32px; display: flex; flex-direction: column; }
+  header, footer { display: flex; justify-content: space-between; align-items: center; }
+  header { color: #b1a394; font: 14px Mono, monospace; letter-spacing: 1.5px; text-transform: uppercase; }
+  .identity { flex: 1; display: grid; grid-template-columns: 1fr 288px; gap: 52px; align-items: center; }
+  h1 { margin: 0 0 25px; font-size: 94px; font-weight: 700; letter-spacing: -5px; line-height: .95; }
+  .role { margin: 0; color: #eee4d5; font-size: 27px; line-height: 1.45; }
+  .role span { display: block; color: #b1a394; }
+  .portrait { width: 288px; height: 330px; object-fit: cover; border-radius: 144px 144px 8px 8px; filter: grayscale(1); }
+  footer { border-top: 1px solid #4c463c; padding-top: 24px; color: #b1a394; font: 15px Mono, monospace; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand img { width: 86px; height: auto; filter: brightness(0) invert(1); opacity: .8; }
+</style>
+<main>
+  <header><span>{{website}}</span><span>Buenos Aires, Argentina</span></header>
+  <section class="identity">
+    <div>
+      <h1>Julián<br>Benitez.</h1>
+      <p class="role">Technical Lead<span>Hands-on Software Engineer</span></p>
+    </div>
+    <img class="portrait" src="{{portrait}}" alt="Julián Benitez">
+  </section>
+  <footer><span>Architecture. Code. Production.</span><span class="brand">Part of <img src="{{logo}}" alt="Agala Labs"></span></footer>
+</main>
+</html>

@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { profile as person } from '~/data/profile'
+import { social } from '~/data/social'
 
 useSeoMeta({
-  title: 'Julián Benitez | Technical Lead & Software Engineer',
-  description: person.summary,
-  ogTitle: 'Agala / Julián Benitez — Software Engineer & Tech Lead',
-  ogDescription: person.summary,
+  title: social.title,
+  description: social.description,
+  ogTitle: social.title,
+  ogDescription: social.description,
+  twitterTitle: social.title,
+  twitterDescription: social.description,
 })
 
 useHead({
