@@ -1,4 +1,4 @@
-import { musicTracks, type MusicObserver, type MusicState } from './music'
+import { musicTracks, shuffleMusicTracks, type MusicObserver, type MusicState } from './music'
 import type { SoundCloudAPI } from '../types/soundcloud'
 import { createListenerRegistry, requireElement } from './dom'
 
@@ -29,7 +29,19 @@ export function mountSoundCloud({
     const currentTime = requireElement<HTMLElement>('[data-current-time]')
     const trackDuration = requireElement<HTMLElement>('[data-track-duration]')
 
-    const tracks = musicTracks
+    const tracks = shuffleMusicTracks(musicTracks)
+    const widgetUrl = new URL('https://w.soundcloud.com/player/')
+    widgetUrl.search = new URLSearchParams({
+      url: tracks[0]!.url,
+      auto_play: 'false',
+      buying: 'false',
+      sharing: 'false',
+      download: 'false',
+      show_artwork: 'false',
+      show_playcount: 'false',
+      show_user: 'false',
+    }).toString()
+    soundcloudFrame.src = widgetUrl.href
     let currentTrack = 0
     let playing = false
     let muted = false
@@ -131,6 +143,7 @@ export function mountSoundCloud({
     }
 
     renderTrack()
+    renderTimeline(position)
 
     try {
       if (!window.SC?.Widget)

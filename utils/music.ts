@@ -40,9 +40,24 @@ export const musicTracks: MusicTrack[] = [
     title: 'Witch House [PHONICAM001]',
     artist: 'Voodoos and Taboos',
     url: 'https://soundcloud.com/trommelmusic/premiere-b1-voodoos-and-taboos-witch-house-phonicam001',
-    start: 207000,
+    start: 118000,
   },
 ]
+
+/** Shuffle a copy once per player mount, keeping next/previous navigation stable. */
+export function shuffleMusicTracks(
+  tracks: readonly MusicTrack[],
+  random: () => number = Math.random,
+): MusicTrack[] {
+  const shuffled = [...tracks]
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const target = Math.floor(random() * (index + 1))
+    const track = shuffled[index]!
+    shuffled[index] = shuffled[target]!
+    shuffled[target] = track
+  }
+  return shuffled
+}
 
 export interface MusicState {
   title: string

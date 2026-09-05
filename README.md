@@ -6,7 +6,7 @@ A Nuxt portfolio for Julián “Agala” Benitez. The homepage reproduces the Po
 
 - **Original design:** Archivo and JetBrains Mono, the original portrait, responsive composition, and the introduction intentionally typing `whoaim` before correcting it to `whoami`.
 - **Agala Labs:** the original architecture chapter covering applications, shared services, data, infrastructure, and delivery.
-- **SoundCloud:** Audio Junkies — “Aspects Of Rhythm” (3:02), Sako Isoyan — “Wow” (2:55), Breezy S — “UFO On A Limousine” (3:28), Alpyren — “Cold Case (ODTF002)” (1:59), Known Artist — “I Need (Rosa Red Remix)” (1:27), and Voodoos and Taboos — “Witch House [PHONICAM001]” (3:27). Playback begins on interaction; switching tracks reapplies the selected offset, while pause/resume retains the current position.
+- **SoundCloud:** Audio Junkies — “Aspects Of Rhythm” (3:02), Sako Isoyan — “Wow” (2:55), Breezy S — “UFO On A Limousine” (3:28), Alpyren — “Cold Case (ODTF002)” (1:59), Known Artist — “I Need (Rosa Red Remix)” (1:27), and Voodoos and Taboos — “Witch House [PHONICAM001]” (1:58). Playback begins on interaction; switching tracks reapplies the selected offset, while pause/resume retains the current position.
 - **Accessible by default:** semantic sections, visible headings, keyboard navigation, responsive layouts, and reduced-motion handling.
 - **Formal resume:** `/resume` is intentionally restrained, photo-free, print-safe, and available as a generated PDF.
 
@@ -41,6 +41,8 @@ The Breezy S track uses the BELTERS 4U release premiere on SoundCloud. During ve
 - `social.ts` — shared social metadata and versioned preview image URL
 
 The formal resume is the only secondary route.
+
+The music queue is shuffled once when the homepage player mounts, including the first track. Next, previous and automatic advance follow that order, wrapping after all six tracks; pause/resume does not reshuffle. Each track keeps its configured starting offset.
 
 The share preview uses the current portrait and brand assets. After editing `scripts/social-card.html`, run `npm run social:image` with Chrome installed (`CHROME_PATH` can override its location), then update the image version in `data/social.ts`. Commit the generated `public/og-image.png` before deployment. Existing messages may retain a cached preview until the sharing service fetches the metadata again.
 

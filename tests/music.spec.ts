@@ -1,7 +1,21 @@
 import { describe, expect, it } from 'vitest'
-import { musicTracks, normalizeWaveform } from '../utils/music'
+import { musicTracks, normalizeWaveform, shuffleMusicTracks } from '../utils/music'
 
 describe('SoundCloud playlist', () => {
+  it('shuffles a copy without losing tracks or changing their offsets', () => {
+    const original = [...musicTracks]
+    const shuffled = shuffleMusicTracks(musicTracks, () => 0)
+    expect(shuffled).toEqual([...original.slice(1), original[0]])
+    expect(new Set(shuffled).size).toBe(original.length)
+    expect(musicTracks).toEqual(original)
+    expect(shuffleMusicTracks(musicTracks, () => 0.999)).toEqual(original)
+    expect(shuffled).not.toBe(musicTracks)
+  })
+
+  it('handles empty and single-track queues', () => {
+    expect(shuffleMusicTracks([])).toEqual([])
+    expect(shuffleMusicTracks([musicTracks[0]!])).toEqual([musicTracks[0]])
+  })
   it('keeps the six requested tracks and starting offsets', () => {
     expect(musicTracks.map(({ title, artist, start }) => ({ title, artist, start }))).toEqual([
       { title: 'Aspects Of Rhythm', artist: 'Audio Junkies', start: 182000 },
@@ -9,7 +23,7 @@ describe('SoundCloud playlist', () => {
       { title: 'UFO On A Limousine', artist: 'Breezy S', start: 208000 },
       { title: 'Cold Case (ODTF002)', artist: 'Alpyren', start: 119000 },
       { title: 'I Need (Rosa Red Remix)', artist: 'Known Artist', start: 87000 },
-      { title: 'Witch House [PHONICAM001]', artist: 'Voodoos and Taboos', start: 207000 },
+      { title: 'Witch House [PHONICAM001]', artist: 'Voodoos and Taboos', start: 118000 },
     ])
   })
 })

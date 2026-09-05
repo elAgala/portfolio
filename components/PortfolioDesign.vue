@@ -255,7 +255,6 @@ onBeforeUnmount(() => {
                   title="SoundCloud audio player"
                   tabindex="-1"
                   allow="autoplay"
-                  src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fmaccabihouse%2Faudio-junkies-aspects-of-rhythm-1&amp;auto_play=false&amp;buying=false&amp;sharing=false&amp;download=false&amp;show_artwork=false&amp;show_playcount=false&amp;show_user=false"
                 />
               </div>
             </div>
