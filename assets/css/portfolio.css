@@ -678,6 +678,7 @@ html.boot-complete .hero-bottom {
 }
 
 .music-player {
+  position: relative;
   display: grid;
   gap: 12px;
   align-content: start;
@@ -926,14 +927,24 @@ html.boot-complete .hero-bottom {
   opacity: 0.65;
 }
 
-.soundcloud-frame {
+.soundcloud-frame-host {
+  /* Keep the audio widget mounted without painting its embedded UI. */
   position: absolute;
+  top: 0;
+  left: 0;
   width: 1px;
   height: 1px;
   overflow: hidden;
+  clip-path: inset(50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.soundcloud-frame {
+  display: block;
+  width: 1px;
+  height: 1px;
   border: 0;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
 }
 
 .hero-links {
@@ -1825,15 +1836,15 @@ html.boot-complete .hero-bottom {
   }
 
   .hero-portrait-wrap {
-    grid-column: 1 / 5;
+    grid-column: 9 / 13;
     grid-row: 1;
-    justify-self: start;
+    justify-self: end;
     width: min(100%, 148px);
   }
 
   .hero-portrait-wrap::before {
-    right: -16px;
-    left: auto;
+    right: auto;
+    left: -16px;
   }
 
   .hero-bottom {

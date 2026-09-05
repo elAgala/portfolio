@@ -248,13 +248,16 @@ onBeforeUnmount(() => {
                   <span class="music-time" data-track-duration>00:00</span>
                 </div>
               </div>
-              <iframe
-                class="soundcloud-frame"
-                data-soundcloud-player
-                title="SoundCloud audio player"
-                allow="autoplay"
-                src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fmaccabihouse%2Faudio-junkies-aspects-of-rhythm-1&amp;auto_play=false&amp;buying=false&amp;sharing=false&amp;download=false&amp;show_artwork=false&amp;show_playcount=false&amp;show_user=false"
-              />
+              <div class="soundcloud-frame-host" aria-hidden="true">
+                <iframe
+                  class="soundcloud-frame"
+                  data-soundcloud-player
+                  title="SoundCloud audio player"
+                  tabindex="-1"
+                  allow="autoplay"
+                  src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fmaccabihouse%2Faudio-junkies-aspects-of-rhythm-1&amp;auto_play=false&amp;buying=false&amp;sharing=false&amp;download=false&amp;show_artwork=false&amp;show_playcount=false&amp;show_user=false"
+                />
+              </div>
             </div>
           </div>
 
