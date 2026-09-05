@@ -1638,6 +1638,13 @@ html.boot-complete .hero-bottom {
   }
 }
 
+@media screen and (max-width: 2000px) {
+  .shell,
+  .header-inner {
+    border-inline-color: transparent;
+  }
+}
+
 @media (max-width: 1180px) {
   .hero-title {
     grid-column: 1 / 10;
