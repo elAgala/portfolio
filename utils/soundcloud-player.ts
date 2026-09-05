@@ -1,4 +1,4 @@
-import type { MusicObserver, MusicState } from './music'
+import { musicTracks, type MusicObserver, type MusicState } from './music'
 import type { SoundCloudAPI } from '../types/soundcloud'
 import { createListenerRegistry, requireElement } from './dom'
 
@@ -29,28 +29,7 @@ export function mountSoundCloud({
     const currentTime = requireElement<HTMLElement>('[data-current-time]')
     const trackDuration = requireElement<HTMLElement>('[data-track-duration]')
 
-    const tracks = [
-      {
-        title: 'Aspects Of Rhythm',
-        artist: 'Audio Junkies',
-        url: 'https://soundcloud.com/maccabihouse/audio-junkies-aspects-of-rhythm-1',
-        start: 182000,
-      },
-      {
-        title: 'Wow',
-        artist: 'Sako Isoyan',
-        url: 'https://soundcloud.com/isoformance/sako-isoyan-wow',
-        start: 175000,
-      },
-      {
-        title: 'UFO On A Limousine',
-        artist: 'Breezy S',
-        // The artist upload currently returns 404 for both audio streams.
-        // This release premiere is the same 6:32 recording.
-        url: 'https://soundcloud.com/user-956047264/breezy-s-ufo-on-a-limousine',
-        start: 208000,
-      },
-    ]
+    const tracks = musicTracks
     let currentTrack = 0
     let playing = false
     let muted = false

@@ -14,7 +14,8 @@ copy, Archivo typography, portrait and responsive rules. There are no
   standalone section components are not used by this homepage.
 - Motion: the hero types and corrects `whoami` once. Reduced-motion visitors
   receive the content immediately.
-- Audio: SoundCloud playlist with offsets 3:02, 2:55, and 3:28. Apply offsets
+- Audio: SoundCloud playlist with offsets 3:02, 2:55, 3:28, 1:59, 1:27, and
+  3:27. Apply offsets
   when playback is requested, never on initial widget readiness. Pause/resume
   retains position. The Breezy S artist upload has broken streams, so use the
   verified BELTERS 4U premiere of the same recording.

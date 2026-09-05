@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
                     ><span data-track-title>Aspects Of Rhythm</span></a
                   >
                   <span class="music-position" data-track-position
-                    >01 / 03</span
+                    >01 / 06</span
                   >
                 </div>
                 <span class="music-credit" data-track-artist

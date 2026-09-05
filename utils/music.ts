@@ -1,3 +1,49 @@
+export interface MusicTrack {
+  title: string
+  artist: string
+  url: string
+  start: number
+}
+
+export const musicTracks: MusicTrack[] = [
+  {
+    title: 'Aspects Of Rhythm',
+    artist: 'Audio Junkies',
+    url: 'https://soundcloud.com/maccabihouse/audio-junkies-aspects-of-rhythm-1',
+    start: 182000,
+  },
+  {
+    title: 'Wow',
+    artist: 'Sako Isoyan',
+    url: 'https://soundcloud.com/isoformance/sako-isoyan-wow',
+    start: 175000,
+  },
+  {
+    title: 'UFO On A Limousine',
+    artist: 'Breezy S',
+    url: 'https://soundcloud.com/user-956047264/breezy-s-ufo-on-a-limousine',
+    start: 208000,
+  },
+  {
+    title: 'Cold Case (ODTF002)',
+    artist: 'Alpyren',
+    url: 'https://soundcloud.com/recordeep-mag/premiere-alpyren-cold-case-odtf002',
+    start: 119000,
+  },
+  {
+    title: 'I Need (Rosa Red Remix)',
+    artist: 'Known Artist',
+    url: 'https://soundcloud.com/novajrec/premiere-known-artist-i-need-rosa-red-remix',
+    start: 87000,
+  },
+  {
+    title: 'Witch House [PHONICAM001]',
+    artist: 'Voodoos and Taboos',
+    url: 'https://soundcloud.com/trommelmusic/premiere-b1-voodoos-and-taboos-witch-house-phonicam001',
+    start: 207000,
+  },
+]
+
 export interface MusicState {
   title: string
   artist: string

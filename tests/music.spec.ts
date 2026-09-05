@@ -1,5 +1,18 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeWaveform } from '../utils/music'
+import { musicTracks, normalizeWaveform } from '../utils/music'
+
+describe('SoundCloud playlist', () => {
+  it('keeps the six requested tracks and starting offsets', () => {
+    expect(musicTracks.map(({ title, artist, start }) => ({ title, artist, start }))).toEqual([
+      { title: 'Aspects Of Rhythm', artist: 'Audio Junkies', start: 182000 },
+      { title: 'Wow', artist: 'Sako Isoyan', start: 175000 },
+      { title: 'UFO On A Limousine', artist: 'Breezy S', start: 208000 },
+      { title: 'Cold Case (ODTF002)', artist: 'Alpyren', start: 119000 },
+      { title: 'I Need (Rosa Red Remix)', artist: 'Known Artist', start: 87000 },
+      { title: 'Witch House [PHONICAM001]', artist: 'Voodoos and Taboos', start: 207000 },
+    ])
+  })
+})
 
 describe('SoundCloud waveform data', () => {
   it('normalizes real amplitudes and bounds peaks without inventing shape', () => {
