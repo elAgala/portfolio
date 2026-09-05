@@ -206,31 +206,6 @@ onBeforeUnmount(() => {
                       <path d="M18 5v14M6 6l8 6-8 6V6Z" />
                     </svg>
                   </button>
-                  <button
-                    class="music-control music-control--mute"
-                    type="button"
-                    data-mute
-                    aria-label="Mute audio"
-                    aria-pressed="false"
-                    disabled
-                  >
-                    <svg
-                      class="music-icon--volume"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path d="M5 10v4h4l5 4V6l-5 4H5Z" />
-                      <path d="M17 9a4 4 0 0 1 0 6" />
-                    </svg>
-                    <svg
-                      class="music-icon--muted"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path d="M5 10v4h4l5 4V6l-5 4H5Z" />
-                      <path d="m17 10 4 4m0-4-4 4" />
-                    </svg>
-                  </button>
                 </div>
                 <div class="music-timeline">
                   <span class="music-time" data-current-time>03:02</span>

@@ -14,7 +14,6 @@ const visible = computed(
     foreground.value &&
     props.music.playing &&
     props.music.confirmedPlaying &&
-    !props.music.muted &&
     props.music.status === 'playing',
 )
 const cache = new Map<string, number[]>()

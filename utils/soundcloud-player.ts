@@ -17,7 +17,6 @@ export function mountSoundCloud({
     const playbackButton = requireElement<HTMLButtonElement>('[data-playback]')
     const previousButton = requireElement<HTMLButtonElement>('[data-previous]')
     const nextButton = requireElement<HTMLButtonElement>('[data-next]')
-    const muteButton = requireElement<HTMLButtonElement>('[data-mute]')
     const musicStatus = requireElement<HTMLElement>('[data-music-status]')
     const trackTitle = requireElement<HTMLElement>('[data-track-title]')
     const trackArtist = requireElement<HTMLElement>('[data-track-artist]')
@@ -44,7 +43,6 @@ export function mountSoundCloud({
     soundcloudFrame.src = widgetUrl.href
     let currentTrack = 0
     let playing = false
-    let muted = false
     let widgetReady = false
     let loadingTrack = false
     let duration = 0
@@ -67,7 +65,6 @@ export function mountSoundCloud({
         trackIndex: currentTrack,
         waveformUrl,
         engaged,
-        muted,
         playing,
         confirmedPlaying,
         disabled: controlsDisabled,
@@ -115,11 +112,6 @@ export function mountSoundCloud({
           ? `Pause ${track.title} by ${track.artist}`
           : `Play ${track.title} by ${track.artist}`,
       )
-      muteButton.setAttribute('aria-pressed', String(muted))
-      muteButton.setAttribute(
-        'aria-label',
-        muted ? 'Unmute audio' : 'Mute audio',
-      )
       publishMusic()
     }
 
@@ -128,7 +120,6 @@ export function mountSoundCloud({
       previousButton.disabled = disabled
       playbackButton.disabled = disabled
       nextButton.disabled = disabled
-      muteButton.disabled = disabled
       trackProgress.disabled = disabled
       publishMusic()
     }
@@ -246,7 +237,7 @@ export function mountSoundCloud({
           callback: () => {
             if (disposed || version !== trackVersion) return
             clearTimeout(loadTimeout)
-            widget.setVolume(muted ? 0 : 80)
+            widget.setVolume(80)
             widget.getDuration((value) => {
               if (disposed || version !== trackVersion) return
               duration = value
@@ -271,7 +262,7 @@ export function mountSoundCloud({
         widgetReady = true
         const version = trackVersion
         readMetadata()
-        widget.setVolume(muted ? 0 : 80)
+        widget.setVolume(80)
         widget.getDuration((value) => {
           if (disposed || version !== trackVersion) return
           duration = value
@@ -388,18 +379,8 @@ export function mountSoundCloud({
         musicStatus.textContent = `${current().title} moved to ${currentTime.textContent}`
       })
 
-      const toggleMute = () => {
-        if (disposed || controlsDisabled) return
-        muted = !muted
-        widget.setVolume(muted ? 0 : 80)
-        renderTrack()
-        musicStatus.textContent = muted ? 'Sound muted' : 'Sound on'
-        publishMusic()
-      }
-      listen(muteButton, 'click', toggleMute)
       onMusicActions?.({
         togglePlayback,
-        toggleMute,
         next: () => {
           if (!controlsDisabled) loadTrack(currentTrack + 1, true)
         },

@@ -117,20 +117,6 @@ function leaveFocus(event: FocusEvent) {
             <path d="M18 5v14M6 6l8 6-8 6V6Z" />
           </svg>
         </button>
-        <button
-          class="floating-button"
-          type="button"
-          :disabled="music.disabled || !actions"
-          :aria-label="music.muted ? 'Unmute audio' : 'Mute audio'"
-          :aria-pressed="music.muted"
-          @click="actions?.toggleMute()"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 10v4h4l5 4V6l-5 4H5Z" />
-            <path v-if="music.muted" d="m17 10 4 4m0-4-4 4" />
-            <path v-else d="M17 9a4 4 0 0 1 0 6" />
-          </svg>
-        </button>
       </template>
       <p v-if="music.status === 'error'" class="floating-error">
         {{ music.message }}

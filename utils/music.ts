@@ -75,7 +75,6 @@ export interface MusicState {
   message: string
   engaged: boolean
   disabled: boolean
-  muted: boolean
   playing: boolean
   confirmedPlaying: boolean
   position: number
@@ -86,7 +85,6 @@ export interface MusicActions {
   togglePlayback: () => void
   next: () => void
   previous: () => void
-  toggleMute: () => void
 }
 
 export interface MusicObserver {
@@ -104,7 +102,6 @@ export const initialMusicState: MusicState = {
   message: 'Loading SoundCloud',
   engaged: false,
   disabled: true,
-  muted: false,
   playing: false,
   confirmedPlaying: false,
   position: 0,

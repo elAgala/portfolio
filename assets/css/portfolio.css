@@ -835,19 +835,12 @@ html.boot-complete .hero-bottom {
   border-radius: 50%;
 }
 
-.music-control--mute {
-  margin-left: auto;
-}
-
 .music-control .music-icon--pause,
-.music-control .music-icon--muted,
-.music-player[data-state="playing"] .music-icon--play,
-.music-control--mute[aria-pressed="true"] .music-icon--volume {
+.music-player[data-state="playing"] .music-icon--play {
   display: none;
 }
 
-.music-player[data-state="playing"] .music-icon--pause,
-.music-control--mute[aria-pressed="true"] .music-icon--muted {
+.music-player[data-state="playing"] .music-icon--pause {
   display: block;
 }
 

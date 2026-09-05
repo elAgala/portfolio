@@ -22,7 +22,7 @@ copy, Archivo typography, portrait and responsive rules. There are no
 - Keep one SoundCloud widget. `utils/soundcloud-player.ts` publishes typed
   state and actions to `FloatingMusicPlayer` and `SoundCloudBackdrop`. The
   ambient waveform uses real track samples and stays hidden while paused,
-  muted or unavailable. Keep maintained source in TypeScript.
+  or unavailable. Playback is controlled with play/pause; there is no mute control. Keep maintained source in TypeScript.
 - Brand semantics: “Agala” is Julián's nickname and personal mark. “Agala Labs”
   is his software factory and links to `https://agala.com.ar`.
 - Content order: identity → working approach → AI workflow → everyday tools → Agala Labs → contact.
