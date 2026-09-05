@@ -16,7 +16,7 @@ describe('SoundCloud playlist', () => {
     expect(shuffleMusicTracks([])).toEqual([])
     expect(shuffleMusicTracks([musicTracks[0]!])).toEqual([musicTracks[0]])
   })
-  it('keeps the six requested tracks and starting offsets', () => {
+  it('keeps the requested tracks and starting offsets', () => {
     expect(musicTracks.map(({ title, artist, start }) => ({ title, artist, start }))).toEqual([
       { title: 'Aspects Of Rhythm', artist: 'Audio Junkies', start: 182000 },
       { title: 'Wow', artist: 'Sako Isoyan', start: 175000 },
@@ -24,6 +24,7 @@ describe('SoundCloud playlist', () => {
       { title: 'Cold Case (ODTF002)', artist: 'Alpyren', start: 119000 },
       { title: 'I Need (Rosa Red Remix)', artist: 'Known Artist', start: 87000 },
       { title: 'Witch House [PHONICAM001]', artist: 'Voodoos and Taboos', start: 118000 },
+      { title: 'Lime House', artist: 'Demi Riquísimo & Hammer', start: 178000 },
     ])
   })
 })

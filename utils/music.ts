@@ -42,6 +42,12 @@ export const musicTracks: MusicTrack[] = [
     url: 'https://soundcloud.com/trommelmusic/premiere-b1-voodoos-and-taboos-witch-house-phonicam001',
     start: 118000,
   },
+  {
+    title: 'Lime House',
+    artist: 'Demi Riquísimo & Hammer',
+    url: 'https://soundcloud.com/minitelofc/incoming-demi-riquisimo-hammer-lime-house-semidelicious',
+    start: 178000,
+  },
 ]
 
 /** Shuffle a copy once per player mount, keeping next/previous navigation stable. */

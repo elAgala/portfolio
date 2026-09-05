@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import portfolioStyles from "~/assets/css/portfolio.css?inline";
 import { mountPortfolio } from "~/utils/portfolio";
-import { initialMusicState, type MusicActions } from "~/utils/music";
+import { initialMusicState, musicTracks, type MusicActions } from "~/utils/music";
 
 const music = shallowRef({ ...initialMusicState });
 const musicActions = shallowRef<MusicActions | null>(null);
@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
                     ><span data-track-title>Aspects Of Rhythm</span></a
                   >
                   <span class="music-position" data-track-position
-                    >01 / 06</span
+                    >01 / {{ String(musicTracks.length).padStart(2, '0') }}</span
                   >
                 </div>
                 <span class="music-credit" data-track-artist

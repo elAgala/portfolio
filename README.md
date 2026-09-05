@@ -42,7 +42,9 @@ The Breezy S track uses the BELTERS 4U release premiere on SoundCloud. During ve
 
 The formal resume is the only secondary route.
 
-The music queue is shuffled once when the homepage player mounts, including the first track. Next, previous and automatic advance follow that order, wrapping after all six tracks; pause/resume does not reshuffle. Each track keeps its configured starting offset.
+The playlist also includes Demi Riquísimo & Hammer — “Lime House” (2:58), using the MINITEL upload on SoundCloud.
+
+The music queue is shuffled once when the homepage player mounts, including the first track. Next, previous and automatic advance follow that order, wrapping after all seven tracks; pause/resume does not reshuffle. Each track keeps its configured starting offset.
 
 The share preview uses the current portrait and brand assets. After editing `scripts/social-card.html`, run `npm run social:image` with Chrome installed (`CHROME_PATH` can override its location), then update the image version in `data/social.ts`. Commit the generated `public/og-image.png` before deployment. Existing messages may retain a cached preview until the sharing service fetches the metadata again.
 

@@ -15,7 +15,7 @@ copy, Archivo typography, portrait and responsive rules. There are no
 - Motion: the hero intentionally types `whoaim`, then corrects it to `whoami` once. Keep this joke. Reduced-motion visitors
   receive the content immediately.
 - Audio: SoundCloud playlist with offsets 3:02, 2:55, 3:28, 1:59, 1:27, and
-  1:58. Shuffle a copy of the playlist once per player mount, including the first track; keep that order for next/previous and automatic advance. Apply offsets
+  1:58, plus Demi Riquísimo & Hammer — Lime House at 2:58. Shuffle a copy of the playlist once per player mount, including the first track; keep that order for next/previous and automatic advance. Apply offsets
   when playback is requested, never on initial widget readiness. Pause/resume
   retains position. The Breezy S artist upload has broken streams, so use the
   verified BELTERS 4U premiere of the same recording.
