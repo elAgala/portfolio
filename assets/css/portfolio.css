@@ -1818,7 +1818,7 @@ html.boot-complete .hero-bottom {
   }
 
   .hero-main {
-    grid-template-columns: minmax(0, 1fr) clamp(72px, 20vw, 80px);
+    grid-template-columns: minmax(0, 1fr) clamp(88px, 24vw, 96px);
     gap: 16px;
     align-items: center;
   }
