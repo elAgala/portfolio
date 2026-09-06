@@ -383,6 +383,10 @@ img {
   text-transform: uppercase;
 }
 
+.site-mark > span {
+  transform: translateY(1px);
+}
+
 .site-mark__portrait {
   display: block;
   width: 30px;
