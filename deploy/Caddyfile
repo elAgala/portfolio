@@ -9,6 +9,7 @@
 	encode zstd gzip
 
 	handle /healthz {
+		header X-Agala-Revision "{env.VCS_REF}"
 		respond "ok" 200
 	}
 

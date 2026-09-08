@@ -36,29 +36,3 @@ steps:
         - ${CI_COMMIT_SHA}
       build_args:
         VCS_REF: ${CI_COMMIT_SHA}
-
-  - name: deploy-portfolio
-    when:
-      - event: push
-        branch: master
-    image: ghcr.io/agala-labs/ansible-runner:latest
-    pull: true
-    environment:
-      SSH_DEPLOY_KEY:
-        from_secret: ssh_deploy_key
-      GH_USER:
-        from_secret: gh_username
-      GH_TOKEN:
-        from_secret: gh_token
-      ANSIBLE_REPO: https://github.com/agala-labs/platform-iac.git
-      ANSIBLE_DIR: ansible
-      ANSIBLE_PLAYBOOK: ansible/playbooks/portfolio-site.yml
-      ANSIBLE_INVENTORY: ansible/inventories/
-      ANSIBLE_USER: deploy
-      ANSIBLE_LIMIT: apps:localhost
-      APP_VERSION: ${CI_COMMIT_SHA}
-      REGISTRY_URL: ghcr.io
-      REGISTRY_USERNAME:
-        from_secret: gh_username
-      REGISTRY_PASSWORD:
-        from_secret: gh_token

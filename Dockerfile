@@ -23,7 +23,8 @@ LABEL org.opencontainers.image.title="Julián Benitez portfolio" \
       org.opencontainers.image.revision="${VCS_REF}"
 
 ENV XDG_CONFIG_HOME=/tmp/caddy/config \
-    XDG_DATA_HOME=/tmp/caddy/data
+    XDG_DATA_HOME=/tmp/caddy/data \
+    VCS_REF=${VCS_REF}
 
 COPY deploy/Caddyfile /etc/caddy/Caddyfile
 COPY --from=build /workspace/.output/public /srv

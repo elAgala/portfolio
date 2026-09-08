@@ -67,15 +67,16 @@ Set `NUXT_PUBLIC_SITE_URL` when the production canonical URL differs from `https
 
 The portfolio is published as an immutable static image at
 `ghcr.io/elagala/portfolio:<commit-sha>`. Pull requests validate the site. A
-push to `master` validates it, publishes the exact 40-character commit SHA, and
-deploys that image to `https://julian.benitez.ar/` through the shared
-`platform-iac` static-site role.
+push to `master` validates it and publishes the exact 40-character commit SHA.
+Once the revision-bound Kubernetes release runner owned by `platform-iac` has
+been published by digest, production deployment will use a separate, manually
+approved Woodpecker deployment event that resolves the application image digest.
 
 Required Woodpecker repository secrets:
 
 - `gh_username`
 - `gh_token`
-- `ssh_deploy_key`
+- `platform_git_release_token` (release workflow only)
 
 Build and verify the image locally:
 
@@ -85,7 +86,8 @@ docker run --rm -p 8080:8080 portfolio:local
 curl --fail http://127.0.0.1:8080/healthz
 ```
 
-Every push to `master` publishes and deploys its commit SHA automatically. To
-roll back, revert the unwanted change on `master`; the revert commit is built
-and deployed through the same pipeline while DNS and edge routes remain
-unchanged.
+Pushes never deploy automatically. The Kubernetes release remains disabled until
+the pinned runner digest and the `portfolio_production` deployment workflow are
+reviewed together. Once enabled, Kubernetes restores the previous workload
+manifest when a rollout fails; the edge route and the recorded Compose SHA remain
+the initial-cutover fallback.
