@@ -17,7 +17,7 @@ describe('portfolio release boundary', () => {
   it('releases only an approved Portfolio deployment with pinned executors', () => {
     const workflow = readFileSync(resolve('.woodpecker/release.yml'), 'utf8')
     const resolver = 'gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424'
-    const runner = 'ghcr.io/agala-labs/ansible-runner@sha256:e78c571e9dd3008b70245c5bce0d92c3d8e0aecd1d6d3a3e03ea34bb8bd09f59'
+    const runner = 'ghcr.io/agala-labs/ansible-runner@sha256:e21d5845b3d17ef43d4c54d0ee2b59257cfcfa4972240f968c4b8bdcf76f69e7'
 
     expect(workflow).toContain('event: deployment')
     expect(workflow).toContain('branch: master')
@@ -29,11 +29,9 @@ describe('portfolio release boundary', () => {
     expect(workflow).toContain('RELEASE_SERVICE: portfolio-site')
     expect(workflow).toContain('RELEASE_IMAGE_FILE: .release/image.txt')
     expect(workflow).toContain('RELEASE_SOURCE_SHA: ${CI_COMMIT_SHA}')
-    expect(workflow).toContain('RELEASE_IAC_REVISION: 30e10e02ab39c9113365fea731bbbad01c88d6c1')
-    expect(workflow).toContain('INFISICAL_HOST: https://vault.agala.com.ar')
-    expect(workflow).toContain('INFISICAL_PROJECT_ID: c5347389-7c2c-4b3d-8312-7de0d0158560')
-    expect(workflow).toContain('from_secret: infisical_k3s_release_client_id')
-    expect(workflow).toContain('from_secret: infisical_k3s_release_client_secret')
+    expect(workflow).toContain('RELEASE_IAC_REVISION: f3f422cccc698ea8f0dcdad95c65822a7cbedf1d')
+    expect(workflow).toContain('K3S_RELEASE_KUBECONFIG_B64:')
+    expect(workflow).toContain('from_secret: k3s_release_kubeconfig_b64')
     expect(workflow).toContain('from_secret: platform_git_release_token')
     expect(workflow).toContain('protected force-with-lease fails closed')
     expect(workflow).not.toContain('concurrency:')
@@ -41,6 +39,8 @@ describe('portfolio release boundary', () => {
     expect(workflow).not.toContain('/etc/agala/woodpecker/release-kubeconfig')
     expect(workflow).not.toContain('KUBECONFIG:')
     expect(workflow).not.toContain('RELEASE_IMAGE:')
+    expect(workflow).not.toContain('INFISICAL_CLIENT_ID')
+    expect(workflow).not.toContain('INFISICAL_CLIENT_SECRET')
     expect(workflow).not.toContain('latest')
   })
 
