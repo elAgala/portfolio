@@ -29,6 +29,5 @@ steps:
     volumes:
       - /etc/agala/woodpecker/release-kubeconfig:/run/secrets/release-kubeconfig:ro
 
-concurrency:
-  limit: 1
-  group: application-release
+# Woodpecker 3.13 rejects workflow-level concurrency. The platform publisher's
+# protected force-with-lease fails closed if another release updates Git first.

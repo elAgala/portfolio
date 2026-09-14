@@ -78,6 +78,10 @@ release runner. The digest is never entered as a free-form deployment parameter.
 The reviewed resolver image is
 `gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424`
 (crane v0.21.7); the final workflow must keep that immutable reference.
+The current Woodpecker 3.13 server does not accept workflow-level concurrency;
+the platform publisher's protected Git `force-with-lease` rejects a colliding
+release before it can synchronize the cluster. Retry that release after the
+accepted one completes.
 
 Required Woodpecker repository secrets:
 
