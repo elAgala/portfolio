@@ -70,7 +70,13 @@ The portfolio is published as an immutable static image at
 push to `master` validates it and publishes the exact 40-character commit SHA.
 Once the revision-bound Kubernetes release runner owned by `platform-iac` has
 been published by digest, production deployment will use a separate, manually
-approved Woodpecker deployment event that resolves the application image digest.
+approved Woodpecker deployment event. Its pinned `crane` step runs
+`deploy/resolve-release-image.sh`, resolves the exact commit tag to a digest,
+verifies the OCI revision label and passes a one-line digest record to the
+release runner. The digest is never entered as a free-form deployment parameter.
+The reviewed resolver image is
+`gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424`
+(crane v0.21.7); the final workflow must keep that immutable reference.
 
 Required Woodpecker repository secrets:
 
@@ -89,5 +95,6 @@ curl --fail http://127.0.0.1:8080/healthz
 Pushes never deploy automatically. The Kubernetes release remains disabled until
 the pinned runner digest and the `portfolio_production` deployment workflow are
 reviewed together. Once enabled, Kubernetes restores the previous workload
-manifest when a rollout fails; the edge route and the recorded Compose SHA remain
-the initial-cutover fallback.
+manifest when a later rollout fails. Compose is not a post-cutover fallback: the
+platform retirement playbook removes it after the NodePort and public route both
+serve the accepted Kubernetes revision.

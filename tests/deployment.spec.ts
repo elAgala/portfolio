@@ -1,5 +1,7 @@
-import { readFileSync } from 'node:fs'
+import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
+import { spawnSync } from 'node:child_process'
 import { describe, expect, it } from 'vitest'
 
 describe('portfolio release boundary', () => {
@@ -18,5 +20,65 @@ describe('portfolio release boundary', () => {
 
     expect(dockerfile).toContain('VCS_REF=${VCS_REF}')
     expect(caddyfile).toContain('header X-Agala-Revision "{env.VCS_REF}"')
+  })
+
+  it('resolves the deployment commit to a verified digest record', () => {
+    const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-'))
+    const crane = resolve(directory, 'crane')
+    const record = resolve(directory, 'image.txt')
+    const revision = 'a'.repeat(40)
+    writeFileSync(crane, `#!/bin/sh
+case "$1" in
+  digest) printf 'sha256:%s\\n' "${'b'.repeat(64)}" ;;
+  config) printf '{"config":{"Labels":{"org.opencontainers.image.revision":"%s"}}}\\n' "\${MOCK_REVISION:-$CI_COMMIT_SHA}" ;;
+  *) exit 2 ;;
+esac
+`)
+    chmodSync(crane, 0o700)
+
+    try {
+      const result = spawnSync('sh', ['deploy/resolve-release-image.sh'], {
+        cwd: resolve('.'),
+        env: {
+          ...process.env,
+          CI_COMMIT_SHA: revision,
+          CRANE_BIN: crane,
+          RELEASE_IMAGE_FILE: record,
+        },
+        encoding: 'utf8',
+      })
+
+      expect(result.status, result.stderr).toBe(0)
+      expect(readFileSync(record, 'utf8')).toBe(`ghcr.io/elagala/portfolio@sha256:${'b'.repeat(64)}\n`)
+    }
+    finally {
+      rmSync(directory, { recursive: true, force: true })
+    }
+  })
+
+  it('rejects a digest whose image revision differs from the deployment commit', () => {
+    const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-mismatch-'))
+    const crane = resolve(directory, 'crane')
+    writeFileSync(crane, `#!/bin/sh
+case "$1" in
+  digest) printf 'sha256:%s\\n' "${'b'.repeat(64)}" ;;
+  config) printf '{"config":{"Labels":{"org.opencontainers.image.revision":"%s"}}}\\n' "${'c'.repeat(40)}" ;;
+esac
+`)
+    chmodSync(crane, 0o700)
+
+    try {
+      const result = spawnSync('sh', ['deploy/resolve-release-image.sh'], {
+        cwd: resolve('.'),
+        env: {...process.env, CI_COMMIT_SHA: 'a'.repeat(40), CRANE_BIN: crane},
+        encoding: 'utf8',
+      })
+
+      expect(result.status).toBe(1)
+      expect(result.stderr).toContain('image revision label does not match')
+    }
+    finally {
+      rmSync(directory, { recursive: true, force: true })
+    }
   })
 })
