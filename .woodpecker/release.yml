@@ -16,18 +16,21 @@ steps:
       - /busybox/sh deploy/resolve-release-image.sh
 
   - name: release-approved-image
-    image: ghcr.io/agala-labs/ansible-runner@sha256:ecd7fd6d6a1d33a93f593f16b074341e94f2321f80d2e492577ed5b7cf23ed45
+    image: ghcr.io/agala-labs/ansible-runner@sha256:e78c571e9dd3008b70245c5bce0d92c3d8e0aecd1d6d3a3e03ea34bb8bd09f59
     environment:
       AGALA_RUNNER_MODE: k3s-release
       RELEASE_SERVICE: portfolio-site
       RELEASE_IMAGE_FILE: .release/image.txt
       RELEASE_SOURCE_SHA: ${CI_COMMIT_SHA}
-      RELEASE_IAC_REVISION: e268853184fa83ca9ddd88f3bd74dbf78fff43ad
-      KUBECONFIG: /run/secrets/release-kubeconfig
+      RELEASE_IAC_REVISION: 30e10e02ab39c9113365fea731bbbad01c88d6c1
+      INFISICAL_HOST: https://vault.agala.com.ar
+      INFISICAL_PROJECT_ID: c5347389-7c2c-4b3d-8312-7de0d0158560
+      INFISICAL_CLIENT_ID:
+        from_secret: infisical_k3s_release_client_id
+      INFISICAL_CLIENT_SECRET:
+        from_secret: infisical_k3s_release_client_secret
       PLATFORM_GIT_TOKEN:
         from_secret: platform_git_release_token
-    volumes:
-      - /etc/agala/woodpecker/release-kubeconfig:/run/secrets/release-kubeconfig:ro
 
 # Woodpecker 3.13 rejects workflow-level concurrency. The platform publisher's
 # protected force-with-lease fails closed if another release updates Git first.
