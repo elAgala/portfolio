@@ -14,6 +14,29 @@ describe('portfolio release boundary', () => {
     expect(workflow).not.toContain('ANSIBLE_PLAYBOOK')
   })
 
+  it('releases only an approved Portfolio deployment with pinned executors', () => {
+    const workflow = readFileSync(resolve('.woodpecker/release.yml'), 'utf8')
+    const resolver = 'gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424'
+    const runner = 'ghcr.io/agala-labs/ansible-runner@sha256:ecd7fd6d6a1d33a93f593f16b074341e94f2321f80d2e492577ed5b7cf23ed45'
+
+    expect(workflow).toContain('event: deployment')
+    expect(workflow).toContain('branch: master')
+    expect(workflow).toContain('CI_PIPELINE_DEPLOY_TARGET == "portfolio_production"')
+    expect(workflow).toContain(`image: ${resolver}`)
+    expect(workflow).toContain('echo $CI_SCRIPT | base64 -d | /busybox/sh -e')
+    expect(workflow).toContain('commands:\n      - /busybox/sh deploy/resolve-release-image.sh')
+    expect(workflow).toContain(`image: ${runner}`)
+    expect(workflow).toContain('RELEASE_SERVICE: portfolio-site')
+    expect(workflow).toContain('RELEASE_IMAGE_FILE: .release/image.txt')
+    expect(workflow).toContain('RELEASE_SOURCE_SHA: ${CI_COMMIT_SHA}')
+    expect(workflow).toContain('RELEASE_IAC_REVISION: e268853184fa83ca9ddd88f3bd74dbf78fff43ad')
+    expect(workflow).toContain('from_secret: platform_git_release_token')
+    expect(workflow).toContain('/etc/agala/woodpecker/release-kubeconfig:/run/secrets/release-kubeconfig:ro')
+    expect(workflow).toContain('limit: 1\n  group: application-release')
+    expect(workflow).not.toContain('RELEASE_IMAGE:')
+    expect(workflow).not.toContain('latest')
+  })
+
   it('exposes the immutable source revision through health', () => {
     const dockerfile = readFileSync(resolve('Dockerfile'), 'utf8')
     const caddyfile = readFileSync(resolve('deploy/Caddyfile'), 'utf8')

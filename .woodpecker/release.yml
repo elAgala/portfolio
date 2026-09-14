@@ -1,0 +1,34 @@
+when:
+  - event: deployment
+    branch: master
+    evaluate: 'CI_PIPELINE_DEPLOY_TARGET == "portfolio_production"'
+
+steps:
+  - name: resolve-approved-image
+    image: gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424
+    entrypoint:
+      - /busybox/sh
+      - -c
+      - echo $CI_SCRIPT | base64 -d | /busybox/sh -e
+    environment:
+      RELEASE_IMAGE_FILE: .release/image.txt
+    commands:
+      - /busybox/sh deploy/resolve-release-image.sh
+
+  - name: release-approved-image
+    image: ghcr.io/agala-labs/ansible-runner@sha256:ecd7fd6d6a1d33a93f593f16b074341e94f2321f80d2e492577ed5b7cf23ed45
+    environment:
+      AGALA_RUNNER_MODE: k3s-release
+      RELEASE_SERVICE: portfolio-site
+      RELEASE_IMAGE_FILE: .release/image.txt
+      RELEASE_SOURCE_SHA: ${CI_COMMIT_SHA}
+      RELEASE_IAC_REVISION: e268853184fa83ca9ddd88f3bd74dbf78fff43ad
+      KUBECONFIG: /run/secrets/release-kubeconfig
+      PLATFORM_GIT_TOKEN:
+        from_secret: platform_git_release_token
+    volumes:
+      - /etc/agala/woodpecker/release-kubeconfig:/run/secrets/release-kubeconfig:ro
+
+concurrency:
+  limit: 1
+  group: application-release
