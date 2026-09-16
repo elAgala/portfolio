@@ -17,7 +17,7 @@ describe('portfolio release boundary', () => {
   it('releases only an approved Portfolio deployment with pinned executors', () => {
     const workflow = readFileSync(resolve('.woodpecker/release.yml'), 'utf8')
     const resolver = 'gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424'
-    const runner = 'ghcr.io/agala-labs/ansible-runner@sha256:3ea1533f9be12ede7d51314ec739507f563ead536a8cfb768aa791f83c591a9f'
+    const runner = 'ghcr.io/agala-labs/ansible-runner@sha256:e6ac4030f113aa62d6f5ca26fb487305363db81192a8d8275416eacb01349e38'
 
     expect(workflow).toContain('event: deployment')
     expect(workflow).toContain('branch: master')
@@ -33,7 +33,7 @@ describe('portfolio release boundary', () => {
     expect(workflow).toContain('from_secret: portfolio_registry_username')
     expect(workflow).toContain('from_secret: portfolio_registry_password')
     expect(workflow).toContain('partial: false')
-    expect(workflow).toContain('RELEASE_IAC_REVISION: 993ab54791e9219041a7c79ff1aefeacbccf194d')
+    expect(workflow).toContain('RELEASE_IAC_REVISION: 556584e88f9b44d9ced5e2ffb9d154e2341f4c6d')
     expect(workflow).toContain('K3S_RELEASE_KUBECONFIG_B64:')
     expect(workflow).toContain('from_secret: k3s_release_kubeconfig_b64')
     expect(workflow).toContain('from_secret: platform_git_release_token')

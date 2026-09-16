@@ -29,17 +29,16 @@ steps:
     commands:
       - /busybox/sh deploy/resolve-release-image.sh
 
-  # Publication gate: replace the runner digest and IaC revision together after
-  # platform-iac publishes the runner with committed-artifact approval support.
+  # Verified together against platform-iac pipeline 32 and the published OCI revision.
   - name: release-approved-image
-    image: ghcr.io/agala-labs/ansible-runner@sha256:3ea1533f9be12ede7d51314ec739507f563ead536a8cfb768aa791f83c591a9f
+    image: ghcr.io/agala-labs/ansible-runner@sha256:e6ac4030f113aa62d6f5ca26fb487305363db81192a8d8275416eacb01349e38
     environment:
       AGALA_RUNNER_MODE: k3s-release
       RELEASE_SERVICE: portfolio-site
       RELEASE_IMAGE_FILE: .release/image.txt
       RELEASE_SOURCE_SHA: 92b05177c2b67047e043ae1855d21b3ae86dc014
       RELEASE_APPROVED_ARTIFACT: "true"
-      RELEASE_IAC_REVISION: 993ab54791e9219041a7c79ff1aefeacbccf194d
+      RELEASE_IAC_REVISION: 556584e88f9b44d9ced5e2ffb9d154e2341f4c6d
       K3S_RELEASE_KUBECONFIG_B64:
         from_secret: k3s_release_kubeconfig_b64
       PLATFORM_GIT_TOKEN:
