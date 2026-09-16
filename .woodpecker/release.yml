@@ -3,6 +3,14 @@ when:
     branch: master
     evaluate: 'CI_PIPELINE_DEPLOY_TARGET == "portfolio_production"'
 
+# The runner verifies the approved source is an ancestor of this workflow commit.
+clone:
+  - name: clone
+    image: woodpeckerci/plugin-git
+    settings:
+      partial: false
+      depth: 0
+
 steps:
   - name: resolve-approved-image
     image: gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424
@@ -12,16 +20,25 @@ steps:
       - echo $CI_SCRIPT | base64 -d | /busybox/sh -e
     environment:
       RELEASE_IMAGE_FILE: .release/image.txt
+      RELEASE_SOURCE_SHA: 92b05177c2b67047e043ae1855d21b3ae86dc014
+      RELEASE_EXPECTED_DIGEST: sha256:2b4035d58cf6feea7a68f904d7bdbb0197234742bcbc1ee9a94ab8e8361f9e54
+      REGISTRY_USERNAME:
+        from_secret: portfolio_registry_username
+      REGISTRY_PASSWORD:
+        from_secret: portfolio_registry_password
     commands:
       - /busybox/sh deploy/resolve-release-image.sh
 
+  # Publication gate: replace the runner digest and IaC revision together after
+  # platform-iac publishes the runner with committed-artifact approval support.
   - name: release-approved-image
     image: ghcr.io/agala-labs/ansible-runner@sha256:3ea1533f9be12ede7d51314ec739507f563ead536a8cfb768aa791f83c591a9f
     environment:
       AGALA_RUNNER_MODE: k3s-release
       RELEASE_SERVICE: portfolio-site
       RELEASE_IMAGE_FILE: .release/image.txt
-      RELEASE_SOURCE_SHA: ${CI_COMMIT_SHA}
+      RELEASE_SOURCE_SHA: 92b05177c2b67047e043ae1855d21b3ae86dc014
+      RELEASE_APPROVED_ARTIFACT: "true"
       RELEASE_IAC_REVISION: 993ab54791e9219041a7c79ff1aefeacbccf194d
       K3S_RELEASE_KUBECONFIG_B64:
         from_secret: k3s_release_kubeconfig_b64

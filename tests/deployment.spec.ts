@@ -1,4 +1,4 @@
-import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -28,7 +28,11 @@ describe('portfolio release boundary', () => {
     expect(workflow).toContain(`image: ${runner}`)
     expect(workflow).toContain('RELEASE_SERVICE: portfolio-site')
     expect(workflow).toContain('RELEASE_IMAGE_FILE: .release/image.txt')
-    expect(workflow).toContain('RELEASE_SOURCE_SHA: ${CI_COMMIT_SHA}')
+    expect(workflow).toContain('RELEASE_SOURCE_SHA: 92b05177c2b67047e043ae1855d21b3ae86dc014')
+    expect(workflow).toContain('RELEASE_APPROVED_ARTIFACT: "true"')
+    expect(workflow).toContain('from_secret: portfolio_registry_username')
+    expect(workflow).toContain('from_secret: portfolio_registry_password')
+    expect(workflow).toContain('partial: false')
     expect(workflow).toContain('RELEASE_IAC_REVISION: 993ab54791e9219041a7c79ff1aefeacbccf194d')
     expect(workflow).toContain('K3S_RELEASE_KUBECONFIG_B64:')
     expect(workflow).toContain('from_secret: k3s_release_kubeconfig_b64')
@@ -44,6 +48,16 @@ describe('portfolio release boundary', () => {
     expect(workflow).not.toContain('latest')
   })
 
+  it('pins the existing approved artifact independently of the workflow revision', () => {
+    const artifact = JSON.parse(readFileSync(resolve('deploy/release-artifact.json'), 'utf8'))
+    const workflow = readFileSync(resolve('.woodpecker/release.yml'), 'utf8')
+    expect(artifact.service).toBe('portfolio-site')
+    expect(artifact.sourceSha).toBe('92b05177c2b67047e043ae1855d21b3ae86dc014')
+    expect(artifact.image).toBe('ghcr.io/elagala/portfolio@sha256:2b4035d58cf6feea7a68f904d7bdbb0197234742bcbc1ee9a94ab8e8361f9e54')
+    expect(workflow).toContain(`RELEASE_SOURCE_SHA: ${artifact.sourceSha}`)
+    expect(workflow).toContain(`RELEASE_EXPECTED_DIGEST: ${artifact.image.split('@')[1]}`)
+  })
+
   it('exposes the immutable source revision through health', () => {
     const dockerfile = readFileSync(resolve('Dockerfile'), 'utf8')
     const caddyfile = readFileSync(resolve('deploy/Caddyfile'), 'utf8')
@@ -52,15 +66,16 @@ describe('portfolio release boundary', () => {
     expect(caddyfile).toContain('header X-Agala-Revision "{env.VCS_REF}"')
   })
 
-  it('resolves the deployment commit to a verified digest record', () => {
+  it('resolves the approved source using private registry auth and verifies the digest', () => {
     const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-'))
     const crane = resolve(directory, 'crane')
     const record = resolve(directory, 'image.txt')
     const revision = 'a'.repeat(40)
     writeFileSync(crane, `#!/bin/sh
 case "$1" in
+  auth) cat >/dev/null; printf '%s\\n' "$DOCKER_CONFIG" > "$MOCK_CONFIG_PATH" ;;
   digest) printf 'sha256:%s\\n' "${'b'.repeat(64)}" ;;
-  config) printf '{"config":{"Labels":{"org.opencontainers.image.revision":"%s"}}}\\n' "\${MOCK_REVISION:-$CI_COMMIT_SHA}" ;;
+  config) printf '{"config":{"Labels":{"org.opencontainers.image.revision":"%s"}}}\\n' "\${MOCK_REVISION:-$RELEASE_SOURCE_SHA}" ;;
   *) exit 2 ;;
 esac
 `)
@@ -71,7 +86,12 @@ esac
         cwd: resolve('.'),
         env: {
           ...process.env,
-          CI_COMMIT_SHA: revision,
+          CI_COMMIT_SHA: 'd'.repeat(40),
+          RELEASE_SOURCE_SHA: revision,
+          RELEASE_EXPECTED_DIGEST: `sha256:${'b'.repeat(64)}`,
+          REGISTRY_USERNAME: 'test',
+          REGISTRY_PASSWORD: 'test-only-not-a-real-token',
+          MOCK_CONFIG_PATH: resolve(directory, 'config-path'),
           CRANE_BIN: crane,
           RELEASE_IMAGE_FILE: record,
         },
@@ -80,17 +100,20 @@ esac
 
       expect(result.status, result.stderr).toBe(0)
       expect(readFileSync(record, 'utf8')).toBe(`ghcr.io/elagala/portfolio@sha256:${'b'.repeat(64)}\n`)
+      expect(existsSync(readFileSync(resolve(directory, 'config-path'), 'utf8').trim())).toBe(false)
+      expect(result.stdout + result.stderr).not.toContain('test-only-not-a-real-token')
     }
     finally {
       rmSync(directory, { recursive: true, force: true })
     }
   })
 
-  it('rejects a digest whose image revision differs from the deployment commit', () => {
+  it('rejects a digest whose image revision differs from the approved source', () => {
     const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-mismatch-'))
     const crane = resolve(directory, 'crane')
     writeFileSync(crane, `#!/bin/sh
 case "$1" in
+  auth) cat >/dev/null; printf '%s\\n' "$DOCKER_CONFIG" > "$MOCK_CONFIG_PATH" ;;
   digest) printf 'sha256:%s\\n' "${'b'.repeat(64)}" ;;
   config) printf '{"config":{"Labels":{"org.opencontainers.image.revision":"%s"}}}\\n' "${'c'.repeat(40)}" ;;
 esac
@@ -100,7 +123,7 @@ esac
     try {
       const result = spawnSync('sh', ['deploy/resolve-release-image.sh'], {
         cwd: resolve('.'),
-        env: {...process.env, CI_COMMIT_SHA: 'a'.repeat(40), CRANE_BIN: crane},
+        env: {...process.env, RELEASE_SOURCE_SHA: 'a'.repeat(40), RELEASE_EXPECTED_DIGEST: `sha256:${'b'.repeat(64)}`, REGISTRY_USERNAME: 'test', REGISTRY_PASSWORD: 'test-only', MOCK_CONFIG_PATH: resolve(directory, 'config-path'), CRANE_BIN: crane},
         encoding: 'utf8',
       })
 
@@ -111,4 +134,48 @@ esac
       rmSync(directory, { recursive: true, force: true })
     }
   })
+  it.each(['wrong-digest', 'login-failure'])('rejects %s and removes temporary credentials', (failure) => {
+    const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-rejected-'))
+    const crane = resolve(directory, 'crane')
+    const record = resolve(directory, 'image.txt')
+    const configPath = resolve(directory, 'config-path')
+    writeFileSync(crane, `#!/bin/sh
+case "$1" in
+  auth)
+    cat >/dev/null
+    printf '%s\\n' "$DOCKER_CONFIG" > "$MOCK_CONFIG_PATH"
+    printf '{}' > "$DOCKER_CONFIG/config.json"
+    [ "$MOCK_FAILURE" != login-failure ] ;;
+  digest) printf 'sha256:%s\\n' "${'c'.repeat(64)}" ;;
+  *) exit 9 ;;
+esac
+`)
+    chmodSync(crane, 0o700)
+    try {
+      const result = spawnSync('sh', ['deploy/resolve-release-image.sh'], {
+        cwd: resolve('.'),
+        env: {
+          ...process.env,
+          RELEASE_SOURCE_SHA: 'a'.repeat(40),
+          RELEASE_EXPECTED_DIGEST: `sha256:${'b'.repeat(64)}`,
+          REGISTRY_USERNAME: 'test',
+          REGISTRY_PASSWORD: 'test-only-not-a-real-token',
+          MOCK_CONFIG_PATH: configPath,
+          MOCK_FAILURE: failure,
+          CRANE_BIN: crane,
+          RELEASE_IMAGE_FILE: record,
+        },
+        encoding: 'utf8',
+      })
+      expect(result.status).not.toBe(0)
+      expect(existsSync(record)).toBe(false)
+      expect(existsSync(readFileSync(configPath, 'utf8').trim())).toBe(false)
+      expect(result.stdout + result.stderr).not.toContain('test-only-not-a-real-token')
+      if (failure === 'wrong-digest') expect(result.stderr).toContain('resolved digest differs')
+    }
+    finally {
+      rmSync(directory, { recursive: true, force: true })
+    }
+  })
+
 })
