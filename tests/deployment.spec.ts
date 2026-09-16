@@ -58,12 +58,16 @@ describe('portfolio release boundary', () => {
     expect(workflow).toContain(`RELEASE_EXPECTED_DIGEST: ${artifact.image.split('@')[1]}`)
   })
 
-  it('exposes the immutable source revision through health', () => {
+  it('bakes health provenance into a non-root Nginx image', () => {
     const dockerfile = readFileSync(resolve('Dockerfile'), 'utf8')
-    const caddyfile = readFileSync(resolve('deploy/Caddyfile'), 'utf8')
-
-    expect(dockerfile).toContain('VCS_REF=${VCS_REF}')
-    expect(caddyfile).toContain('header X-Agala-Revision "{env.VCS_REF}"')
+    const config = readFileSync(resolve('deploy/nginx.conf'), 'utf8')
+    expect(dockerfile).toMatch(/FROM nginxinc\/nginx-unprivileged:stable-alpine@sha256:[0-9a-f]{64}/)
+    expect(dockerfile).toContain('USER 10001:10001')
+    expect(dockerfile).toContain('ENTRYPOINT ["nginx"]')
+    expect(dockerfile).toContain('s/__VCS_REF__/$VCS_REF/g')
+    expect(config).toContain('add_header X-Agala-Revision "__VCS_REF__" always;')
+    expect(config).toContain('listen 8080;')
+    expect(existsSync(resolve('deploy/Caddyfile'))).toBe(false)
   })
 
   it('resolves the approved source using private registry auth and verifies the digest', () => {

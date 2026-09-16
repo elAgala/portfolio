@@ -15,7 +15,8 @@
     "resume:verify": "node --experimental-strip-types scripts/verify-resume.ts",
     "route:validate": "node --experimental-strip-types scripts/validate-route-isolation.ts",
     "test": "vitest run",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "runtime:verify": "node --experimental-strip-types scripts/verify-nginx.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter-tight": "^5.2.7",
