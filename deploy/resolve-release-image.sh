@@ -3,7 +3,6 @@ set -eu
 
 repository=ghcr.io/elagala/portfolio
 source_sha=${RELEASE_SOURCE_SHA:-}
-expected_digest=${RELEASE_EXPECTED_DIGEST:-}
 output_file=${RELEASE_IMAGE_FILE:-.release/image.txt}
 crane_bin=${CRANE_BIN:-crane}
 
@@ -22,7 +21,6 @@ esac
 # Keep the generated Docker configuration outside the shared CI workspace.
 : "${REGISTRY_USERNAME:?REGISTRY_USERNAME is required}"
 : "${REGISTRY_PASSWORD:?REGISTRY_PASSWORD is required}"
-[ -n "$expected_digest" ] || { printf '%s\n' 'RELEASE_EXPECTED_DIGEST is required' >&2; exit 1; }
 DOCKER_CONFIG=$(mktemp -d /tmp/portfolio-registry.XXXXXX)
 export DOCKER_CONFIG
 cleanup() { rm -f "$DOCKER_CONFIG/config.json"; rmdir "$DOCKER_CONFIG"; }
@@ -48,17 +46,12 @@ case "${digest#sha256:}" in
     ;;
 esac
 
-[ "$digest" = "$expected_digest" ] || {
-  printf '%s\n' 'resolved digest differs from the approved artifact' >&2
-  exit 1
-}
-
 config=$("$crane_bin" config "$repository@$digest")
 expected_label="\"org.opencontainers.image.revision\":\"$source_sha\""
 case "$config" in
   *"$expected_label"*) ;;
   *)
-    printf '%s\n' 'image revision label does not match the approved source commit' >&2
+    printf '%s\n' 'image revision label does not match the deployment commit' >&2
     exit 1
     ;;
 esac

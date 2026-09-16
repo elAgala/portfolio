@@ -14,10 +14,10 @@ describe('portfolio release boundary', () => {
     expect(workflow).not.toContain('ANSIBLE_PLAYBOOK')
   })
 
-  it('releases only an approved Portfolio deployment with pinned executors', () => {
+  it('releases only the selected Portfolio commit with pinned executors', () => {
     const workflow = readFileSync(resolve('.woodpecker/release.yml'), 'utf8')
     const resolver = 'gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424'
-    const runner = 'ghcr.io/agala-labs/ansible-runner@sha256:e6ac4030f113aa62d6f5ca26fb487305363db81192a8d8275416eacb01349e38'
+    const runner = 'ghcr.io/agala-labs/ansible-runner@sha256:73fb6ecc45192f3f376ee104740993dc04aa5c14e546679c8a09bd99f6e21a14'
 
     expect(workflow).toContain('event: deployment')
     expect(workflow).toContain('branch: master')
@@ -28,14 +28,12 @@ describe('portfolio release boundary', () => {
     expect(workflow).toContain(`image: ${runner}`)
     expect(workflow).toContain('RELEASE_SERVICE: portfolio-site')
     expect(workflow).toContain('RELEASE_IMAGE_FILE: .release/image.txt')
-    expect(workflow).toContain('RELEASE_SOURCE_SHA: 92b05177c2b67047e043ae1855d21b3ae86dc014')
-    expect(workflow).toContain('RELEASE_APPROVED_ARTIFACT: "true"')
+    expect(workflow.match(/RELEASE_SOURCE_SHA: \$\{CI_COMMIT_SHA\}/g)).toHaveLength(2)
     expect(workflow).toContain('from_secret: portfolio_registry_username')
     expect(workflow).toContain('from_secret: portfolio_registry_password')
-    expect(workflow).toContain('partial: false')
-    expect(workflow).toContain('RELEASE_IAC_REVISION: 556584e88f9b44d9ced5e2ffb9d154e2341f4c6d')
-    expect(workflow).toContain('K3S_RELEASE_KUBECONFIG_B64:')
-    expect(workflow).toContain('from_secret: k3s_release_kubeconfig_b64')
+    expect(workflow).toContain('RELEASE_ENVIRONMENT: production')
+    expect(workflow).not.toContain('K3S_RELEASE_KUBECONFIG_B64:')
+    expect(workflow).not.toContain('from_secret: k3s_release_kubeconfig_b64')
     expect(workflow).toContain('from_secret: platform_git_release_token')
     expect(workflow).toContain('protected force-with-lease fails closed')
     expect(workflow).not.toContain('concurrency:')
@@ -46,16 +44,6 @@ describe('portfolio release boundary', () => {
     expect(workflow).not.toContain('INFISICAL_CLIENT_ID')
     expect(workflow).not.toContain('INFISICAL_CLIENT_SECRET')
     expect(workflow).not.toContain('latest')
-  })
-
-  it('pins the existing approved artifact independently of the workflow revision', () => {
-    const artifact = JSON.parse(readFileSync(resolve('deploy/release-artifact.json'), 'utf8'))
-    const workflow = readFileSync(resolve('.woodpecker/release.yml'), 'utf8')
-    expect(artifact.service).toBe('portfolio-site')
-    expect(artifact.sourceSha).toBe('92b05177c2b67047e043ae1855d21b3ae86dc014')
-    expect(artifact.image).toBe('ghcr.io/elagala/portfolio@sha256:2b4035d58cf6feea7a68f904d7bdbb0197234742bcbc1ee9a94ab8e8361f9e54')
-    expect(workflow).toContain(`RELEASE_SOURCE_SHA: ${artifact.sourceSha}`)
-    expect(workflow).toContain(`RELEASE_EXPECTED_DIGEST: ${artifact.image.split('@')[1]}`)
   })
 
   it('bakes health provenance into a non-root Nginx image', () => {
@@ -70,7 +58,7 @@ describe('portfolio release boundary', () => {
     expect(existsSync(resolve('deploy/Caddyfile'))).toBe(false)
   })
 
-  it('resolves the approved source using private registry auth and verifies the digest', () => {
+  it('resolves the deployment commit using private registry auth', () => {
     const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-'))
     const crane = resolve(directory, 'crane')
     const record = resolve(directory, 'image.txt')
@@ -90,9 +78,7 @@ esac
         cwd: resolve('.'),
         env: {
           ...process.env,
-          CI_COMMIT_SHA: 'd'.repeat(40),
           RELEASE_SOURCE_SHA: revision,
-          RELEASE_EXPECTED_DIGEST: `sha256:${'b'.repeat(64)}`,
           REGISTRY_USERNAME: 'test',
           REGISTRY_PASSWORD: 'test-only-not-a-real-token',
           MOCK_CONFIG_PATH: resolve(directory, 'config-path'),
@@ -112,7 +98,7 @@ esac
     }
   })
 
-  it('rejects a digest whose image revision differs from the approved source', () => {
+  it('rejects an image whose revision differs from the deployment commit', () => {
     const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-mismatch-'))
     const crane = resolve(directory, 'crane')
     writeFileSync(crane, `#!/bin/sh
@@ -127,7 +113,7 @@ esac
     try {
       const result = spawnSync('sh', ['deploy/resolve-release-image.sh'], {
         cwd: resolve('.'),
-        env: {...process.env, RELEASE_SOURCE_SHA: 'a'.repeat(40), RELEASE_EXPECTED_DIGEST: `sha256:${'b'.repeat(64)}`, REGISTRY_USERNAME: 'test', REGISTRY_PASSWORD: 'test-only', MOCK_CONFIG_PATH: resolve(directory, 'config-path'), CRANE_BIN: crane},
+        env: { ...process.env, RELEASE_SOURCE_SHA: 'a'.repeat(40), REGISTRY_USERNAME: 'test', REGISTRY_PASSWORD: 'test-only', MOCK_CONFIG_PATH: resolve(directory, 'config-path'), CRANE_BIN: crane },
         encoding: 'utf8',
       })
 
@@ -138,7 +124,8 @@ esac
       rmSync(directory, { recursive: true, force: true })
     }
   })
-  it.each(['wrong-digest', 'login-failure'])('rejects %s and removes temporary credentials', (failure) => {
+
+  it.each(['malformed-digest', 'login-failure'])('rejects %s and removes temporary credentials', (failure) => {
     const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-rejected-'))
     const crane = resolve(directory, 'crane')
     const record = resolve(directory, 'image.txt')
@@ -150,7 +137,7 @@ case "$1" in
     printf '%s\\n' "$DOCKER_CONFIG" > "$MOCK_CONFIG_PATH"
     printf '{}' > "$DOCKER_CONFIG/config.json"
     [ "$MOCK_FAILURE" != login-failure ] ;;
-  digest) printf 'sha256:%s\\n' "${'c'.repeat(64)}" ;;
+  digest) printf 'sha256:short\\n' ;;
   *) exit 9 ;;
 esac
 `)
@@ -161,7 +148,6 @@ esac
         env: {
           ...process.env,
           RELEASE_SOURCE_SHA: 'a'.repeat(40),
-          RELEASE_EXPECTED_DIGEST: `sha256:${'b'.repeat(64)}`,
           REGISTRY_USERNAME: 'test',
           REGISTRY_PASSWORD: 'test-only-not-a-real-token',
           MOCK_CONFIG_PATH: configPath,
@@ -175,11 +161,10 @@ esac
       expect(existsSync(record)).toBe(false)
       expect(existsSync(readFileSync(configPath, 'utf8').trim())).toBe(false)
       expect(result.stdout + result.stderr).not.toContain('test-only-not-a-real-token')
-      if (failure === 'wrong-digest') expect(result.stderr).toContain('resolved digest differs')
+      if (failure === 'malformed-digest') expect(result.stderr).toContain('registry did not return an exact sha256 image digest')
     }
     finally {
       rmSync(directory, { recursive: true, force: true })
     }
   })
-
 })

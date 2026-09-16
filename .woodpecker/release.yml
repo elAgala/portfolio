@@ -3,16 +3,8 @@ when:
     branch: master
     evaluate: 'CI_PIPELINE_DEPLOY_TARGET == "portfolio_production"'
 
-# The runner verifies the approved source is an ancestor of this workflow commit.
-clone:
-  - name: clone
-    image: woodpeckerci/plugin-git
-    settings:
-      partial: false
-      depth: 0
-
 steps:
-  - name: resolve-approved-image
+  - name: resolve-commit-image
     image: gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424
     entrypoint:
       - /busybox/sh
@@ -20,8 +12,7 @@ steps:
       - echo $CI_SCRIPT | base64 -d | /busybox/sh -e
     environment:
       RELEASE_IMAGE_FILE: .release/image.txt
-      RELEASE_SOURCE_SHA: 92b05177c2b67047e043ae1855d21b3ae86dc014
-      RELEASE_EXPECTED_DIGEST: sha256:2b4035d58cf6feea7a68f904d7bdbb0197234742bcbc1ee9a94ab8e8361f9e54
+      RELEASE_SOURCE_SHA: ${CI_COMMIT_SHA}
       REGISTRY_USERNAME:
         from_secret: portfolio_registry_username
       REGISTRY_PASSWORD:
@@ -29,18 +20,15 @@ steps:
     commands:
       - /busybox/sh deploy/resolve-release-image.sh
 
-  # Verified together against platform-iac pipeline 32 and the published OCI revision.
-  - name: release-approved-image
-    image: ghcr.io/agala-labs/ansible-runner@sha256:e6ac4030f113aa62d6f5ca26fb487305363db81192a8d8275416eacb01349e38
+  # The image digest pins the reviewed platform catalog, compiler and release policy.
+  - name: release-commit-image
+    image: ghcr.io/agala-labs/ansible-runner@sha256:73fb6ecc45192f3f376ee104740993dc04aa5c14e546679c8a09bd99f6e21a14
     environment:
       AGALA_RUNNER_MODE: k3s-release
       RELEASE_SERVICE: portfolio-site
       RELEASE_IMAGE_FILE: .release/image.txt
-      RELEASE_SOURCE_SHA: 92b05177c2b67047e043ae1855d21b3ae86dc014
-      RELEASE_APPROVED_ARTIFACT: "true"
-      RELEASE_IAC_REVISION: 556584e88f9b44d9ced5e2ffb9d154e2341f4c6d
-      K3S_RELEASE_KUBECONFIG_B64:
-        from_secret: k3s_release_kubeconfig_b64
+      RELEASE_SOURCE_SHA: ${CI_COMMIT_SHA}
+      RELEASE_ENVIRONMENT: production
       PLATFORM_GIT_TOKEN:
         from_secret: platform_git_release_token
 

@@ -1,5 +1,0 @@
-{
-  "service": "portfolio-site",
-  "image": "ghcr.io/elagala/portfolio@sha256:2b4035d58cf6feea7a68f904d7bdbb0197234742bcbc1ee9a94ab8e8361f9e54",
-  "sourceSha": "92b05177c2b67047e043ae1855d21b3ae86dc014"
-}

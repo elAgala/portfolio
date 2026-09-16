@@ -74,7 +74,9 @@ been published by digest, production deployment uses the separate
 event targeting `portfolio_production`. Its pinned `crane` step runs
 `deploy/resolve-release-image.sh`, resolves the exact commit tag to a digest,
 verifies the OCI revision label and passes a one-line digest record to the
-release runner. The digest is never entered as a free-form deployment parameter.
+release runner. The deployment commit, image tag and OCI revision must match;
+the digest is never entered as a free-form deployment parameter or stored in a
+source approval file.
 The reviewed resolver image is
 `gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424`
 (crane v0.21.7); the final workflow must keep that immutable reference.
@@ -87,6 +89,8 @@ Required Woodpecker repository secrets:
 
 - `gh_username`
 - `gh_token`
+- `portfolio_registry_username` (release workflow only)
+- `portfolio_registry_password` (release workflow only)
 - `platform_git_release_token` (release workflow only)
 
 Build and verify the image locally:
@@ -97,9 +101,8 @@ docker run --rm -p 8080:8080 portfolio:local
 curl --fail http://127.0.0.1:8080/healthz
 ```
 
-Pushes never deploy automatically. The Kubernetes release remains disabled until
-the cluster, release identity, application admission and manually approved
-`portfolio_production` target are ready. Once enabled, Kubernetes restores the
-previous workload manifest when a later rollout fails. Compose is not a
-post-cutover fallback: the platform retirement playbook removes it after the
-NodePort and public route both serve the accepted Kubernetes revision.
+Pushes never deploy automatically. A manually approved `portfolio_production`
+event publishes desired state and prints its exact platform commit. The operator
+reviews and synchronizes that revision in Argo CD with pruning disabled. Compose
+is not a post-cutover fallback: the platform retirement playbook removes it after
+the NodePort and public route both serve the accepted Kubernetes revision.
