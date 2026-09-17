@@ -69,14 +69,15 @@ The portfolio is published as an immutable static image at
 `ghcr.io/elagala/portfolio:<commit-sha>`. Pull requests validate the site. A
 push to `master` validates it and publishes the exact 40-character commit SHA.
 Once the revision-bound Kubernetes release runner owned by `platform-iac` has
-been published by digest, production deployment uses the separate
-`.woodpecker/release.yml` workflow for a manually approved Woodpecker deployment
-event targeting `portfolio_production`. Its pinned `crane` step runs
-`deploy/resolve-release-image.sh`, resolves the exact commit tag to a digest,
-verifies the OCI revision label and passes a one-line digest record to the
-release runner. The deployment commit, image tag and OCI revision must match;
-the digest is never entered as a free-form deployment parameter or stored in a
-source approval file.
+been published by digest, the separate `.woodpecker/release.yml` workflow depends
+on the `deploy` workflow for the same `master` push. After the image build
+succeeds, its pinned `crane` step runs `deploy/resolve-release-image.sh`, resolves
+the exact commit tag to a digest, verifies the OCI revision label and passes a
+one-line digest record to the release runner. The push commit, image tag and OCI
+revision must match; the digest is never entered as a free-form deployment
+parameter or stored in a source approval file. The release publishes production
+desired state; Argo CD keeps automatic synchronization disabled and remains the
+hard manual gate.
 The reviewed resolver image is
 `gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424`
 (crane v0.21.7); the final workflow must keep that immutable reference.
@@ -101,8 +102,9 @@ docker run --rm -p 8080:8080 portfolio:local
 curl --fail http://127.0.0.1:8080/healthz
 ```
 
-Pushes never deploy automatically. A manually approved `portfolio_production`
-event publishes desired state and prints its exact platform commit. The operator
-reviews and synchronizes that revision in Argo CD with pruning disabled. Compose
-is not a post-cutover fallback: the platform retirement playbook removes it after
-the NodePort and public route both serve the accepted Kubernetes revision.
+A successful `master` push builds the image and automatically publishes desired
+state through the dependent release workflow. It does not deploy production.
+The operator reviews the printed platform commit and synchronizes that revision
+in Argo CD with pruning disabled. Compose is not a post-cutover fallback: the
+platform retirement playbook removes it after the NodePort and public route both
+serve the accepted Kubernetes revision.

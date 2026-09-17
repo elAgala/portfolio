@@ -17,7 +17,7 @@ esac
   exit 1
 }
 
-# The reviewed workflow supplies deployment-only credentials to this resolver.
+# The reviewed workflow supplies push-scoped credentials to this resolver.
 # Keep the generated Docker configuration outside the shared CI workspace.
 : "${REGISTRY_USERNAME:?REGISTRY_USERNAME is required}"
 : "${REGISTRY_PASSWORD:?REGISTRY_PASSWORD is required}"
@@ -51,7 +51,7 @@ expected_label="\"org.opencontainers.image.revision\":\"$source_sha\""
 case "$config" in
   *"$expected_label"*) ;;
   *)
-    printf '%s\n' 'image revision label does not match the deployment commit' >&2
+    printf '%s\n' 'image revision label does not match the push commit' >&2
     exit 1
     ;;
 esac

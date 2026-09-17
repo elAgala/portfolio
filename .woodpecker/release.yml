@@ -1,7 +1,9 @@
+depends_on:
+  - deploy
+
 when:
-  - event: deployment
+  - event: push
     branch: master
-    evaluate: 'CI_PIPELINE_DEPLOY_TARGET == "portfolio_production"'
 
 steps:
   - name: resolve-commit-image
@@ -22,7 +24,7 @@ steps:
 
   # The image digest pins the reviewed platform catalog, compiler and release policy.
   - name: release-commit-image
-    image: ghcr.io/agala-labs/ansible-runner@sha256:73fb6ecc45192f3f376ee104740993dc04aa5c14e546679c8a09bd99f6e21a14
+    image: ghcr.io/agala-labs/ansible-runner@sha256:ebe67efc85f6126bfb4d623b94cbba68fcd94a145819bf36312dea0ec4c03cb2
     environment:
       AGALA_RUNNER_MODE: k3s-release
       RELEASE_SERVICE: portfolio-site

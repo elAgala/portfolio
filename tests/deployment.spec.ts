@@ -17,11 +17,12 @@ describe('portfolio release boundary', () => {
   it('releases only the selected Portfolio commit with pinned executors', () => {
     const workflow = readFileSync(resolve('.woodpecker/release.yml'), 'utf8')
     const resolver = 'gcr.io/go-containerregistry/crane/debug@sha256:54b27703e6c602fbd6f95712910e9c8d45d4361a59274bde38aeec943734e424'
-    const runner = 'ghcr.io/agala-labs/ansible-runner@sha256:73fb6ecc45192f3f376ee104740993dc04aa5c14e546679c8a09bd99f6e21a14'
+    const runner = 'ghcr.io/agala-labs/ansible-runner@sha256:ebe67efc85f6126bfb4d623b94cbba68fcd94a145819bf36312dea0ec4c03cb2'
 
-    expect(workflow).toContain('event: deployment')
+    expect(workflow).toContain('event: push')
     expect(workflow).toContain('branch: master')
-    expect(workflow).toContain('CI_PIPELINE_DEPLOY_TARGET == "portfolio_production"')
+    expect(workflow).toContain('depends_on:\n  - deploy')
+    expect(workflow).not.toContain('CI_PIPELINE_DEPLOY_TARGET')
     expect(workflow).toContain(`image: ${resolver}`)
     expect(workflow).toContain('echo $CI_SCRIPT | base64 -d | /busybox/sh -e')
     expect(workflow).toContain('commands:\n      - /busybox/sh deploy/resolve-release-image.sh')
@@ -58,7 +59,7 @@ describe('portfolio release boundary', () => {
     expect(existsSync(resolve('deploy/Caddyfile'))).toBe(false)
   })
 
-  it('resolves the deployment commit using private registry auth', () => {
+  it('resolves the push commit using private registry auth', () => {
     const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-'))
     const crane = resolve(directory, 'crane')
     const record = resolve(directory, 'image.txt')
@@ -98,7 +99,7 @@ esac
     }
   })
 
-  it('rejects an image whose revision differs from the deployment commit', () => {
+  it('rejects an image whose revision differs from the push commit', () => {
     const directory = mkdtempSync(resolve(tmpdir(), 'portfolio-release-mismatch-'))
     const crane = resolve(directory, 'crane')
     writeFileSync(crane, `#!/bin/sh
