@@ -478,7 +478,6 @@ onBeforeUnmount(() => {
           <img src="/portfolio/images/agala-logo.png" alt="Agala Labs" width="1074" height="476" loading="lazy">
         </a>
         <span>Buenos Aires, Argentina</span>
-        <p class="site-footer__privacy">This site uses self-hosted Umami for cookieless visit and referral statistics. Privacy questions: <a href="mailto:julian@benitez.com.ar">julian@benitez.com.ar</a>.</p>
       </footer>
     </main>
   </div>
