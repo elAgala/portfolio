@@ -19,6 +19,13 @@ export default defineNuxtConfig({
       ],
       script: [
         { innerHTML: "document.documentElement.classList.add('js')" },
+        {
+          src: 'https://analytics.agala.com.ar/script.js',
+          defer: true,
+          'data-website-id': '7ee2c48f-f170-491e-aeca-8fa369800a7c',
+          'data-domains': 'julian.benitez.ar',
+          'data-exclude-hash': 'true',
+        },
       ],
     },
     pageTransition: { name: 'page', mode: 'out-in' },

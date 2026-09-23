@@ -1556,8 +1556,22 @@ html.boot-complete .hero-bottom {
   text-transform: uppercase;
 }
 
-.site-footer > span:last-child {
+.site-footer > span:last-of-type {
   text-align: right;
+}
+
+.site-footer__privacy {
+  grid-column: 1 / -1;
+  margin: 0;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.site-footer__privacy a {
+  color: inherit;
+  text-underline-offset: 3px;
 }
 
 .site-footer__brand {
@@ -1996,7 +2010,7 @@ html.boot-complete .hero-bottom {
     text-align: center;
   }
 
-  .site-footer > span:last-child {
+  .site-footer > span:last-of-type {
     text-align: center;
   }
 }
