@@ -52,6 +52,7 @@ export function mountSoundCloud({
     let waveformUrl: string | null = null
     let engaged = false
     let confirmedPlaying = false
+    let playRequested = false
     let controlsDisabled = true
     let trackVersion = 0
     let playerState: MusicState['status'] = 'loading'
@@ -183,7 +184,13 @@ export function mountSoundCloud({
       if (disposed) return
       setPlayerState('loading', 'Loading SoundCloud player…')
       setControlsDisabled(true)
-      soundcloudFrame.src ||= widgetUrl.href
+      if (shouldPlay) {
+        const retryUrl = new URL(widgetUrl.href)
+        retryUrl.searchParams.set('auto_play', 'true')
+        soundcloudFrame.src = retryUrl.href
+      } else {
+        soundcloudFrame.src ||= widgetUrl.href
+      }
       try {
         await loadApi()
       } catch {
@@ -192,7 +199,6 @@ export function mountSoundCloud({
         return
       }
       if (disposed) return
-      if (shouldPlay) soundcloudFrame.src = widgetUrl.href
       setupWidget(shouldPlay)
     }
 
@@ -223,6 +229,20 @@ export function mountSoundCloud({
         let loadTimeout = 0
         let playbackTimeout = 0
         let playbackStart = 0
+        const armPlaybackTimeout = (version = trackVersion) => {
+          clearTimeout(playbackTimeout)
+          playbackTimeout = window.setTimeout(() => {
+            if (disposed || version !== trackVersion || !playRequested) return
+            widget.pause()
+            playRequested = false
+            playing = false
+            renderTrack()
+            setPlayerState(
+              'error',
+              'Audio could not start. Retry Play or open the track title on SoundCloud.',
+            )
+          }, 15000)
+        }
         const armLoadTimeout = (version = trackVersion) => {
           clearTimeout(loadTimeout)
           loadTimeout = window.setTimeout(() => {
@@ -231,6 +251,7 @@ export function mountSoundCloud({
             loadingTrack = false
             widgetReady = false
             playing = false
+            playRequested = false
             renderTrack()
             setControlsDisabled(false)
             setPlayerState(
@@ -255,6 +276,7 @@ export function mountSoundCloud({
           waveformUrl = null
           confirmedPlaying = false
           if (shouldPlay) engaged = true
+          playRequested = shouldPlay
           clearTimeout(playbackTimeout)
           armLoadTimeout(version)
           currentTrack = (index + tracks.length) % tracks.length
@@ -263,13 +285,16 @@ export function mountSoundCloud({
           loadingTrack = true
           duration = 0
           pendingStart = current().start
+          playbackStart = 0
           renderTrack()
           renderTimeline(current().start)
           setControlsDisabled(true)
           setPlayerState('loading', `Loading ${current().title}`)
 
           widget.load(current().url, {
-            auto_play: false,
+            // Ask the iframe to play as part of the track change itself. A
+            // later play() from the load callback loses the iOS user gesture.
+            auto_play: shouldPlay,
             buying: false,
             sharing: false,
             download: false,
@@ -283,17 +308,18 @@ export function mountSoundCloud({
               widget.getDuration((value) => {
                 if (disposed || version !== trackVersion) return
                 duration = value
-                renderTimeline(current().start)
+                renderTimeline(position)
               })
               readMetadata()
               loadingTrack = false
               widgetReady = true
               setControlsDisabled(false)
-              setPlayerState(
-                'paused',
-                `${current().title} ready at selected start`,
-              )
-              if (shouldPlay) startPlayback()
+              if (shouldPlay) {
+                setPlayerState('loading', `Starting ${current().title}`)
+                armPlaybackTimeout(version)
+              } else {
+                setPlayerState('paused', `${current().title} ready at selected start`)
+              }
             },
           })
         }
@@ -308,26 +334,26 @@ export function mountSoundCloud({
           widget.getDuration((value) => {
             if (disposed || version !== trackVersion) return
             duration = value
-            renderTimeline(current().start)
+            renderTimeline(position)
           })
           setControlsDisabled(false)
-          setPlayerState('paused', `${current().title} ready at selected start`)
-          if (shouldPlay) startPlayback()
+          if (shouldPlay) {
+            engaged = true
+            playRequested = true
+            playbackStart = 0
+            setPlayerState('loading', `Starting ${current().title}`)
+            armPlaybackTimeout(version)
+          } else {
+            setPlayerState('paused', `${current().title} ready at selected start`)
+          }
         })
 
-        widget.bind(api.Widget.Events.PLAY, () => {
-          if (disposed || loadingTrack) return
-          playing = true
-          renderTrack()
-          setPlayerState(
-            'playing',
-            `Playing ${current().title} by ${current().artist}`,
-          )
-        })
-
+        // PLAY can fire for a seek before audio advances. Only progress may
+        // move the visible state to playing.
         widget.bind(api.Widget.Events.PAUSE, () => {
-          if (disposed || loadingTrack || musicPlayer.dataset.state === 'error')
+          if (disposed || loadingTrack || musicPlayer.dataset.state === 'error' || (playRequested && !confirmedPlaying))
             return
+          playRequested = false
           playing = false
           renderTrack()
           setPlayerState('paused', `${current().title} paused`)
@@ -335,10 +361,26 @@ export function mountSoundCloud({
 
         widget.bind(api.Widget.Events.PLAY_PROGRESS, (event) => {
           if (disposed || loadingTrack) return
-          if (playing && engaged && event.currentPosition > position + 10)
-            confirmedPlaying = true
-          if (event.currentPosition > playbackStart + 250)
+          if (playRequested && pendingStart !== null && event.currentPosition > 250) {
+            const start = pendingStart
+            pendingStart = null
+            playbackStart = start
+            widget.seekTo(start)
+            renderTimeline(start)
+            return
+          }
+          // Progress from before the seek may still arrive via postMessage.
+          if (playRequested && !confirmedPlaying && event.currentPosition < playbackStart - 1000)
+            return
+          if (playRequested && event.currentPosition > playbackStart + 250) {
             clearTimeout(playbackTimeout)
+            if (!confirmedPlaying) {
+              playing = true
+              confirmedPlaying = true
+              renderTrack()
+              setPlayerState('playing', `Playing ${current().title} by ${current().artist}`)
+            }
+          }
           if (!scrubbing) renderTimeline(event.currentPosition)
         })
 
@@ -357,6 +399,7 @@ export function mountSoundCloud({
           trackVersion++
           widgetReady = false
           playing = false
+          playRequested = false
           loadingTrack = false
           renderTrack()
           setControlsDisabled(false)
@@ -369,26 +412,12 @@ export function mountSoundCloud({
         const startPlayback = () => {
           engaged = true
           confirmedPlaying = false
+          playRequested = true
           publishMusic()
-          clearTimeout(playbackTimeout)
-          playbackStart = pendingStart ?? Number(trackProgress.value)
-          playbackTimeout = window.setTimeout(() => {
-            if (disposed) return
-            widget.pause()
-            playing = false
-            pendingStart = playbackStart
-            renderTrack()
-            setPlayerState(
-              'error',
-              'Audio could not start. Retry Play or open the track title on SoundCloud.',
-            )
-          }, 15000)
-          // Seeking on READY can trigger playback before a user gesture.
-          // Apply the requested offset only when playback is requested.
-          if (pendingStart !== null) {
-            widget.seekTo(pendingStart)
-            pendingStart = null
-          }
+          playbackStart = pendingStart === null ? Number(trackProgress.value) : 0
+          armPlaybackTimeout()
+          // Start inside the click handler. Seeking first can make the widget
+          // briefly play and then pause on Safari.
           widget.play()
         }
 
@@ -402,6 +431,7 @@ export function mountSoundCloud({
           if (!widgetReady || loadingTrack) return
           if (playing) {
             clearTimeout(playbackTimeout)
+            playRequested = false
             widget.pause()
           } else {
             setPlayerState('loading', `Starting ${current().title}`)

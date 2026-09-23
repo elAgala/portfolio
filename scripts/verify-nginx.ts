@@ -36,7 +36,17 @@ try {
   docker('exec', name, 'nginx', '-t')
   const get = (path: string) => docker('exec', name, 'sh', '-c',
     'wget -S -O - "$1" 2>&1', 'probe', `http://127.0.0.1:8080${path}`)
-  const health = get('/healthz')
+  let health = ''
+  for (let attempt = 0; attempt < 20; attempt++) {
+    try {
+      health = get('/healthz')
+      break
+    }
+    catch (error) {
+      if (attempt === 19) throw error
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+  }
   assert.match(health, /HTTP\/1\.1 200/)
   assert.ok(health.includes(`X-Agala-Revision: ${revision}`))
   for (const path of ['/', '/resume', '/resume/', '/a/deep/link']) {
@@ -54,6 +64,10 @@ try {
     const response = get(file.slice('/srv'.length))
     assert.ok(response.includes(`Content-Type: ${mime}`), `Wrong MIME type for ${file}`)
     if (file.startsWith('/srv/_nuxt/')) assert.match(response, /max-age=31536000, immutable/)
+  }
+  for (const path of ['/portfolio/images/julian-benitez.webp', '/portfolio/images/agala-logo.webp', '/portfolio/fonts/archivo-latin.woff2']) {
+    const response = get(path)
+    assert.match(response, /Cache-Control: public, max-age=3600, stale-while-revalidate=86400/)
   }
   const missing = docker('exec', name, 'sh', '-c', 'wget -S -O /dev/null http://127.0.0.1:8080/_nuxt/missing.js 2>&1 || true')
   assert.match(missing, /404 Not Found/)

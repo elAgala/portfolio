@@ -396,6 +396,10 @@ img {
   filter: grayscale(1) contrast(1.05);
 }
 
+.site-mark.portrait-failed .site-mark__portrait {
+  visibility: hidden;
+}
+
 .site-nav {
   display: flex;
   align-items: center;
@@ -649,6 +653,23 @@ html.boot-complete .hero-bottom {
   aspect-ratio: 1;
   object-fit: cover;
   filter: grayscale(1) contrast(1.05);
+}
+
+.hero-portrait-wrap.portrait-failed .hero-portrait {
+  visibility: hidden;
+}
+
+.hero-portrait-wrap.portrait-failed::after {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: clamp(16px, 3vw, 30px);
+  content: "JB";
 }
 
 .hero-bottom {

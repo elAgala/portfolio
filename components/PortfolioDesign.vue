@@ -6,6 +6,16 @@ import { initialMusicState, musicTracks, type MusicActions } from "~/utils/music
 const music = shallowRef({ ...initialMusicState });
 const musicActions = shallowRef<MusicActions | null>(null);
 
+function handlePortraitError(event: Event) {
+  const image = event.target;
+  if (!(image instanceof HTMLImageElement)) return;
+  if (image.src.endsWith('/julian-benitez.webp')) {
+    image.src = '/portfolio/images/julian-benitez-fallback.jpg';
+    return;
+  }
+  image.parentElement?.classList.add('portrait-failed');
+}
+
 useHead({
   style: [{ key: "portfolio-design", innerHTML: portfolioStyles }],
   link: [{ rel: "preload", as: "image", href: "/portfolio/images/julian-benitez.webp" }],
@@ -44,6 +54,7 @@ onBeforeUnmount(() => {
             alt=""
             width="640"
             height="640"
+            @error="handlePortraitError"
           >
           <span>Julián Benitez</span>
         </a>
@@ -115,6 +126,7 @@ onBeforeUnmount(() => {
               fetchpriority="high"
               loading="eager"
               decoding="async"
+              @error="handlePortraitError"
             >
           </figure>
         </div>
@@ -475,7 +487,7 @@ onBeforeUnmount(() => {
         <span>© 2026 Julián Benitez</span>
         <a class="site-footer__brand" href="https://agala.com.ar" target="_blank" rel="noopener noreferrer">
           <span>Part of</span>
-          <img src="/portfolio/images/agala-logo.png" alt="Agala Labs" width="1074" height="476" loading="lazy">
+          <img src="/portfolio/images/agala-logo.webp" alt="Agala Labs" width="360" height="160" loading="lazy">
         </a>
         <span>Buenos Aires, Argentina</span>
       </footer>
