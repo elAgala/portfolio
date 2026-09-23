@@ -10,7 +10,7 @@ const visible = computed(
   () => (passedOriginal.value || focused.value) && !menuOpen.value,
 )
 const expanded = computed(
-  () => props.music.engaged || props.music.status === 'error',
+  () => props.music.engaged || props.music.status === 'loading' || props.music.status === 'error',
 )
 const playbackLabel = computed(() =>
   props.music.status === 'error'
@@ -78,13 +78,15 @@ function leaveFocus(event: FocusEvent) {
       <div class="floating-track">
         <template v-if="expanded">
           <a
+            v-if="music.url"
             :href="music.url"
             target="_blank"
             rel="noopener noreferrer"
             :title="`${music.title} — ${music.artist}`"
             >{{ music.title }}</a
           >
-          <span>{{ music.artist }} · SoundCloud</span>
+          <span v-if="music.status === 'loading' || music.status === 'error'" role="status">{{ music.message }}</span>
+          <span v-else>{{ music.artist }} · SoundCloud</span>
         </template>
         <span v-else class="floating-invitation"
           >Listen to some house music I like</span
@@ -94,7 +96,7 @@ function leaveFocus(event: FocusEvent) {
         key="playback"
         class="floating-button floating-playback"
         type="button"
-        :disabled="music.disabled || !actions"
+        :disabled="(music.disabled && music.status !== 'error') || !actions"
         :aria-label="playbackLabel"
         :aria-pressed="music.playing"
         :aria-busy="music.status === 'loading'"

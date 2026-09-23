@@ -745,6 +745,7 @@ html.boot-complete .hero-bottom {
   gap: 3px;
 }
 
+.music-player[data-state="loading"] [data-music-status],
 .music-player[data-state="error"] [data-music-status] {
   position: static;
   width: auto;
@@ -754,6 +755,28 @@ html.boot-complete .hero-bottom {
   white-space: normal;
   color: var(--stone);
   font-size: 11px;
+}
+
+.music-player[data-state="loading"] [data-music-status]::before {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 8px;
+  border: 1px solid var(--faint);
+  border-top-color: var(--stone);
+  border-radius: 50%;
+  content: "";
+  animation: music-loading 800ms linear infinite;
+}
+
+@keyframes music-loading {
+  to { transform: rotate(1turn); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-player[data-state="loading"] [data-music-status]::before {
+    animation: none;
+  }
 }
 
 .music-track-top {

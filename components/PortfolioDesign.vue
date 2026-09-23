@@ -8,10 +8,11 @@ const musicActions = shallowRef<MusicActions | null>(null);
 
 useHead({
   style: [{ key: "portfolio-design", innerHTML: portfolioStyles }],
+  link: [{ rel: "preload", as: "image", href: "/portfolio/images/julian-benitez.webp" }],
   script: [
     {
       key: "portfolio-boot",
-      innerHTML: `if (location.pathname === '/' && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) { document.documentElement.classList.add('booting'); setTimeout(() => document.documentElement.classList.remove('booting'), 5000); }`,
+      innerHTML: `if (location.pathname === '/' && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) { document.documentElement.classList.add('booting'); setTimeout(() => document.documentElement.classList.remove('booting'), 3500); }`,
     },
   ],
 });
@@ -39,10 +40,10 @@ onBeforeUnmount(() => {
         <a class="site-mark" href="#identity" aria-label="Julián Benitez, home">
           <img
             class="site-mark__portrait"
-            src="/portfolio/images/julian-benitez.png"
+            src="/portfolio/images/julian-benitez.webp"
             alt=""
-            width="1254"
-            height="1254"
+            width="640"
+            height="640"
           >
           <span>Julián Benitez</span>
         </a>
@@ -107,10 +108,13 @@ onBeforeUnmount(() => {
           <figure class="hero-portrait-wrap">
             <img
               class="hero-portrait"
-              src="/portfolio/images/julian-benitez.png"
+              src="/portfolio/images/julian-benitez.webp"
               alt="Portrait of Julián Benitez"
-              width="1254"
-              height="1254"
+              width="640"
+              height="640"
+              fetchpriority="high"
+              loading="eager"
+              decoding="async"
             >
           </figure>
         </div>
@@ -127,7 +131,7 @@ onBeforeUnmount(() => {
           </p>
 
           <div class="hero-identity">
-            <div class="music-player" data-music-player data-state="paused">
+            <div class="music-player" data-music-player data-state="loading">
               <div class="music-heading">
                 <span class="meta-label">Listen to some house music I like</span>
                 <span class="music-eq" aria-hidden="true"
@@ -139,7 +143,7 @@ onBeforeUnmount(() => {
                 role="status"
                 aria-live="polite"
                 data-music-status
-                >Paused</span
+                >Loading SoundCloud player…</span
               >
               <div class="music-track">
                 <div class="music-track-top">

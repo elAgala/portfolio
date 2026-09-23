@@ -188,7 +188,26 @@ export function mountPortfolio(options: MusicObserver = {}) {
   )
   updateProgress()
 
-  disposals.push(mountSoundCloud(options))
+  // Let the hero paint before the third-party iframe and script start loading.
+  let musicDispose: (() => void) | undefined
+  const musicFrame = requestAnimationFrame(() => {
+    if (disposed) return
+    if ('requestIdleCallback' in window) {
+      const idle = window.requestIdleCallback(() => {
+        if (!disposed) musicDispose = mountSoundCloud(options)
+      }, { timeout: 1500 })
+      disposals.push(() => window.cancelIdleCallback(idle))
+    } else {
+      const timer = setTimeout(() => {
+        if (!disposed) musicDispose = mountSoundCloud(options)
+      }, 250)
+      disposals.push(() => clearTimeout(timer))
+    }
+  })
+  disposals.push(() => {
+    cancelAnimationFrame(musicFrame)
+    musicDispose?.()
+  })
 
   const copyButton = requireElement<HTMLButtonElement>('.copy-email')
   const copyStatus = requireElement('.copy-status')
