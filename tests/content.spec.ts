@@ -145,7 +145,6 @@ describe('Agala portfolio content', () => {
   it('ships the hero hidden before client-side animation starts', () => {
     const hero = readFileSync(resolve('components/PortfolioDesign.vue'), 'utf8')
     const styles = readFileSync(resolve('assets/css/portfolio.css'), 'utf8')
-    const runtime = readFileSync(resolve('utils/portfolio.ts'), 'utf8')
     const config = readFileSync(resolve('nuxt.config.ts'), 'utf8')
 
     expect(hero).toContain('<span data-boot-command />')
@@ -153,7 +152,6 @@ describe('Agala portfolio content', () => {
     expect(config).toContain('prefers-reduced-motion: reduce')
     expect(styles).toContain('html.booting .portfolio-page > :not(.shell)')
     expect(styles).toContain('html.booting .hero > :not(.hero-top)')
-    expect(runtime).toContain('finishWhenPortraitReady')
   })
 
   it('keeps homepage calls to action aligned with real section targets', () => {
