@@ -29,12 +29,14 @@ export function mountPortfolio(options: MusicObserver = {}) {
   // Intentional typo: the hero backspaces and corrects it as part of the intro.
   const mistypedCommand = 'whoaim'
   let bootTimer = 0
+  let bootWatchdog = 0
   let bootComplete = false
 
   const finishBoot = () => {
     if (bootComplete) return
     bootComplete = true
     window.clearTimeout(bootTimer)
+    window.clearTimeout(bootWatchdog)
     bootCommand.textContent = command
     bootStatus.textContent = 'Portfolio ready'
     const wasBooting = root.classList.contains('booting')
@@ -59,8 +61,11 @@ export function mountPortfolio(options: MusicObserver = {}) {
     bootStatus.textContent = 'Loading portfolio'
     root.classList.add('boot-typing')
     const schedule = (callback: () => void, delay: number) => {
-      bootTimer = window.setTimeout(callback, delay)
+      bootTimer = window.setTimeout(() => {
+        if (!bootComplete) callback()
+      }, delay)
     }
+    bootWatchdog = window.setTimeout(finishBoot, 4000)
 
     const typeCharacters = (
       characters: string,
@@ -101,22 +106,13 @@ export function mountPortfolio(options: MusicObserver = {}) {
       deleteNextCharacter()
     }
 
-    const finishWhenPortraitReady = () => {
-      const portrait = document.querySelector<HTMLImageElement>('.hero-portrait')
-      if (!portrait || portrait.complete) finishBoot()
-      else {
-        listen(portrait, 'load', finishBoot, { once: true })
-        listen(portrait, 'error', finishBoot, { once: true })
-      }
-    }
-
     schedule(() => {
       typeCharacters(mistypedCommand, 72, () => {
         bootStatus.textContent = 'Correcting command'
         schedule(() => {
           deleteCharacters(2, 95, () => {
             schedule(() => {
-              typeCharacters('mi', 90, () => schedule(finishWhenPortraitReady, 240))
+              typeCharacters('mi', 90, () => schedule(finishBoot, 240))
             }, 120)
           })
         }, 420)
@@ -265,6 +261,7 @@ export function mountPortfolio(options: MusicObserver = {}) {
   return () => {
     disposed = true
     window.clearTimeout(bootTimer)
+    window.clearTimeout(bootWatchdog)
     window.clearTimeout(copyTimer)
     cancelAnimationFrame(progressFrame)
     disposals.forEach((dispose) => dispose())

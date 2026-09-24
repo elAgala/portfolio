@@ -23,13 +23,15 @@ export default defineNuxtConfig({
             if (location.pathname === '/' && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
               document.documentElement.classList.add('booting');
               setTimeout(() => {
-                if (document.documentElement.classList.contains('booting')) {
+                if (document.documentElement.classList.contains('booting') && !document.documentElement.classList.contains('boot-typing')) {
                   document.documentElement.dataset.bootTimedOut = 'true';
+                  const command = document.querySelector('[data-boot-command]');
+                  if (command) command.textContent = 'whoami';
                   const status = document.querySelector('[data-boot-status]');
                   if (status) status.textContent = 'Portfolio ready';
                   document.documentElement.classList.remove('booting', 'boot-typing');
                 }
-              }, 3500);
+              }, 8000);
             }`,
         },
         {
