@@ -9,6 +9,7 @@ export function mountPortfolio(options: MusicObserver = {}) {
   const root = document.documentElement
   if (
     !window.location.hash &&
+    !root.dataset.bootTimedOut &&
     !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   )
     root.classList.add('booting')
@@ -36,8 +37,9 @@ export function mountPortfolio(options: MusicObserver = {}) {
     window.clearTimeout(bootTimer)
     bootCommand.textContent = command
     bootStatus.textContent = 'Portfolio ready'
-    root.classList.remove('booting')
-    root.classList.add('boot-complete')
+    const wasBooting = root.classList.contains('booting')
+    root.classList.remove('booting', 'boot-typing')
+    if (wasBooting) root.classList.add('boot-complete')
     window.removeEventListener('hashchange', finishBoot)
     document.removeEventListener('keydown', skipBootWithKey)
     document.removeEventListener('click', skipBootWithLink)
@@ -54,6 +56,8 @@ export function mountPortfolio(options: MusicObserver = {}) {
 
   if (root.classList.contains('booting') && bootCommand) {
     bootCommand.textContent = ''
+    bootStatus.textContent = 'Loading portfolio'
+    root.classList.add('boot-typing')
     const schedule = (callback: () => void, delay: number) => {
       bootTimer = window.setTimeout(callback, delay)
     }
@@ -97,13 +101,22 @@ export function mountPortfolio(options: MusicObserver = {}) {
       deleteNextCharacter()
     }
 
+    const finishWhenPortraitReady = () => {
+      const portrait = document.querySelector<HTMLImageElement>('.hero-portrait')
+      if (!portrait || portrait.complete) finishBoot()
+      else {
+        listen(portrait, 'load', finishBoot, { once: true })
+        listen(portrait, 'error', finishBoot, { once: true })
+      }
+    }
+
     schedule(() => {
       typeCharacters(mistypedCommand, 72, () => {
         bootStatus.textContent = 'Correcting command'
         schedule(() => {
           deleteCharacters(2, 95, () => {
             schedule(() => {
-              typeCharacters('mi', 90, () => schedule(finishBoot, 240))
+              typeCharacters('mi', 90, () => schedule(finishWhenPortraitReady, 240))
             }, 120)
           })
         }, 420)
@@ -115,7 +128,7 @@ export function mountPortfolio(options: MusicObserver = {}) {
   } else {
     bootCommand.textContent = command
     bootStatus.textContent = 'Portfolio ready'
-    root.classList.remove('booting')
+    root.classList.remove('booting', 'boot-typing')
   }
 
   const setMenu = (open: boolean) => {
@@ -255,7 +268,7 @@ export function mountPortfolio(options: MusicObserver = {}) {
     window.clearTimeout(copyTimer)
     cancelAnimationFrame(progressFrame)
     disposals.forEach((dispose) => dispose())
-    root.classList.remove('booting', 'boot-complete')
+    root.classList.remove('booting', 'boot-typing', 'boot-complete')
     body.classList.remove('menu-open')
     root.style.removeProperty('--page-progress')
   }

@@ -19,12 +19,6 @@ function handlePortraitError(event: Event) {
 useHead({
   style: [{ key: "portfolio-design", innerHTML: portfolioStyles }],
   link: [{ rel: "preload", as: "image", href: "/portfolio/images/julian-benitez.webp" }],
-  script: [
-    {
-      key: "portfolio-boot",
-      innerHTML: `if (location.pathname === '/' && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) { document.documentElement.classList.add('booting'); setTimeout(() => document.documentElement.classList.remove('booting'), 3500); }`,
-    },
-  ],
 });
 let dispose: (() => void) | undefined;
 onMounted(() => {
@@ -92,9 +86,7 @@ onBeforeUnmount(() => {
         <div class="hero-top">
           <div class="terminal-intro">
             <p class="terminal-line" aria-hidden="true">
-              <span class="terminal-prompt">$</span
-              ><span data-boot-command>whoami</span
-              ><span class="terminal-cursor" />
+              <span class="terminal-prompt">$</span><span data-boot-command /><span class="terminal-cursor" />
             </p>
             <p
               class="sr-only"
@@ -102,7 +94,7 @@ onBeforeUnmount(() => {
               role="status"
               aria-live="polite"
             >
-              Loading portfolio
+              Portfolio ready
             </p>
           </div>
           <p class="hero-state">
@@ -116,19 +108,7 @@ onBeforeUnmount(() => {
             <span class="title-line"><span>Julián</span></span>
             <span class="title-line"><span>Benitez</span></span>
           </h1>
-          <figure class="hero-portrait-wrap">
-            <img
-              class="hero-portrait"
-              src="/portfolio/images/julian-benitez.webp"
-              alt="Portrait of Julián Benitez"
-              width="640"
-              height="640"
-              fetchpriority="high"
-              loading="eager"
-              decoding="async"
-              @error="handlePortraitError"
-            >
-          </figure>
+          <VinylPortrait :music="music" />
         </div>
 
         <div class="hero-bottom">

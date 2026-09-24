@@ -506,6 +506,10 @@ img {
   color: var(--brass);
 }
 
+html:not(.booting) [data-boot-command]:empty::before {
+  content: "whoami";
+}
+
 .terminal-cursor {
   display: inline-block;
   width: 0.62em;
@@ -527,27 +531,24 @@ img {
   white-space: nowrap;
 }
 
-html.booting .reading-progress {
-  opacity: 0;
-}
-
-html.booting .hero-state,
-html.booting .hero > .hero-main,
-html.booting .hero > .hero-bottom {
+html.booting .portfolio-page > :not(.shell),
+html.booting .shell > :not(.hero),
+html.booting .hero > :not(.hero-top),
+html.booting .hero-top > :not(.terminal-intro),
+html.booting:not(.boot-typing) .terminal-intro {
   visibility: hidden;
-  opacity: 0;
 }
 
-html.boot-complete .hero-state {
-  animation: content-reveal 180ms var(--ease-enter) both;
+html.booting .shell,
+html.booting .hero {
+  border-color: transparent;
 }
 
-html.boot-complete .hero-main {
-  animation: content-reveal 240ms 40ms var(--ease-enter) both;
-}
-
+html.boot-complete .site-header,
+html.boot-complete .hero-state,
+html.boot-complete .hero-main,
 html.boot-complete .hero-bottom {
-  animation: content-reveal 240ms 80ms var(--ease-enter) both;
+  animation: content-reveal 240ms var(--ease-enter) both;
 }
 
 @keyframes cursor-blink {
@@ -633,16 +634,6 @@ html.boot-complete .hero-bottom {
   justify-self: end;
   width: min(100%, 296px);
   margin-bottom: 4px;
-}
-
-.hero-portrait-wrap::before {
-  position: absolute;
-  top: 12%;
-  left: -24px;
-  width: 1px;
-  height: 42%;
-  background: var(--red);
-  content: "";
 }
 
 .hero-portrait {
@@ -766,40 +757,6 @@ html.boot-complete .hero-bottom {
   gap: 3px;
 }
 
-.music-player[data-state="loading"] [data-music-status],
-.music-player[data-state="error"] [data-music-status] {
-  position: static;
-  width: auto;
-  height: auto;
-  clip: auto;
-  overflow: visible;
-  white-space: normal;
-  color: var(--stone);
-  font-size: 11px;
-}
-
-.music-player[data-state="loading"] [data-music-status]::before {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  margin-right: 8px;
-  border: 1px solid var(--faint);
-  border-top-color: var(--stone);
-  border-radius: 50%;
-  content: "";
-  animation: music-loading 800ms linear infinite;
-}
-
-@keyframes music-loading {
-  to { transform: rotate(1turn); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .music-player[data-state="loading"] [data-music-status]::before {
-    animation: none;
-  }
-}
-
 .music-track-top {
   display: flex;
   align-items: baseline;
@@ -808,7 +765,11 @@ html.boot-complete .hero-bottom {
 }
 
 .music-track-link {
+  display: block;
   min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: var(--paper);
   font-size: 13px;
   font-weight: 520;
@@ -825,6 +786,9 @@ html.boot-complete .hero-bottom {
 }
 
 .music-credit {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: var(--faint);
   font-family: var(--mono);
   font-size: 9px;
@@ -1891,10 +1855,6 @@ html.boot-complete .hero-bottom {
     justify-self: end;
     width: 100%;
     margin-bottom: 0;
-  }
-
-  .hero-portrait-wrap::before {
-    content: none;
   }
 
   .hero-bottom {

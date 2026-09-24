@@ -104,7 +104,9 @@ export function mountSoundCloud({
     const renderTrack = () => {
       const track = current()
       trackTitle.textContent = track.title
-      trackArtist.textContent = `${track.artist} · SoundCloud`
+      trackArtist.textContent = playerState === 'error'
+        ? 'SoundCloud unavailable · Retry Play'
+        : `${track.artist} · SoundCloud`
       trackPosition.textContent = `${String(currentTrack + 1).padStart(2, '0')} / ${String(tracks.length).padStart(2, '0')}`
       trackLink.href = track.url
       playbackButton.setAttribute('aria-pressed', String(playing))
@@ -131,6 +133,9 @@ export function mountSoundCloud({
       if (state !== 'playing') confirmedPlaying = false
       musicPlayer.dataset.state = state
       musicStatus.textContent = status
+      trackArtist.textContent = state === 'error'
+        ? 'SoundCloud unavailable · Retry Play'
+        : `${current().artist} · SoundCloud`
       playbackButton.toggleAttribute('aria-busy', state === 'loading')
       playbackButton.disabled = controlsDisabled && state !== 'error'
       if (state === 'error')

@@ -18,7 +18,20 @@ export default defineNuxtConfig({
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png?v=opendesign', sizes: '180x180' },
       ],
       script: [
-        { innerHTML: "document.documentElement.classList.add('js')" },
+        {
+          innerHTML: `document.documentElement.classList.add('js');
+            if (location.pathname === '/' && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+              document.documentElement.classList.add('booting');
+              setTimeout(() => {
+                if (document.documentElement.classList.contains('booting')) {
+                  document.documentElement.dataset.bootTimedOut = 'true';
+                  const status = document.querySelector('[data-boot-status]');
+                  if (status) status.textContent = 'Portfolio ready';
+                  document.documentElement.classList.remove('booting', 'boot-typing');
+                }
+              }, 3500);
+            }`,
+        },
         {
           src: 'https://analytics.agala.com.ar/script.js',
           defer: true,

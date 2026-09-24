@@ -9,9 +9,7 @@ const menuOpen = ref(false)
 const visible = computed(
   () => (passedOriginal.value || focused.value) && !menuOpen.value,
 )
-const expanded = computed(
-  () => props.music.engaged || props.music.status === 'loading' || props.music.status === 'error',
-)
+const expanded = computed(() => props.music.engaged)
 const playbackLabel = computed(() =>
   props.music.status === 'error'
     ? `Retry ${props.music.title}`
@@ -85,9 +83,10 @@ function leaveFocus(event: FocusEvent) {
             :title="`${music.title} — ${music.artist}`"
             >{{ music.title }}</a
           >
-          <span v-if="music.status === 'loading' || music.status === 'error'" role="status">{{ music.message }}</span>
-          <span v-else>{{ music.artist }} · SoundCloud</span>
+          <span v-if="music.status === 'error'" role="status" :aria-label="music.message" :title="music.message">SoundCloud unavailable · Retry Play</span>
+          <span v-else>{{ music.artist ? `${music.artist} · SoundCloud` : 'SoundCloud' }}</span>
         </template>
+        <span v-else-if="music.status === 'error'" class="floating-invitation" role="status" :aria-label="music.message" :title="music.message">SoundCloud unavailable · Retry Play</span>
         <span v-else class="floating-invitation"
           >Listen to some house music I like</span
         >
@@ -120,9 +119,6 @@ function leaveFocus(event: FocusEvent) {
           </svg>
         </button>
       </template>
-      <p v-if="music.status === 'error'" class="floating-error">
-        {{ music.message }}
-      </p>
     </aside>
   </Transition>
 </template>
@@ -164,6 +160,9 @@ function leaveFocus(event: FocusEvent) {
 }
 .floating-track > span {
   display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: var(--stone);
   font-family: var(--mono);
   font-size: 9px;
@@ -213,13 +212,7 @@ function leaveFocus(event: FocusEvent) {
 .floating-button:active {
   transform: scale(0.97);
 }
-.floating-error {
-  flex-basis: 100%;
-  padding: 4px;
-  color: var(--stone);
-  font-size: 12px;
-  line-height: 1.5;
-}
+
 .floating-music-enter-active,
 .floating-music-leave-active {
   transition:
