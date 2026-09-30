@@ -188,6 +188,7 @@
   --brass: #c09a5f;
   --green: #8aa392;
   --red: #9a2b31;
+  --wine: #761f24;
   --line: rgba(238, 228, 213, 0.14);
   --line-strong: rgba(238, 228, 213, 0.3);
   --display: "Archivo", "Arial Narrow", sans-serif;
@@ -848,11 +849,13 @@ html.boot-complete .hero-bottom {
 }
 
 .music-control .music-icon--pause,
-.music-player[data-state="playing"] .music-icon--play {
+.music-player[data-state="playing"] .music-icon--play,
+.music-player[data-state="starting"] .music-icon--play {
   display: none;
 }
 
-.music-player[data-state="playing"] .music-icon--pause {
+.music-player[data-state="playing"] .music-icon--pause,
+.music-player[data-state="starting"] .music-icon--pause {
   display: block;
 }
 
@@ -933,22 +936,20 @@ html.boot-complete .hero-bottom {
 }
 
 .soundcloud-frame-host {
-  /* Keep the audio widget mounted without painting its embedded UI. */
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
+  /* One audio engine controlled through the Widget API; never intercept input. */
+  position: fixed;
+  top: -200px;
+  left: -500px;
+  width: 400px;
+  height: 166px;
   opacity: 0;
   pointer-events: none;
 }
 
 .soundcloud-frame {
   display: block;
-  width: 1px;
-  height: 1px;
+  width: 400px;
+  height: 166px;
   border: 0;
 }
 
@@ -1443,6 +1444,23 @@ html.boot-complete .hero-bottom {
   display: grid;
   gap: 40px;
   padding-block: 72px;
+  background: var(--wine);
+}
+
+.contact .section-index,
+.contact .copy-email,
+.contact .contact-links a {
+  color: #e4d5c3;
+}
+
+.contact .copy-email[data-state="copied"],
+.contact .copy-email[data-state="error"] {
+  color: var(--paper);
+}
+
+.contact .contact-email:hover {
+  color: var(--paper);
+  text-decoration: underline;
 }
 
 .contact-heading {

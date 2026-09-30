@@ -197,21 +197,10 @@ export function mountPortfolio(options: MusicObserver = {}) {
   )
   updateProgress()
 
-  // Let the hero paint before the third-party iframe and script start loading.
+  // Start loading after the first paint so the player is ready for the first click.
   let musicDispose: (() => void) | undefined
   const musicFrame = requestAnimationFrame(() => {
-    if (disposed) return
-    if ('requestIdleCallback' in window) {
-      const idle = window.requestIdleCallback(() => {
-        if (!disposed) musicDispose = mountSoundCloud(options)
-      }, { timeout: 1500 })
-      disposals.push(() => window.cancelIdleCallback(idle))
-    } else {
-      const timer = setTimeout(() => {
-        if (!disposed) musicDispose = mountSoundCloud(options)
-      }, 250)
-      disposals.push(() => clearTimeout(timer))
-    }
+    if (!disposed) musicDispose = mountSoundCloud(options)
   })
   disposals.push(() => {
     cancelAnimationFrame(musicFrame)

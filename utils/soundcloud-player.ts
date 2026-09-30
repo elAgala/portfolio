@@ -1,481 +1,433 @@
-import { musicTracks, shuffleMusicTracks, type MusicObserver, type MusicState } from './music'
-import type { SoundCloudAPI } from '../types/soundcloud'
+import { musicPlaylistUrl, musicTracks, type MusicObserver, type MusicState, type MusicTrack } from './music'
+import type { SoundCloudAPI, SoundCloudSound, SoundCloudWidget } from '../types/soundcloud'
 import { createListenerRegistry, requireElement } from './dom'
 
-export function mountSoundCloud({
-  onMusicState,
-  onMusicActions,
-}: MusicObserver): () => void {
+let apiRequest: Promise<void> | undefined
+
+function loadApi(): Promise<void> {
+  if (window.SC?.Widget) return Promise.resolve()
+  if (apiRequest) return apiRequest
+  apiRequest = new Promise<void>((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = 'https://w.soundcloud.com/player/api.js'
+    script.async = true
+    let settled = false
+    const finish = (error?: Error) => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(timeout)
+      script.onload = null
+      script.onerror = null
+      if (error) {
+        script.remove()
+        reject(error)
+      } else resolve()
+    }
+    const timeout = window.setTimeout(() => finish(new Error('SoundCloud timed out')), 8000)
+    script.onload = () => finish(window.SC?.Widget ? undefined : new Error('SoundCloud API unavailable'))
+    script.onerror = () => finish(new Error('SoundCloud unavailable'))
+    document.head.appendChild(script)
+  }).finally(() => { apiRequest = undefined })
+  return apiRequest
+}
+
+function trackFromSound(sound: SoundCloudSound | null, index: number): MusicTrack {
+  return musicTracks.find(track => track.id === sound?.id) ?? {
+    id: sound?.id ?? index,
+    title: sound?.title || `Track ${index + 1}`,
+    artist: sound?.user?.username || 'SoundCloud',
+    url: sound?.permalink_url || musicPlaylistUrl,
+  }
+}
+
+export function mountSoundCloud({ onMusicState, onMusicActions }: MusicObserver): () => void {
   const disposals: Array<() => void> = []
   const listen = createListenerRegistry(disposals)
+  const player = requireElement<HTMLElement>('[data-music-player]')
+  const frame = requireElement<HTMLIFrameElement>('[data-soundcloud-player]')
+  const playback = requireElement<HTMLButtonElement>('[data-playback]')
+  const previous = requireElement<HTMLButtonElement>('[data-previous]')
+  const next = requireElement<HTMLButtonElement>('[data-next]')
+  const statusText = requireElement<HTMLElement>('[data-music-status]')
+  const title = requireElement<HTMLElement>('[data-track-title]')
+  const artist = requireElement<HTMLElement>('[data-track-artist]')
+  const trackNumber = requireElement<HTMLElement>('[data-track-position]')
+  const link = requireElement<HTMLAnchorElement>('[data-track-link]')
+  const progress = requireElement<HTMLInputElement>('[data-track-progress]')
+  const time = requireElement<HTMLElement>('[data-current-time]')
+  const length = requireElement<HTMLElement>('[data-track-duration]')
+  const options = { auto_play: false, buying: false, sharing: false, download: false, show_artwork: false, show_playcount: false, show_user: false }
+  const widgetUrl = new URL('https://w.soundcloud.com/player/')
+  widgetUrl.search = new URLSearchParams({ url: musicPlaylistUrl, ...Object.fromEntries(Object.entries(options).map(([key, value]) => [key, String(value)])) }).toString()
+
   let disposed = false
-  const initializeMusic = async () => {
-    const musicPlayer = requireElement<HTMLElement>('[data-music-player]')
-    const soundcloudFrame = requireElement<HTMLIFrameElement>(
-      '[data-soundcloud-player]',
-    )
-    const playbackButton = requireElement<HTMLButtonElement>('[data-playback]')
-    const previousButton = requireElement<HTMLButtonElement>('[data-previous]')
-    const nextButton = requireElement<HTMLButtonElement>('[data-next]')
-    const musicStatus = requireElement<HTMLElement>('[data-music-status]')
-    const trackTitle = requireElement<HTMLElement>('[data-track-title]')
-    const trackArtist = requireElement<HTMLElement>('[data-track-artist]')
-    const trackPosition = requireElement<HTMLElement>('[data-track-position]')
-    const trackLink = requireElement<HTMLAnchorElement>('[data-track-link]')
-    const trackProgress = requireElement<HTMLInputElement>(
-      '[data-track-progress]',
-    )
-    const currentTime = requireElement<HTMLElement>('[data-current-time]')
-    const trackDuration = requireElement<HTMLElement>('[data-track-duration]')
+  let generation = 0
+  let metadataRevision = 0
+  let playbackAttempt = 0
+  let widget: SoundCloudWidget | undefined
+  let events: SoundCloudAPI['Widget']['Events'] | undefined
+  let initializing = false
+  let readingPlaylist = false
+  let ready = false
+  let intentToPlay = false
+  let engaged = false
+  let status: MusicState['status'] = 'loading'
+  let errorMessage = ''
+  let tracks = [...musicTracks]
+  let sounds: SoundCloudSound[] = []
+  let currentIndex = 0
+  let requestedIndex: number | null = null
+  let requestedAt = 0
+  let position = 0
+  let duration = 0
+  let waveformUrl: string | null = null
+  let baseline = 0
+  let scrubbing = false
+  let ended = false
+  let loadTimer = 0
+  let playTimer = 0
+  let metadataTimer = 0
+  let lastRender = 0
+  const timers = new Set<number>()
+  const pendingReads = new Set<() => void>()
+  const later = (callback: () => void, delay: number) => {
+    const timer = window.setTimeout(() => { timers.delete(timer); callback() }, delay)
+    timers.add(timer)
+    return timer
+  }
+  const cancel = (timer: number) => { window.clearTimeout(timer); timers.delete(timer) }
+  const valid = (token: number) => !disposed && token === generation
 
-    const tracks = shuffleMusicTracks(musicTracks)
-    const widgetUrl = new URL('https://w.soundcloud.com/player/')
-    widgetUrl.search = new URLSearchParams({
-      url: tracks[0]!.url,
-      auto_play: 'false',
-      buying: 'false',
-      sharing: 'false',
-      download: 'false',
-      show_artwork: 'false',
-      show_playcount: 'false',
-      show_user: 'false',
-    }).toString()
-    // The iframe starts after the page has painted; it never gates the hero.
-    let currentTrack = 0
-    let playing = false
-    let widgetReady = false
-    let loadingTrack = false
-    let duration = 0
-    let scrubbing = false
-    let pendingStart: number | null = tracks[0]!.start
-    let position = tracks[0]!.start
-    let waveformUrl: string | null = null
-    let engaged = false
-    let confirmedPlaying = false
-    let playRequested = false
-    let controlsDisabled = true
-    let trackVersion = 0
-    let playerState: MusicState['status'] = 'loading'
-    let retryInitialization = () => {}
-
-    const publishMusic = () => {
-      if (disposed) return
-      onMusicState?.({
-        title: current().title,
-        artist: current().artist,
-        url: current().url,
-        trackIndex: currentTrack,
-        waveformUrl,
-        engaged,
-        playing,
-        confirmedPlaying,
-        disabled: controlsDisabled,
-        status: playerState,
-        message: musicStatus.textContent ?? '',
-        position,
-        duration,
-      })
-    }
-
-    const current = () => tracks[currentTrack]!
-
-    const formatTime = (milliseconds: number) => {
-      const seconds = Math.max(0, Math.floor(milliseconds / 1000))
-      return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
-    }
-
-    const renderTimeline = (nextPosition: number) => {
-      const safePosition = Math.min(
-        Math.max(0, nextPosition),
-        duration || nextPosition,
-      )
-      position = safePosition
-      trackProgress.max = String(duration || 1)
-      trackProgress.value = String(safePosition)
-      currentTime.textContent = formatTime(safePosition)
-      trackDuration.textContent = formatTime(duration)
-      trackProgress.setAttribute(
-        'aria-valuetext',
-        `${formatTime(safePosition)} of ${formatTime(duration)}`,
-      )
-      publishMusic()
-    }
-
-    const renderTrack = () => {
-      const track = current()
-      trackTitle.textContent = track.title
-      trackArtist.textContent = playerState === 'error'
-        ? 'SoundCloud unavailable · Retry Play'
-        : `${track.artist} · SoundCloud`
-      trackPosition.textContent = `${String(currentTrack + 1).padStart(2, '0')} / ${String(tracks.length).padStart(2, '0')}`
-      trackLink.href = track.url
-      playbackButton.setAttribute('aria-pressed', String(playing))
-      playbackButton.setAttribute(
-        'aria-label',
-        playing
-          ? `Pause ${track.title} by ${track.artist}`
-          : `Play ${track.title} by ${track.artist}`,
-      )
-      publishMusic()
-    }
-
-    const setControlsDisabled = (disabled: boolean) => {
-      controlsDisabled = disabled
-      previousButton.disabled = disabled
-      playbackButton.disabled = disabled && playerState !== 'error'
-      nextButton.disabled = disabled
-      trackProgress.disabled = disabled
-      publishMusic()
-    }
-
-    const setPlayerState = (state: MusicState['status'], status: string) => {
-      playerState = state
-      if (state !== 'playing') confirmedPlaying = false
-      musicPlayer.dataset.state = state
-      musicStatus.textContent = status
-      trackArtist.textContent = state === 'error'
-        ? 'SoundCloud unavailable · Retry Play'
-        : `${current().artist} · SoundCloud`
-      playbackButton.toggleAttribute('aria-busy', state === 'loading')
-      playbackButton.disabled = controlsDisabled && state !== 'error'
-      if (state === 'error')
-        playbackButton.setAttribute('aria-label', `Retry ${current().title}`)
-      publishMusic()
-    }
-
-    renderTrack()
-    renderTimeline(position)
-    setPlayerState('loading', 'Loading SoundCloud player…')
-    listen(playbackButton, 'click', () => retryInitialization())
-    onMusicActions?.({
-      togglePlayback: () => retryInitialization(),
-      next: () => {},
-      previous: () => {},
+  // Widget getters communicate asynchronously across the iframe boundary.
+  const read = <T>(getter: (callback: (value: T) => void) => void, timeout = 2000): Promise<T | undefined> =>
+    new Promise((resolve) => {
+      let settled = false
+      let timer = 0
+      const abort = () => finish(undefined)
+      const finish = (value: T | undefined) => {
+        if (settled) return
+        settled = true
+        cancel(timer)
+        pendingReads.delete(abort)
+        resolve(value)
+      }
+      pendingReads.add(abort)
+      timer = later(abort, timeout)
+      try { getter(value => finish(value)) } catch { finish(undefined) }
     })
 
-    const loadApi = async () => {
-      if (window.SC?.Widget) return
-      await new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = 'https://w.soundcloud.com/player/api.js'
-        script.async = true
-        let settled = false
-        const finish = (error?: Error) => {
-          if (settled) return
-          settled = true
-          clearTimeout(timer)
-          script.onload = null
-          script.onerror = null
-          if (error) {
-            script.remove()
-            reject(error)
-          } else resolve()
-        }
-        const timer = window.setTimeout(
-          () => finish(new Error('SoundCloud timed out')),
-          8000,
-        )
-        script.onload = () => finish()
-        script.onerror = () => finish(new Error('SoundCloud unavailable'))
-        document.head.appendChild(script)
-        disposals.push(() => {
-          finish(new Error('Disposed'))
-          script.remove()
-        })
-      })
-    }
-
-    const initialize = async (shouldPlay = false) => {
-      if (disposed) return
-      setPlayerState('loading', 'Loading SoundCloud player…')
-      setControlsDisabled(true)
-      if (shouldPlay) {
-        const retryUrl = new URL(widgetUrl.href)
-        retryUrl.searchParams.set('auto_play', 'true')
-        soundcloudFrame.src = retryUrl.href
-      } else {
-        soundcloudFrame.src ||= widgetUrl.href
-      }
-      try {
-        await loadApi()
-      } catch {
-        if (disposed) return
-        setPlayerState('error', 'SoundCloud is unavailable. Retry Play or open the track title.')
-        return
-      }
-      if (disposed) return
-      setupWidget(shouldPlay)
-    }
-
-    retryInitialization = () => {
-      if (playerState !== 'error') return
-      if (window.SC?.Widget && widgetReady) return
-      void initialize(true)
-    }
-
-    const setupWidget = (shouldPlay: boolean) => {
-      const api: SoundCloudAPI | undefined = window.SC
-      if (!api?.Widget) {
-        setPlayerState(
-          'error',
-          'SoundCloud playback unavailable. Open the track title to listen on SoundCloud.',
-        )
-        setControlsDisabled(true)
-      } else {
-        const widget = api.Widget(soundcloudFrame)
-        const readMetadata = () => {
-          const version = trackVersion
-          widget.getCurrentSound((sound) => {
-            if (disposed || version !== trackVersion) return
-            waveformUrl = sound?.waveform_url || null
-            publishMusic()
-          })
-        }
-        let loadTimeout = 0
-        let playbackTimeout = 0
-        let playbackStart = 0
-        const armPlaybackTimeout = (version = trackVersion) => {
-          clearTimeout(playbackTimeout)
-          playbackTimeout = window.setTimeout(() => {
-            if (disposed || version !== trackVersion || !playRequested) return
-            widget.pause()
-            playRequested = false
-            playing = false
-            renderTrack()
-            setPlayerState(
-              'error',
-              'Audio could not start. Retry Play or open the track title on SoundCloud.',
-            )
-          }, 15000)
-        }
-        const armLoadTimeout = (version = trackVersion) => {
-          clearTimeout(loadTimeout)
-          loadTimeout = window.setTimeout(() => {
-            if (disposed || version !== trackVersion) return
-            trackVersion++
-            loadingTrack = false
-            widgetReady = false
-            playing = false
-            playRequested = false
-            renderTrack()
-            setControlsDisabled(false)
-            setPlayerState(
-              'error',
-              'SoundCloud took too long. Retry Play or open the track title.',
-            )
-          }, 12000)
-        }
-        armLoadTimeout()
-        disposals.push(() => {
-          clearTimeout(loadTimeout)
-          clearTimeout(playbackTimeout)
-          widget.pause()
-          Object.values(api.Widget.Events).forEach((event) =>
-            widget.unbind(event),
-          )
-        })
-
-        const loadTrack = (index: number, shouldPlay: boolean) => {
-          if (disposed || loadingTrack) return
-          const version = ++trackVersion
-          waveformUrl = null
-          confirmedPlaying = false
-          if (shouldPlay) engaged = true
-          playRequested = shouldPlay
-          clearTimeout(playbackTimeout)
-          armLoadTimeout(version)
-          currentTrack = (index + tracks.length) % tracks.length
-          playing = false
-          widgetReady = false
-          loadingTrack = true
-          duration = 0
-          pendingStart = current().start
-          playbackStart = 0
-          renderTrack()
-          renderTimeline(current().start)
-          setControlsDisabled(true)
-          setPlayerState('loading', `Loading ${current().title}`)
-
-          widget.load(current().url, {
-            // Ask the iframe to play as part of the track change itself. A
-            // later play() from the load callback loses the iOS user gesture.
-            auto_play: shouldPlay,
-            buying: false,
-            sharing: false,
-            download: false,
-            show_artwork: false,
-            show_playcount: false,
-            show_user: false,
-            callback: () => {
-              if (disposed || version !== trackVersion) return
-              clearTimeout(loadTimeout)
-              widget.setVolume(80)
-              widget.getDuration((value) => {
-                if (disposed || version !== trackVersion) return
-                duration = value
-                renderTimeline(position)
-              })
-              readMetadata()
-              loadingTrack = false
-              widgetReady = true
-              setControlsDisabled(false)
-              if (shouldPlay) {
-                setPlayerState('loading', `Starting ${current().title}`)
-                armPlaybackTimeout(version)
-              } else {
-                setPlayerState('paused', `${current().title} ready at selected start`)
-              }
-            },
-          })
-        }
-
-        widget.bind(api.Widget.Events.READY, () => {
-          if (disposed || loadingTrack || widgetReady || playerState === 'error') return
-          clearTimeout(loadTimeout)
-          widgetReady = true
-          const version = trackVersion
-          readMetadata()
-          widget.setVolume(80)
-          widget.getDuration((value) => {
-            if (disposed || version !== trackVersion) return
-            duration = value
-            renderTimeline(position)
-          })
-          setControlsDisabled(false)
-          if (shouldPlay) {
-            engaged = true
-            playRequested = true
-            playbackStart = 0
-            setPlayerState('loading', `Starting ${current().title}`)
-            armPlaybackTimeout(version)
-          } else {
-            setPlayerState('paused', `${current().title} ready at selected start`)
-          }
-        })
-
-        // PLAY can fire for a seek before audio advances. Only progress may
-        // move the visible state to playing.
-        widget.bind(api.Widget.Events.PAUSE, () => {
-          if (disposed || loadingTrack || musicPlayer.dataset.state === 'error' || (playRequested && !confirmedPlaying))
-            return
-          playRequested = false
-          playing = false
-          renderTrack()
-          setPlayerState('paused', `${current().title} paused`)
-        })
-
-        widget.bind(api.Widget.Events.PLAY_PROGRESS, (event) => {
-          if (disposed || loadingTrack) return
-          if (playRequested && pendingStart !== null && event.currentPosition > 250) {
-            const start = pendingStart
-            pendingStart = null
-            playbackStart = start
-            widget.seekTo(start)
-            renderTimeline(start)
-            return
-          }
-          // Progress from before the seek may still arrive via postMessage.
-          if (playRequested && !confirmedPlaying && event.currentPosition < playbackStart - 1000)
-            return
-          if (playRequested && event.currentPosition > playbackStart + 250) {
-            clearTimeout(playbackTimeout)
-            if (!confirmedPlaying) {
-              playing = true
-              confirmedPlaying = true
-              renderTrack()
-              setPlayerState('playing', `Playing ${current().title} by ${current().artist}`)
-            }
-          }
-          if (!scrubbing) renderTimeline(event.currentPosition)
-        })
-
-        widget.bind(api.Widget.Events.SEEK, (event) => {
-          if (disposed || loadingTrack || scrubbing) return
-          renderTimeline(event.currentPosition)
-        })
-
-        widget.bind(api.Widget.Events.FINISH, () => {
-          loadTrack(currentTrack + 1, true)
-        })
-
-        widget.bind(api.Widget.Events.ERROR, () => {
-          clearTimeout(loadTimeout)
-          clearTimeout(playbackTimeout)
-          trackVersion++
-          widgetReady = false
-          playing = false
-          playRequested = false
-          loadingTrack = false
-          renderTrack()
-          setControlsDisabled(false)
-          setPlayerState(
-            'error',
-            `${current().title} is unavailable. Retry Play, choose another track or open the track title.`,
-          )
-        })
-
-        const startPlayback = () => {
-          engaged = true
-          confirmedPlaying = false
-          playRequested = true
-          publishMusic()
-          playbackStart = pendingStart === null ? Number(trackProgress.value) : 0
-          armPlaybackTimeout()
-          // Start inside the click handler. Seeking first can make the widget
-          // briefly play and then pause on Safari.
-          widget.play()
-        }
-
-        const togglePlayback = () => {
-          if (disposed || (controlsDisabled && playerState !== 'error')) return
-          engaged = true
-          if (musicPlayer.dataset.state === 'error') {
-            loadTrack(currentTrack, true)
-            return
-          }
-          if (!widgetReady || loadingTrack) return
-          if (playing) {
-            clearTimeout(playbackTimeout)
-            playRequested = false
-            widget.pause()
-          } else {
-            setPlayerState('loading', `Starting ${current().title}`)
-            startPlayback()
-          }
-        }
-        retryInitialization = togglePlayback
-
-        listen(previousButton, 'click', () => loadTrack(currentTrack - 1, true))
-        listen(nextButton, 'click', () => loadTrack(currentTrack + 1, true))
-
-        listen(trackProgress, 'input', () => {
-          scrubbing = true
-          renderTimeline(Number(trackProgress.value))
-        })
-
-        listen(trackProgress, 'change', () => {
-          widget.seekTo(Number(trackProgress.value))
-          scrubbing = false
-          musicStatus.textContent = `${current().title} moved to ${currentTime.textContent}`
-        })
-
-        onMusicActions?.({
-          togglePlayback,
-          next: () => {
-            if (!controlsDisabled) loadTrack(currentTrack + 1, true)
-          },
-          previous: () => {
-            if (!controlsDisabled) loadTrack(currentTrack - 1, true)
-          },
-        })
-      }
-    }
-    void initialize()
+  const current = () => tracks[currentIndex] ?? musicTracks[0]!
+  const formatTime = (value: number) => {
+    const seconds = Math.max(0, Math.floor(value / 1000))
+    return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
   }
-  void initializeMusic()
+  const setText = (element: HTMLElement, value: string) => {
+    if (element.textContent !== value) element.textContent = value
+  }
+  const render = () => {
+    if (disposed) return
+    lastRender = Date.now()
+    const track = current()
+    const playing = status === 'playing'
+    const starting = status === 'starting'
+    const message = status === 'error' ? errorMessage
+      : status === 'loading' ? 'Loading SoundCloud player…'
+        : starting ? `Starting ${(requestedIndex === null ? track : tracks[requestedIndex])?.title ?? track.title}`
+          : playing ? (requestedIndex === null ? `Playing ${track.title} by ${track.artist}` : Date.now() - requestedAt < 2000 ? 'Music is playing; confirming the selected track…' : 'Music is playing; track details unavailable.')
+            : `${track.title} ${ended ? 'finished' : 'paused'}`
+    player.dataset.state = status
+    setText(statusText, message)
+    setText(title, track.title)
+    setText(artist, status === 'error' ? 'SoundCloud unavailable · Retry Play' : `${track.artist} · SoundCloud`)
+    setText(trackNumber, ready ? `${String(currentIndex + 1).padStart(2, '0')} / ${String(tracks.length).padStart(2, '0')}` : '01 / --')
+    link.href = track.url
+    previous.disabled = next.disabled = !ready || tracks.length < 2
+    playback.disabled = !ready && status !== 'error'
+    playback.setAttribute('aria-pressed', String(playing))
+    playback.setAttribute('aria-label', status === 'error' ? `Retry ${track.title}` : starting ? `Cancel starting ${track.title}` : `${playing ? 'Pause' : 'Play'} ${track.title} by ${track.artist}`)
+    playback.toggleAttribute('aria-busy', status === 'loading' || starting)
+    progress.disabled = !ready || duration <= 0 || requestedIndex !== null
+    progress.max = String(duration || 1)
+    progress.value = String(position)
+    progress.setAttribute('aria-valuetext', `${formatTime(position)} of ${formatTime(duration)}`)
+    setText(time, formatTime(position))
+    setText(length, formatTime(duration))
+    onMusicState?.({ title: track.title, artist: track.artist, url: track.url, trackIndex: currentIndex, waveformUrl, status, message, engaged, disabled: !ready, playing, confirmedPlaying: playing, position, duration })
+  }
+  const fail = (message: string) => {
+    cancel(playTimer)
+    cancel(metadataTimer)
+    metadataRevision++
+    playbackAttempt++
+    intentToPlay = false
+    status = 'error'
+    errorMessage = message
+    render()
+  }
+  const confirmPlayback = () => {
+    cancel(playTimer)
+    status = 'playing'
+    render()
+  }
 
+  const syncMetadata = async () => {
+    if (!widget || !ready || disposed) return
+    cancel(metadataTimer)
+    const token = generation
+    const revision = ++metadataRevision
+    const active = () => valid(token) && revision === metadataRevision
+    const index = await read<number>(callback => widget!.getCurrentSoundIndex(callback))
+    if (!active()) return
+    if (!Number.isInteger(index) || index! < 0 || index! >= tracks.length || (requestedIndex !== null && index !== requestedIndex)) {
+      if (requestedIndex !== null && Date.now() - requestedAt < 2000)
+        metadataTimer = later(() => { void syncMetadata() }, 150)
+      return
+    }
+    if (currentIndex !== index || requestedIndex !== null) {
+      currentIndex = index!
+      requestedIndex = null
+      position = 0
+      duration = 0
+      baseline = 0
+      ended = false
+      waveformUrl = sounds[currentIndex]?.waveform_url ?? null
+      render()
+    }
+    // Missing decoration or duration must never block PLAY_PROGRESS.
+    void read<SoundCloudSound>(callback => widget!.getCurrentSound(callback)).then((sound) => {
+      if (!active() || !sound || sound.id !== tracks[currentIndex]?.id) return
+      tracks[currentIndex] = trackFromSound(sound, currentIndex)
+      waveformUrl = sound.waveform_url ?? null
+      render()
+    })
+    void read<number>(callback => widget!.getDuration(callback)).then((value) => {
+      if (!active()) return
+      duration = Number.isFinite(value) && value! > 0 ? value! : 0
+      render()
+    })
+  }
+
+  const armPlaybackTimeout = () => {
+    cancel(playTimer)
+    const token = generation
+    const attempt = ++playbackAttempt
+    const active = () => valid(token) && attempt === playbackAttempt && intentToPlay && status !== 'playing'
+    playTimer = later(() => {
+      void (async () => {
+        if (!active() || !widget) return
+        const [paused, firstPosition] = await Promise.all([
+          read<boolean>(callback => widget!.isPaused(callback), 800),
+          read<number>(callback => widget!.getPosition(callback), 800),
+        ])
+        if (!active()) return
+        if (paused === false && Number.isFinite(firstPosition)) {
+          await new Promise<void>(resolve => { later(resolve, 250) })
+          if (!active()) return
+          const secondPosition = await read<number>(callback => widget!.getPosition(callback), 800)
+          if (!active()) return
+          if (Number.isFinite(secondPosition) && secondPosition! > firstPosition!) {
+            position = secondPosition!
+            confirmPlayback()
+            return
+          }
+        }
+        // A failed acknowledgement is not permission to stop potentially working audio.
+        if (active()) fail('Audio did not respond. Retry Play or open the track on SoundCloud.')
+      })()
+    }, 15000)
+  }
+
+  const unbindWidget = () => {
+    if (widget && events) Object.values(events).forEach(event => widget!.unbind(event))
+  }
+  const failInitialization = (token: number, message: string) => {
+    if (!valid(token)) return
+    generation++
+    initializing = false
+    readingPlaylist = false
+    ready = false
+    cancel(loadTimer)
+    pendingReads.forEach(abort => abort())
+    fail(message)
+  }
+  const finishInitialization = async (token: number) => {
+    if (!valid(token) || ready || readingPlaylist || !widget) return
+    readingPlaylist = true
+    const playlist = await read<SoundCloudSound[]>(callback => widget!.getSounds(callback), 12000)
+    if (!valid(token)) return
+    if (!Array.isArray(playlist) || playlist.length === 0) {
+      failInitialization(token, 'The SoundCloud playlist is unavailable. Retry Play or open SoundCloud.')
+      return
+    }
+    cancel(loadTimer)
+    sounds = playlist
+    tracks = sounds.map(trackFromSound)
+    currentIndex = 0
+    ready = true
+    initializing = false
+    readingPlaylist = false
+    status = 'paused'
+    widget.setVolume(80)
+    waveformUrl = sounds[0]?.waveform_url ?? null
+    render()
+    void syncMetadata()
+  }
+  const bindWidget = (token: number) => {
+    const active = () => valid(token) && ready
+    const api = window.SC!
+    events = api.Widget.Events
+    widget!.bind(events.READY, () => { void finishInitialization(token) })
+    widget!.bind(events.PLAY, () => {
+      if (!active()) return
+      if (!intentToPlay) { widget!.pause(); return }
+      if (status === 'paused') {
+        baseline = position
+        status = 'starting'
+        armPlaybackTimeout()
+        render()
+      }
+      // PLAY can be repeated during a single start; it must not reset its deadline.
+      void syncMetadata()
+    })
+    widget!.bind(events.PLAY_PROGRESS, (event) => {
+      if (!active() || !intentToPlay || status === 'paused' || !Number.isFinite(event.currentPosition) || event.currentPosition < 0) return
+      if (!scrubbing && requestedIndex === null) position = event.currentPosition
+      if (event.currentPosition > baseline && status !== 'playing') confirmPlayback()
+      else if (Date.now() - lastRender >= 100) render()
+    })
+    widget!.bind(events.PAUSE, () => {
+      if (!active() || status === 'error' || (status === 'starting' && intentToPlay)) return
+      cancel(playTimer)
+      status = 'paused'
+      render()
+    })
+    widget!.bind(events.SEEK, (event) => {
+      if (!active() || scrubbing || requestedIndex !== null || !Number.isFinite(event.currentPosition)) return
+      position = Math.max(0, event.currentPosition)
+      render()
+    })
+    widget!.bind(events.FINISH, () => {
+      if (!active() || requestedIndex !== null || !intentToPlay) return
+      ended = true
+      if (currentIndex === tracks.length - 1) {
+        intentToPlay = false
+        cancel(playTimer)
+        status = 'paused'
+      } else {
+        status = 'starting'
+        baseline = 0
+        armPlaybackTimeout()
+      }
+      render()
+    })
+    widget!.bind(events.ERROR, () => {
+      if (!valid(token)) return
+      if (ready && !intentToPlay && status === 'paused') return
+      if (!ready) failInitialization(token, 'SoundCloud is unavailable. Retry Play or open SoundCloud.')
+      else fail(`${current().title} is unavailable. Try the next track or open SoundCloud.`)
+    })
+  }
+
+  const initialize = async () => {
+    if (disposed || initializing) return
+    const token = ++generation
+    initializing = true
+    ready = false
+    readingPlaylist = false
+    intentToPlay = false
+    metadataRevision++
+    playbackAttempt++
+    timers.forEach(timer => window.clearTimeout(timer))
+    timers.clear()
+    pendingReads.forEach(abort => abort())
+    unbindWidget()
+    requestedIndex = null
+    position = duration = baseline = 0
+    waveformUrl = null
+    ended = false
+    status = 'loading'
+    render()
+    loadTimer = later(() => failInitialization(token, 'SoundCloud took too long. Retry Play or open SoundCloud.'), 12000)
+    if (!widget) frame.src = widgetUrl.href
+    try {
+      await loadApi()
+      if (!valid(token)) return
+      if (!widget) {
+        widget = window.SC!.Widget(frame)
+        bindWidget(token)
+      } else {
+        bindWidget(token)
+        widget.load(musicPlaylistUrl, { ...options, callback: () => { void finishInitialization(token) } })
+      }
+    } catch {
+      failInitialization(token, 'SoundCloud is unavailable. Retry Play or open SoundCloud.')
+    }
+  }
+
+  const startPlayback = () => {
+    if (!ready || !widget || disposed) return
+    intentToPlay = true
+    engaged = true
+    ended = false
+    baseline = position
+    status = 'starting'
+    render()
+    armPlaybackTimeout()
+    if (requestedIndex !== null) widget.skip(requestedIndex)
+    widget.play()
+    void syncMetadata()
+  }
+  const togglePlayback = () => {
+    if (disposed) return
+    if (!ready) { if (status === 'error') void initialize(); return }
+    if (status === 'playing' || status === 'starting') {
+      intentToPlay = false
+      playbackAttempt++
+      cancel(playTimer)
+      status = 'paused'
+      widget!.pause()
+      render()
+    } else startPlayback()
+  }
+  const skipTrack = (direction: number) => {
+    if (disposed || !ready || !widget || tracks.length < 2) return
+    requestedIndex = ((requestedIndex ?? currentIndex) + direction + tracks.length) % tracks.length
+    requestedAt = Date.now()
+    metadataRevision++
+    position = duration = baseline = 0
+    waveformUrl = null
+    engaged = intentToPlay = true
+    ended = false
+    status = 'starting'
+    render()
+    armPlaybackTimeout()
+    widget.skip(requestedIndex)
+    widget.play()
+    void syncMetadata()
+  }
+
+  listen(playback, 'click', togglePlayback)
+  listen(previous, 'click', () => skipTrack(-1))
+  listen(next, 'click', () => skipTrack(1))
+  listen(progress, 'input', () => {
+    scrubbing = true
+    position = Math.min(duration, Math.max(0, Number(progress.value)))
+    render()
+  })
+  listen(progress, 'change', () => {
+    if (ready && duration > 0 && requestedIndex === null) widget!.seekTo(position)
+    scrubbing = false
+  })
+  onMusicActions?.({ togglePlayback, next: () => skipTrack(1), previous: () => skipTrack(-1) })
+  void initialize()
   return () => {
     disposed = true
-    disposals.forEach((dispose) => dispose())
+    generation++
+    timers.forEach(timer => window.clearTimeout(timer))
+    timers.clear()
+    pendingReads.forEach(abort => abort())
+    widget?.pause()
+    unbindWidget()
+    disposals.forEach(dispose => dispose())
   }
 }

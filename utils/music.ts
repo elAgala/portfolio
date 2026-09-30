@@ -1,69 +1,57 @@
 export interface MusicTrack {
+  id: number
   title: string
   artist: string
   url: string
-  start: number
 }
 
+export const musicPlaylistUrl = 'https://soundcloud.com/agalamusic/sets/portfolio'
+
+/** Metadata for the tracks curated in the SoundCloud playlist. Its widget owns playback order. */
 export const musicTracks: MusicTrack[] = [
   {
-    title: 'Aspects Of Rhythm',
-    artist: 'Audio Junkies',
-    url: 'https://soundcloud.com/maccabihouse/audio-junkies-aspects-of-rhythm-1',
-    start: 182000,
-  },
-  {
-    title: 'Wow',
-    artist: 'Sako Isoyan',
-    url: 'https://soundcloud.com/isoformance/sako-isoyan-wow',
-    start: 175000,
-  },
-  {
-    title: 'UFO On A Limousine',
-    artist: 'Breezy S',
-    url: 'https://soundcloud.com/user-956047264/breezy-s-ufo-on-a-limousine',
-    start: 208000,
-  },
-  {
+    id: 1974108831,
     title: 'Cold Case (ODTF002)',
     artist: 'Alpyren',
     url: 'https://soundcloud.com/recordeep-mag/premiere-alpyren-cold-case-odtf002',
-    start: 119000,
   },
   {
-    title: 'I Need (Rosa Red Remix)',
-    artist: 'Known Artist',
-    url: 'https://soundcloud.com/novajrec/premiere-known-artist-i-need-rosa-red-remix',
-    start: 87000,
+    id: 709396003,
+    title: 'Wow',
+    artist: 'Sako Isoyan',
+    url: 'https://soundcloud.com/isoformance/sako-isoyan-wow',
   },
   {
+    id: 2263905473,
+    title: 'UFO On A Limousine',
+    artist: 'Breezy S',
+    url: 'https://soundcloud.com/breezysmusic/ufo-on-a-limousine',
+  },
+  {
+    id: 1104511672,
     title: 'Witch House [PHONICAM001]',
     artist: 'Voodoos and Taboos',
     url: 'https://soundcloud.com/trommelmusic/premiere-b1-voodoos-and-taboos-witch-house-phonicam001',
-    start: 118000,
   },
   {
+    id: 1692099648,
+    title: 'I Need (Rosa Red Remix)',
+    artist: 'Known Artist',
+    url: 'https://soundcloud.com/novajrec/premiere-known-artist-i-need-rosa-red-remix',
+  },
+  {
+    id: 1876217238,
+    title: 'Aspects Of Rhythm',
+    artist: 'Audio Junkies',
+    url: 'https://soundcloud.com/maccabihouse/audio-junkies-aspects-of-rhythm-1',
+  },
+  {
+    id: 2222058083,
     title: 'Lime House',
     artist: 'Demi Riquísimo & Hammer',
     url: 'https://soundcloud.com/minitelofc/incoming-demi-riquisimo-hammer-lime-house-semidelicious',
-    start: 178000,
   },
 ]
-
-/** Shuffle a copy once per player mount, keeping next/previous navigation stable. */
-export function shuffleMusicTracks(
-  tracks: readonly MusicTrack[],
-  random: () => number = Math.random,
-): MusicTrack[] {
-  const shuffled = [...tracks]
-  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const target = Math.floor(random() * (index + 1))
-    const track = shuffled[index]!
-    shuffled[index] = shuffled[target]!
-    shuffled[target] = track
-  }
-  return shuffled
-}
 
 export interface MusicState {
   title: string
@@ -71,7 +59,7 @@ export interface MusicState {
   url: string
   trackIndex: number
   waveformUrl: string | null
-  status: 'paused' | 'loading' | 'playing' | 'error'
+  status: 'paused' | 'loading' | 'starting' | 'playing' | 'error'
   message: string
   engaged: boolean
   disabled: boolean

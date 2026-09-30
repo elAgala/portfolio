@@ -1,30 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { musicTracks, normalizeWaveform, shuffleMusicTracks } from '../utils/music'
+import { musicPlaylistUrl, musicTracks, normalizeWaveform } from '../utils/music'
 
 describe('SoundCloud playlist', () => {
-  it('shuffles a copy without losing tracks or changing their offsets', () => {
-    const original = [...musicTracks]
-    const shuffled = shuffleMusicTracks(musicTracks, () => 0)
-    expect(shuffled).toEqual([...original.slice(1), original[0]])
-    expect(new Set(shuffled).size).toBe(original.length)
-    expect(musicTracks).toEqual(original)
-    expect(shuffleMusicTracks(musicTracks, () => 0.999)).toEqual(original)
-    expect(shuffled).not.toBe(musicTracks)
-  })
-
-  it('handles empty and single-track queues', () => {
-    expect(shuffleMusicTracks([])).toEqual([])
-    expect(shuffleMusicTracks([musicTracks[0]!])).toEqual([musicTracks[0]])
-  })
-  it('keeps the requested tracks and starting offsets', () => {
-    expect(musicTracks.map(({ title, artist, start }) => ({ title, artist, start }))).toEqual([
-      { title: 'Aspects Of Rhythm', artist: 'Audio Junkies', start: 182000 },
-      { title: 'Wow', artist: 'Sako Isoyan', start: 175000 },
-      { title: 'UFO On A Limousine', artist: 'Breezy S', start: 208000 },
-      { title: 'Cold Case (ODTF002)', artist: 'Alpyren', start: 119000 },
-      { title: 'I Need (Rosa Red Remix)', artist: 'Known Artist', start: 87000 },
-      { title: 'Witch House [PHONICAM001]', artist: 'Voodoos and Taboos', start: 118000 },
-      { title: 'Lime House', artist: 'Demi Riquísimo & Hammer', start: 178000 },
+  it('identifies the curated songs by SoundCloud ID in playlist order', () => {
+    expect(musicPlaylistUrl).toBe('https://soundcloud.com/agalamusic/sets/portfolio')
+    expect(musicTracks.map(({ id, title, artist }) => ({ id, title, artist }))).toEqual([
+      { id: 1974108831, title: 'Cold Case (ODTF002)', artist: 'Alpyren' },
+      { id: 709396003, title: 'Wow', artist: 'Sako Isoyan' },
+      { id: 2263905473, title: 'UFO On A Limousine', artist: 'Breezy S' },
+      { id: 1104511672, title: 'Witch House [PHONICAM001]', artist: 'Voodoos and Taboos' },
+      { id: 1692099648, title: 'I Need (Rosa Red Remix)', artist: 'Known Artist' },
+      { id: 1876217238, title: 'Aspects Of Rhythm', artist: 'Audio Junkies' },
+      { id: 2222058083, title: 'Lime House', artist: 'Demi Riquísimo & Hammer' },
     ])
   })
 })

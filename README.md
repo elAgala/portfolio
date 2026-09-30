@@ -6,7 +6,7 @@ A Nuxt portfolio for Julián “Agala” Benitez. The homepage reproduces the Po
 
 - **Original design:** Archivo and JetBrains Mono, the original portrait, responsive composition, and the introduction intentionally typing `whoaim` before correcting it to `whoami`.
 - **Agala Labs:** the original architecture chapter covering applications, shared services, data, infrastructure, and delivery.
-- **SoundCloud:** Audio Junkies — “Aspects Of Rhythm” (3:02), Sako Isoyan — “Wow” (2:55), Breezy S — “UFO On A Limousine” (3:28), Alpyren — “Cold Case (ODTF002)” (1:59), Known Artist — “I Need (Rosa Red Remix)” (1:27), and Voodoos and Taboos — “Witch House [PHONICAM001]” (1:58). Playback begins on interaction; switching tracks reapplies the selected offset, while pause/resume retains the current position.
+- **SoundCloud:** The [Portfolio playlist](https://soundcloud.com/agalamusic/sets/portfolio) supplies the music. Playback begins on interaction; tracks start at the beginning and pause/resume retains the current position. The site keeps one widget mounted while SoundCloud handles transitions within the playlist.
 - **Accessible by default:** semantic sections, visible headings, keyboard navigation, responsive layouts, and reduced-motion handling.
 - **Formal resume:** `/resume` is intentionally restrained, photo-free, print-safe, and available as a generated PDF.
 
@@ -29,9 +29,11 @@ The imported homepage lives in `components/PortfolioDesign.vue`, with styles in 
 
 “Listen to some house music I like” becomes a compact floating invitation after the original player scrolls above the header. After interaction, it exposes shared playback controls without creating another iframe. Both players use play/pause, with no separate mute control. The real SoundCloud waveform appears only during confirmed playback. A softly smoothed 24-second window scrolls with the current audio position centered, without a visible cursor. Waveform data is loaded on demand, validated and cached in memory; failures leave audio untouched. Drawing stops in hidden tabs, and reduced-motion visitors get a static waveform. Keyboard focus is retained when scrolling back to the original player.
 
+All controls call the official SoundCloud Widget API directly from the click handler. The hidden iframe never intercepts pointer input. A pending start can be canceled; playback is confirmed by advancing audio position, independently of optional track metadata. Initialization has a 12-second total deadline, metadata getters have 2-second deadlines, and a 15-second start deadline checks the widget's actual position before reporting a recoverable error. Missing metadata never pauses working audio. Rapid next/previous actions follow the latest requested playlist destination, with stale replies ignored.
+
 The app, maintenance scripts and ESLint configuration use TypeScript. The maintenance commands run with Node 22's native type stripping; generated JavaScript in Nuxt build output is not maintained source.
 
-The Breezy S track uses the BELTERS 4U release premiere on SoundCloud. During verification, the artist upload returned HTTP 404 from both stream endpoints; the premiere played the same 6:32 recording from 3:28.
+The Breezy S track uses the playable `breezysmusic/ufo-on-a-limousine` upload in the playlist. The older `user-956047264` URL had broken streams.
 
 - `profile.ts` — identity, contact information, and positioning
 - `lab.ts` — Agala Labs products, architecture, tooling, and agentic work
@@ -42,9 +44,7 @@ The Breezy S track uses the BELTERS 4U release premiere on SoundCloud. During ve
 
 The formal resume is the only secondary route.
 
-The playlist also includes Demi Riquísimo & Hammer — “Lime House” (2:58), using the MINITEL upload on SoundCloud.
-
-The music queue is shuffled once when the homepage player mounts, including the first track. Next, previous and automatic advance follow that order, wrapping after all seven tracks; pause/resume does not reshuffle. Each track keeps its configured starting offset.
+The curated catalog also identifies Demi Riquísimo & Hammer — “Lime House” on the MINITEL upload. The SoundCloud playlist is the source of truth for which tracks play and in what order; add that track to the playlist to include it in playback. Next and previous select tracks inside the same iframe, and no automatic start offsets are applied.
 
 The share preview uses the current portrait and brand assets. After editing `scripts/social-card.html`, run `npm run social:image` with Chrome installed (`CHROME_PATH` can override its location), then update the image version in `data/social.ts`. Commit the generated `public/og-image.png` before deployment. Existing messages may retain a cached preview until the sharing service fetches the metadata again.
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import portfolioStyles from "~/assets/css/portfolio.css?inline";
 import { mountPortfolio } from "~/utils/portfolio";
-import { initialMusicState, musicTracks, type MusicActions } from "~/utils/music";
+import { initialMusicState, type MusicActions } from "~/utils/music";
 
 const music = shallowRef({ ...initialMusicState });
 const musicActions = shallowRef<MusicActions | null>(null);
@@ -36,6 +36,15 @@ onBeforeUnmount(() => {
   <div class="portfolio-page">
     <SoundCloudBackdrop :music="music" />
     <FloatingMusicPlayer :music="music" :actions="musicActions" />
+    <div class="soundcloud-frame-host" data-soundcloud-host aria-hidden="true">
+      <iframe
+        class="soundcloud-frame"
+        data-soundcloud-player
+        title="SoundCloud audio player"
+        tabindex="-1"
+        allow="autoplay; encrypted-media"
+      />
+    </div>
     <a class="skip-link" href="#main-content">Skip to the portfolio</a>
     <span class="reading-progress" aria-hidden="true" />
 
@@ -142,17 +151,17 @@ onBeforeUnmount(() => {
                   <a
                     class="music-track-link"
                     data-track-link
-                    href="https://soundcloud.com/maccabihouse/audio-junkies-aspects-of-rhythm-1"
+                    href="https://soundcloud.com/recordeep-mag/premiere-alpyren-cold-case-odtf002"
                     target="_blank"
                     rel="noreferrer"
-                    ><span data-track-title>Aspects Of Rhythm</span></a
+                    ><span data-track-title>Cold Case (ODTF002)</span></a
                   >
                   <span class="music-position" data-track-position
-                    >01 / {{ String(musicTracks.length).padStart(2, '0') }}</span
+                    >01 / --</span
                   >
                 </div>
                 <span class="music-credit" data-track-artist
-                  >Audio Junkies · SoundCloud</span
+                  >Alpyren · SoundCloud</span
                 >
               </div>
               <div class="music-controls">
@@ -172,7 +181,7 @@ onBeforeUnmount(() => {
                     class="music-control music-control--playback"
                     type="button"
                     data-playback
-                    aria-label="Play Aspects Of Rhythm by Audio Junkies"
+                    aria-label="Play Cold Case (ODTF002) by Alpyren"
                     aria-pressed="false"
                     disabled
                   >
@@ -204,7 +213,7 @@ onBeforeUnmount(() => {
                   </button>
                 </div>
                 <div class="music-timeline">
-                  <span class="music-time" data-current-time>03:02</span>
+                  <span class="music-time" data-current-time>00:00</span>
                   <input
                     class="music-progress"
                     data-track-progress
@@ -218,15 +227,6 @@ onBeforeUnmount(() => {
                   >
                   <span class="music-time" data-track-duration>00:00</span>
                 </div>
-              </div>
-              <div class="soundcloud-frame-host" aria-hidden="true">
-                <iframe
-                  class="soundcloud-frame"
-                  data-soundcloud-player
-                  title="SoundCloud audio player"
-                  tabindex="-1"
-                  allow="autoplay"
-                />
               </div>
             </div>
           </div>

@@ -14,14 +14,19 @@ copy, Archivo typography, portrait and responsive rules. There are no
   standalone section components are not used by this homepage.
 - Motion: the hero intentionally types `whoaim`, then corrects it to `whoami` once. Keep this joke. Reduced-motion visitors
   receive the content immediately.
-- Audio: SoundCloud playlist with offsets 3:02, 2:55, 3:28, 1:59, 1:27, and
-  1:58, plus Demi Riquísimo & Hammer — Lime House at 2:58. Shuffle a copy of the playlist once per player mount, including the first track; keep that order for next/previous and automatic advance. Apply offsets
-  when playback is requested, never on initial widget readiness. Pause/resume
-  retains position. The Breezy S artist upload has broken streams, so use the
-  verified BELTERS 4U premiere of the same recording.
-- Keep one SoundCloud widget. `utils/soundcloud-player.ts` publishes typed
-  state and actions to `FloatingMusicPlayer` and `SoundCloudBackdrop`. The
-  ambient waveform uses real track samples and stays hidden while paused,
+- Audio: embed the public `agalamusic/sets/portfolio` playlist in one SoundCloud
+  widget. The widget owns its order and automatic advance; next/previous skip
+  inside the same iframe. Each track starts at 0 with no automatic seek.
+  Pause/resume retains position. Use the Breezy S upload in that playlist;
+  the older `user-956047264` URL has broken streams.
+- Keep one SoundCloud widget. `utils/soundcloud-player.ts` uses the official
+  Widget API and publishes typed state/actions to `FloatingMusicPlayer` and
+  `SoundCloudBackdrop`. Never place the iframe over
+  a visible control: all clicks, taps and keyboard activation use those controls'
+  handlers. Confirm playback from advancing position independently of metadata;
+  allow canceling a pending start, bound all getters and ignore stale responses.
+  Fast track navigation follows the latest requested index, not an old widget reply.
+  The ambient waveform uses real track samples and stays hidden while paused,
   or unavailable. Playback is controlled with play/pause; there is no mute control. Keep maintained source in TypeScript.
 - Brand semantics: “Agala” is Julián's nickname and personal mark. “Agala Labs”
   is his software factory and links to `https://agala.com.ar`.

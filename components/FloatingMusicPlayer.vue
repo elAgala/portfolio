@@ -13,6 +13,8 @@ const expanded = computed(() => props.music.engaged)
 const playbackLabel = computed(() =>
   props.music.status === 'error'
     ? `Retry ${props.music.title}`
+    : props.music.status === 'starting'
+      ? `Cancel starting ${props.music.title}`
     : `${props.music.playing ? 'Pause' : 'Play'} ${props.music.title} by ${props.music.artist}`,
 )
 let cleanup = () => {}
@@ -84,6 +86,7 @@ function leaveFocus(event: FocusEvent) {
             >{{ music.title }}</a
           >
           <span v-if="music.status === 'error'" role="status" :aria-label="music.message" :title="music.message">SoundCloud unavailable · Retry Play</span>
+          <span v-else-if="music.status === 'starting'" role="status">{{ music.message }}</span>
           <span v-else>{{ music.artist ? `${music.artist} · SoundCloud` : 'SoundCloud' }}</span>
         </template>
         <span v-else-if="music.status === 'error'" class="floating-invitation" role="status" :aria-label="music.message" :title="music.message">SoundCloud unavailable · Retry Play</span>
@@ -98,11 +101,11 @@ function leaveFocus(event: FocusEvent) {
         :disabled="(music.disabled && music.status !== 'error') || !actions"
         :aria-label="playbackLabel"
         :aria-pressed="music.playing"
-        :aria-busy="music.status === 'loading'"
+        :aria-busy="music.status === 'loading' || music.status === 'starting'"
         @click="actions?.togglePlayback()"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path v-if="music.playing" d="M9 6v12M15 6v12" />
+          <path v-if="music.playing || music.status === 'starting'" d="M9 6v12M15 6v12" />
           <path v-else d="m9 6 9 6-9 6V6Z" />
         </svg>
       </button>
